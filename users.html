@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fluent — Users</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <script src="components.js" defer></script>
+  <style>
+    .content {
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 52px);
+    }
+
+    .page-header { flex-shrink: 0; margin-bottom: 16px; }
+
+    .page-title { font-size: 24px; font-weight: 700; margin-bottom: 14px; }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      padding: 0 16px;
+      height: 36px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+
+    .table-wrap {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      flex: 1;
+      overflow-y: auto;
+      background: var(--card);
+    }
+
+    .users-table { width: 100%; border-collapse: collapse; }
+
+    .users-table thead tr {
+      background: var(--card);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .users-table thead th {
+      padding: 11px 16px;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .users-table tbody tr { background: var(--background); border-bottom: 1px solid var(--border); cursor: pointer; }
+    .users-table tbody tr:last-child { border-bottom: none; }
+    .users-table tbody tr:hover { background: var(--muted); }
+
+    .users-table tbody td { padding: 11px 16px; font-size: 14px; }
+
+    .users-table col.col-name  { width: 25%; }
+    .users-table col.col-role  { width: 20%; }
+    .users-table col.col-email { width: auto; }
+    .users-table col.col-status { width: 130px; }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .badge-invited  { background: var(--primary); color: #fff; }
+    .badge-verified { background: var(--card); color: var(--muted-foreground); border: 1px solid var(--border); }
+
+    /* ── Add User Dialog ── */
+    .dialog-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+    }
+    .dialog-backdrop.open { display: flex; }
+
+    .dialog {
+      background: var(--background);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+      width: 480px;
+      max-width: calc(100vw - 32px);
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dialog-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dialog-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .dialog-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted-foreground);
+      padding: 4px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .dialog-close:hover { background: var(--muted); color: var(--foreground); }
+
+    .dialog-body {
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-field { display: flex; flex-direction: column; gap: 5px; }
+
+    .form-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--foreground);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .required-star { color: #dc2626; }
+
+    .form-help {
+      font-size: 12px;
+      color: var(--muted-foreground);
+      margin-top: 2px;
+    }
+
+    .form-input, .form-select {
+      height: 36px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0 10px;
+      font-size: 14px;
+      font-family: var(--font);
+      color: var(--foreground);
+      background: var(--background);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .form-input:focus, .form-select:focus { border-color: var(--primary); }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .dialog-footer {
+      padding: 16px 24px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-add-user {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      padding: 0 20px;
+      height: 36px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      opacity: 0.4;
+      pointer-events: none;
+      transition: background 0.15s, opacity 0.15s;
+    }
+    .btn-add-user.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .btn-add-user.active:hover { background: var(--primary-hover); }
+  </style>
+</head>
+<body>
+
+  <div id="fluent-header"></div>
+
+  <div class="content">
+    <div class="page-header">
+      <h1 class="page-title">Users</h1>
+      <button class="btn-primary" id="open-add-user">Add User</button>
+    </div>
+
+    <div class="table-wrap">
+      <table class="users-table">
+        <colgroup>
+          <col class="col-name">
+          <col class="col-role">
+          <col class="col-email">
+          <col class="col-status">
+        </colgroup>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Email</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Anna Rivera</td><td>Translator</td><td>anna.rivera@gmail.com</td><td><span class="badge badge-verified">verified</span></td></tr>
+          <tr><td>Ben Okafor</td><td>Translator</td><td>ben.okafor@gmail.com</td><td><span class="badge badge-invited">invited</span></td></tr>
+          <tr><td>Chad W</td><td>Manager</td><td>chadw@fluent.app</td><td><span class="badge badge-verified">verified</span></td></tr>
+          <tr><td>Diana Chen</td><td>Manager</td><td>diana.chen@fluent.app</td><td><span class="badge badge-verified">verified</span></td></tr>
+          <tr><td>Elias Brooke</td><td>Translator</td><td>elias.brooke@gmail.com</td><td><span class="badge badge-verified">verified</span></td></tr>
+          <tr><td>Fatima Malik</td><td>Translator</td><td>fatima.malik@gmail.com</td><td><span class="badge badge-verified">verified</span></td></tr>
+          <tr><td>Grace Adeyemi</td><td>Translator</td><td>grace.adeyemi@gmail.com</td><td><span class="badge badge-invited">invited</span></td></tr>
+          <tr><td>James Osei</td><td>Translator</td><td>james.osei@gmail.com</td><td><span class="badge badge-verified">verified</span></td></tr>
+          <tr><td>Luis Ferreira</td><td>Translator</td><td>luis.ferreira@gmail.com</td><td><span class="badge badge-invited">invited</span></td></tr>
+          <tr><td>Marcus Webb</td><td>Translator</td><td>marcus.webb@gmail.com</td><td><span class="badge badge-verified">verified</span></td></tr>
+          <tr><td>Nadia Vasquez</td><td>Translator</td><td>nadia.vasquez@gmail.com</td><td><span class="badge badge-invited">invited</span></td></tr>
+          <tr><td>Priya Sharma</td><td>Translator</td><td>priya.sharma@gmail.com</td><td><span class="badge badge-verified">verified</span></td></tr>
+          <tr><td>qa.manager</td><td>Manager</td><td>qa.manager@fluent.app</td><td><span class="badge badge-verified">verified</span></td></tr>
+          <tr><td>Roslin P</td><td>Translator</td><td>roslinp@gmail.com</td><td><span class="badge badge-verified">verified</span></td></tr>
+          <tr><td>Roslin T</td><td>Translator</td><td>roslint@gmail.com</td><td><span class="badge badge-verified">verified</span></td></tr>
+          <tr><td>Samuel Park</td><td>Manager</td><td>samuel.park@fluent.app</td><td><span class="badge badge-verified">verified</span></td></tr>
+          <tr><td>Seema T</td><td>Translator</td><td>seema.t@gmail.com</td><td><span class="badge badge-invited">invited</span></td></tr>
+          <tr><td>Tom Nakamura</td><td>Translator</td><td>tom.nakamura@gmail.com</td><td><span class="badge badge-verified">verified</span></td></tr>
+          <tr><td>Victor Oduya</td><td>Translator</td><td>victor.oduya@gmail.com</td><td><span class="badge badge-verified">verified</span></td></tr>
+          <tr><td>Yuki Tanaka</td><td>Translator</td><td>yuki.tanaka@gmail.com</td><td><span class="badge badge-invited">invited</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Add User Dialog -->
+  <div class="dialog-backdrop" id="add-user-backdrop">
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title">
+      <div class="dialog-header">
+        <span class="dialog-title" id="dialog-title">Add User</span>
+        <button class="dialog-close" id="close-dialog" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="dialog-body">
+        <div class="form-field">
+          <label class="form-label" for="field-email">
+            <span class="required-star">*</span> Email
+          </label>
+          <input class="form-input" type="email" id="field-email" placeholder="" autocomplete="off">
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="field-display-name">
+            <span class="required-star">*</span> Display Name
+          </label>
+          <input class="form-input" type="text" id="field-display-name" placeholder="" autocomplete="off">
+          <span class="form-help">Visible to all Scribe users</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label class="form-label" for="field-first-name">First Name</label>
+            <input class="form-input" type="text" id="field-first-name" placeholder="" autocomplete="off">
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="field-last-name">Last Name</label>
+            <input class="form-input" type="text" id="field-last-name" placeholder="" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="field-role">
+            <span class="required-star">*</span> Role
+          </label>
+          <select class="form-select" id="field-role">
+            <option value="Translator">Translator</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <button class="btn-add-user" id="btn-add-user">Add User</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Wire up row clicks to open Edit Profile dialog
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.users-table tbody tr').forEach(function(row) {
+        row.addEventListener('click', function() {
+          const cells = row.querySelectorAll('td');
+          const fullName   = cells[0].textContent.trim();
+          const role       = cells[1].textContent.trim();
+          const email      = cells[2].textContent.trim();
+          const nameParts  = fullName.split(' ');
+          const firstName  = nameParts[0] || '';
+          const lastName   = nameParts.slice(1).join(' ');
+          openEditProfile({
+            email:       email,
+            displayName: fullName,
+            firstName:   firstName,
+            lastName:    lastName,
+            role:        role,
+          });
+        });
+      });
+    });
+
+    const backdrop   = document.getElementById('add-user-backdrop');
+    const openBtn    = document.getElementById('open-add-user');
+    const closeBtn   = document.getElementById('close-dialog');
+    const addBtn     = document.getElementById('btn-add-user');
+    const fieldEmail = document.getElementById('field-email');
+    const fieldName  = document.getElementById('field-display-name');
+    const fieldRole  = document.getElementById('field-role');
+
+    function openDialog() {
+      backdrop.classList.add('open');
+      fieldEmail.focus();
+    }
+
+    function closeDialog() {
+      backdrop.classList.remove('open');
+      // reset form
+      document.querySelectorAll('.form-input').forEach(el => el.value = '');
+      fieldRole.selectedIndex = 0;
+      checkRequired();
+    }
+
+    function checkRequired() {
+      const ready = fieldEmail.value.trim() !== '' &&
+                    fieldName.value.trim()  !== '' &&
+                    fieldRole.value         !== '';
+      addBtn.classList.toggle('active', ready);
+    }
+
+    openBtn.addEventListener('click', openDialog);
+    closeBtn.addEventListener('click', closeDialog);
+
+    // Prevent close on backdrop click (per spec)
+    backdrop.addEventListener('click', e => { if (e.target === backdrop) e.stopPropagation(); });
+
+    [fieldEmail, fieldName, fieldRole].forEach(el => el.addEventListener('input', checkRequired));
+    fieldRole.addEventListener('change', checkRequired);
+
+    addBtn.addEventListener('click', () => {
+      if (!addBtn.classList.contains('active')) return;
+      // In a real app this would POST to the API; for the mockup just close.
+      closeDialog();
+    });
+  </script>
+
+</body>
+</html>

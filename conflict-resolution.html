@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fluent — Conflict Resolution</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <script src="components.js" defer></script>
+  <style>
+    html, body { height: 100%; overflow: hidden; }
+    body { display: flex; flex-direction: column; }
+
+    /* ── Sub-header ── */
+    .sub-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px 14px 20px;
+      background: var(--background);
+      flex-shrink: 0;
+      gap: 10px;
+    }
+
+    .sub-left { display: flex; align-items: center; gap: 12px; }
+
+    .back-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--foreground); padding: 4px 6px;
+      display: flex; align-items: center;
+      border-radius: var(--radius-sm);
+    }
+    .back-btn:hover { background: var(--muted); }
+
+    .page-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--foreground);
+    }
+
+    .conflict-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 12px;
+      border: 1.5px solid #D97706;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #92400E;
+      background: #FEF3C7;
+    }
+
+    /* ── Body layout ── */
+    .page-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* ── Unit selector bar ── */
+    .unit-selector-bar {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      padding: 0 24px;
+      flex-shrink: 0;
+      background: var(--background);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .unit-selector-bar::-webkit-scrollbar { display: none; }
+
+    .unit-tab {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 16px 11px;
+      border: none;
+      border-bottom: 2px solid transparent;
+      background: none;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: var(--font);
+      color: var(--muted-foreground);
+      cursor: pointer;
+      white-space: nowrap;
+      margin-bottom: -1px;
+      transition: color 0.15s;
+    }
+    .unit-tab:hover { color: var(--foreground); }
+    .unit-tab.active {
+      color: var(--foreground);
+      font-weight: 600;
+      border-bottom-color: var(--primary);
+    }
+    .unit-tab.resolved {
+      color: #16a34a;
+    }
+    .unit-tab.resolved .unit-dot { background: #16a34a; }
+
+    .unit-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #D97706;
+      flex-shrink: 0;
+    }
+    .unit-tab.active .unit-dot { background: var(--primary); }
+
+    /* ── Resolution content ── */
+    .resolution-content {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* ── Takes panel ── */
+    .takes-panel {
+      width: 380px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .takes-header {
+      padding: 16px 20px 12px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--foreground);
+      flex-shrink: 0;
+    }
+
+    .takes-header p {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--muted-foreground);
+      margin-top: 4px;
+    }
+
+    .takes-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .take-card {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--card);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .take-card.playing {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+    }
+    .take-card.selected-take {
+      border-color: #16a34a;
+      background: #f0fdf4;
+    }
+
+    .take-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .take-contributor {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .contributor-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--foreground);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .contributor-date {
+      font-size: 12px;
+      color: var(--muted-foreground);
+    }
+
+    .take-selected-badge {
+      display: none;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #16a34a;
+    }
+    .take-card.selected-take .take-selected-badge { display: flex; }
+
+    /* ── Audio player row ── */
+    .take-player {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .play-btn {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: var(--primary);
+      color: white;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .play-btn:hover { background: var(--primary-hover); }
+    .take-card.selected-take .play-btn { background: #16a34a; }
+    .take-card.selected-take .play-btn:hover { background: #15803d; }
+
+    .waveform {
+      flex: 1;
+      height: 36px;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+      background: var(--muted);
+      cursor: pointer;
+    }
+
+    .waveform-bars {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      height: 100%;
+      padding: 4px 8px;
+    }
+
+    .waveform-bar {
+      flex: 1;
+      border-radius: 1px;
+      background: #CBD5E1;
+      transition: background 0.15s;
+    }
+    .take-card.playing .waveform-bar { background: var(--primary); }
+    .take-card.selected-take .waveform-bar { background: #86efac; }
+    .take-card.selected-take.playing .waveform-bar { background: #16a34a; }
+
+    .take-duration {
+      font-size: 12px;
+      color: var(--muted-foreground);
+      white-space: nowrap;
+      min-width: 36px;
+      text-align: right;
+    }
+
+    /* ── Select as Draft button ── */
+    .select-draft-btn {
+      width: 100%;
+      padding: 8px 14px;
+      border: 1.5px solid var(--primary);
+      border-radius: var(--radius);
+      background: none;
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .select-draft-btn:hover { background: var(--primary); color: white; }
+    .take-card.selected-take .select-draft-btn {
+      border-color: #16a34a;
+      color: #16a34a;
+      cursor: default;
+    }
+    .take-card.selected-take .select-draft-btn:hover { background: none; color: #16a34a; }
+
+    /* ── Preview panel ── */
+    .preview-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .preview-header {
+      padding: 16px 24px 12px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--foreground);
+      flex-shrink: 0;
+    }
+
+    .preview-header p {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--muted-foreground);
+      margin-top: 4px;
+    }
+
+    .preview-verse-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 24px;
+    }
+
+    .preview-verse-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 12px 0;
+    }
+
+    .preview-verse-num {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--muted-foreground);
+      min-width: 1.5rem;
+      padding-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .preview-source-text {
+      font-size: 0.9375rem;
+      line-height: 1.6;
+      color: var(--foreground);
+    }
+
+    .preview-unit-label {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+
+    /* ── Resolution complete banner ── */
+    .resolved-banner {
+      display: none;
+      margin: 12px;
+      padding: 12px 16px;
+      background: #f0fdf4;
+      border: 1.5px solid #86efac;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      color: #166534;
+      align-items: center;
+      gap: 8px;
+    }
+    .resolved-banner.show { display: flex; }
+  </style>
+</head>
+<body data-role="manager">
+
+  <div id="fluent-header"></div>
+
+  <!-- Sub-header -->
+  <div class="sub-header">
+    <div class="sub-left">
+      <button class="back-btn" onclick="history.back()" aria-label="Back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span class="page-title">1 John 5 — Conflict Resolution</span>
+      <span class="conflict-badge" id="conflict-badge">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>
+        <span id="conflict-count-label">2 conflicts</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- Page body -->
+  <div class="page-body">
+
+    <!-- Unit selector -->
+    <div class="unit-selector-bar" id="unit-selector-bar">
+      <button class="unit-tab active" data-unit="0" onclick="selectUnit(0)">
+        <span class="unit-dot"></span>
+        Verses 1–5
+      </button>
+      <button class="unit-tab" data-unit="1" onclick="selectUnit(1)">
+        <span class="unit-dot"></span>
+        Verses 13–15
+      </button>
+    </div>
+
+    <!-- Resolution content -->
+    <div class="resolution-content">
+
+      <!-- Takes panel -->
+      <div class="takes-panel">
+        <div class="takes-header">
+          Conflicting Takes
+          <p>Select one take as the active draft. All recordings are retained.</p>
+        </div>
+        <div class="takes-list" id="takes-list"></div>
+      </div>
+
+      <!-- Preview panel -->
+      <div class="preview-panel">
+        <div class="preview-header">
+          Source Text
+          <p>IRV Gujarati reference for this unit</p>
+        </div>
+        <div class="preview-verse-area" id="preview-verse-area"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ── Data ─────────────────────────────────────────────────────────────────
+
+    const units = [
+      {
+        id: 0,
+        label: 'Verses 1–5',
+        resolved: false,
+        selectedTake: null,
+        verses: [1, 2, 3, 4, 5],
+        takes: [
+          { id: 'take-a', contributor: 'Roslin T', initials: 'RT', color: '#4F46E5', date: 'Jul 22, 2026', duration: '1:47' },
+          { id: 'take-b', contributor: 'Priya M',  initials: 'PM', color: '#0891B2', date: 'Jul 23, 2026', duration: '1:53' },
+          { id: 'take-c', contributor: 'Roslin T', initials: 'RT', color: '#4F46E5', date: 'Jul 25, 2026', duration: '1:44' },
+        ],
+      },
+      {
+        id: 1,
+        label: 'Verses 13–15',
+        resolved: false,
+        selectedTake: null,
+        verses: [13, 14, 15],
+        takes: [
+          { id: 'take-d', contributor: 'Roslin T', initials: 'RT', color: '#4F46E5', date: 'Jul 22, 2026', duration: '0:58' },
+          { id: 'take-e', contributor: 'Seema K',  initials: 'SK', color: '#7C3AED', date: 'Jul 24, 2026', duration: '1:02' },
+        ],
+      },
+    ];
+
+    const sourceText = {
+      1:  'જે કોઈ વિશ્વાસ કરે છે કે ઈસુ ખ્રિસ્ત છે, તે ઈશ્વર થકી જન્મ્યો છે; અને જે ઈશ્વરને ચાહે છે, તે ઈશ્વર થકી જન્મેલાને પણ ચાહે છે.',
+      2:  'આ પ્રકારે આપણે ઓળખીએ છીએ કે આપણે ઈશ્વરનાં બાળકોને ચાહીએ છીએ, જ્યારે આપણે ઈશ્વરને ચાહીએ છીએ અને ઈશ્વરની આજ્ઞા પ્રમાણે ચાલીએ છીએ.',
+      3:  'ઈશ્વર પ્રત્યેનો પ્રેમ એ છે કે આપણે તેની આજ્ઞાઓ પ્રમાણે ચાલીએ; અને તેની આજ્ઞાઓ ભારે નથી.',
+      4:  'કારણ કે ઈશ્વર થકી જન્મેલ દરેક જગतને જીتે છે; અને જે વિジ ज़गत ने जीत्यो, ते आ छे, एटले आपणो विश्वास.',
+      5:  'ઈसु ईश्वरना पुत्र छे, ए विश्वास कोण करे छे, ए सिवाय जगतने जीतनारो बीजो कोण छे?',
+      13: 'ઈश्वरना पुत्रना नाम पर विश्वास करनारा, तमने आ वात मे एटला सारू लख्या छे, के तमे जाणो के तमने अनंत जीवन छे.',
+      14: 'ईश्वर आगळ आ आपणो भरोसो छे, के जो आपणे तेनी इच्छा प्रमाणे कंई मागीए, तो ते आपणुं सांभळे छे.',
+      15: 'अने जो आपणे जाणीए छीए के आपणे जे कोई मागीए ते ते सांभळे छे, तो आपणे जाणीए छीए के जे कोई आपणे माग्युं, ते फळ आपणने मळ्युं छे.',
+    };
+
+    let activeUnit = 0;
+    let playingTakeId = null;
+    let playTimers = {};
+
+    // ── Rendering ─────────────────────────────────────────────────────────────
+
+    function renderUnitTabs() {
+      document.querySelectorAll('.unit-tab').forEach(function(tab) {
+        const idx = parseInt(tab.dataset.unit, 10);
+        const unit = units[idx];
+        tab.classList.toggle('active', idx === activeUnit);
+        tab.classList.toggle('resolved', unit.resolved);
+        const dot = tab.querySelector('.unit-dot');
+        if (unit.resolved) {
+          dot.innerHTML = '';
+          dot.style.background = '#16a34a';
+        } else {
+          dot.style.background = idx === activeUnit ? 'var(--primary)' : '#D97706';
+        }
+      });
+
+      // Update conflict badge
+      const remaining = units.filter(function(u) { return !u.resolved; }).length;
+      const badge = document.getElementById('conflict-badge');
+      const label = document.getElementById('conflict-count-label');
+      if (remaining === 0) {
+        badge.style.background = '#f0fdf4';
+        badge.style.borderColor = '#86efac';
+        badge.style.color = '#166534';
+        badge.querySelector('svg').style.display = 'none';
+        label.textContent = 'All resolved';
+      } else {
+        label.textContent = remaining + (remaining === 1 ? ' conflict' : ' conflicts');
+      }
+    }
+
+    function renderTakes() {
+      const unit = units[activeUnit];
+      const list = document.getElementById('takes-list');
+      list.innerHTML = '';
+
+      unit.takes.forEach(function(take) {
+        const isSelected = unit.selectedTake === take.id;
+        const isPlaying  = playingTakeId === take.id;
+
+        const card = document.createElement('div');
+        card.className = 'take-card' + (isPlaying ? ' playing' : '') + (isSelected ? ' selected-take' : '');
+        card.id = 'card-' + take.id;
+
+        // Waveform bars (decorative, random-ish heights)
+        const barHeights = [30,55,45,70,40,85,60,50,75,45,65,80,35,55,70,45,60,50,40,65,55,75,45,60,70,50,40,65,55,45];
+        const bars = barHeights.map(function(h) {
+          return '<div class="waveform-bar" style="height:' + h + '%;"></div>';
+        }).join('');
+
+        const playIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+        const pauseIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="4" x2="6" y2="20"/><line x1="18" y1="4" x2="18" y2="20"/></svg>';
+        const checkIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
+        card.innerHTML =
+          '<div class="take-meta">' +
+            '<div class="take-contributor">' +
+              '<div>' +
+                '<div class="contributor-name"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted-foreground);flex-shrink:0"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>' + take.contributor + '</div>' +
+                '<div class="contributor-date">Recorded ' + take.date + '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="take-selected-badge">' + checkIcon + ' Active Draft</div>' +
+          '</div>' +
+          '<div class="take-player">' +
+            '<button class="play-btn" data-take="' + take.id + '" onclick="togglePlay(\'' + take.id + '\')">' +
+              (isPlaying ? pauseIcon : playIcon) +
+            '</button>' +
+            '<div class="waveform" onclick="togglePlay(\'' + take.id + '\')">' +
+              '<div class="waveform-bars">' + bars + '</div>' +
+            '</div>' +
+            '<span class="take-duration">' + take.duration + '</span>' +
+          '</div>' +
+          (isSelected
+            ? '<button class="select-draft-btn">' + checkIcon + ' Selected as Draft</button>'
+            : '<button class="select-draft-btn" onclick="selectDraft(\'' + take.id + '\')">' + checkIcon + ' Select as Draft</button>');
+
+        list.appendChild(card);
+      });
+    }
+
+    function renderPreview() {
+      const unit = units[activeUnit];
+      const area = document.getElementById('preview-verse-area');
+      area.innerHTML = '<div class="preview-unit-label">' + unit.label + '</div>';
+
+      unit.verses.forEach(function(n) {
+        const row = document.createElement('div');
+        row.className = 'preview-verse-row';
+        row.innerHTML =
+          '<span class="preview-verse-num">' + n + '</span>' +
+          '<span class="preview-source-text">' + esc(sourceText[n] || '') + '</span>';
+        area.appendChild(row);
+      });
+    }
+
+    function render() {
+      renderUnitTabs();
+      renderTakes();
+      renderPreview();
+    }
+
+    // ── Interactions ──────────────────────────────────────────────────────────
+
+    function selectUnit(idx) {
+      stopCurrentPlayback();
+      activeUnit = idx;
+      render();
+    }
+
+    function togglePlay(takeId) {
+      if (playingTakeId === takeId) {
+        stopCurrentPlayback();
+      } else {
+        stopCurrentPlayback();
+        playingTakeId = takeId;
+        renderTakes();
+        // Auto-stop after the take's duration (simulated)
+        const unit = units[activeUnit];
+        const take = unit.takes.find(function(t) { return t.id === takeId; });
+        if (take) {
+          const parts = take.duration.split(':');
+          const secs = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+          playTimers[takeId] = setTimeout(function() {
+            if (playingTakeId === takeId) {
+              stopCurrentPlayback();
+            }
+          }, secs * 1000);
+        }
+      }
+    }
+
+    function stopCurrentPlayback() {
+      if (playingTakeId && playTimers[playingTakeId]) {
+        clearTimeout(playTimers[playingTakeId]);
+        delete playTimers[playingTakeId];
+      }
+      playingTakeId = null;
+      renderTakes();
+    }
+
+    function selectDraft(takeId) {
+      stopCurrentPlayback();
+      const unit = units[activeUnit];
+      unit.selectedTake = takeId;
+      unit.resolved = true;
+      render();
+
+      // If all units resolved, navigate back with a small delay so the user sees the state
+      const allResolved = units.every(function(u) { return u.resolved; });
+      if (allResolved) {
+        setTimeout(function() {
+          if (confirm('All conflicts resolved. Return to the chapter view?')) {
+            window.location.href = 'view-chapter.html';
+          }
+        }, 600);
+      }
+    }
+
+    function esc(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // ── Init ─────────────────────────────────────────────────────────────────
+
+    window.addEventListener('load', render);
+  </script>
+</body>
+</html>

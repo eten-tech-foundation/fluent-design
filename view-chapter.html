@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fluent — View Chapter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <script src="components.js" defer></script>
+  <style>
+    html, body { height: 100%; overflow: hidden; }
+    body { display: flex; flex-direction: column; }
+
+    /* ── Sub-header ── */
+    .sub-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px 14px 20px;
+      background: var(--background);
+      flex-shrink: 0;
+      gap: 10px;
+    }
+
+    .sub-left { display: flex; align-items: center; gap: 12px; flex: 1; }
+
+    .back-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--foreground); padding: 4px 6px;
+      display: flex; align-items: center;
+      border-radius: var(--radius-sm);
+    }
+    .back-btn:hover { background: var(--muted); }
+
+    .chapter-title { font-size: 1.875rem; font-weight: 700; color: var(--foreground); }
+
+    .draft-badge {
+      display: inline-flex; align-items: center;
+      padding: 4px 12px;
+      border: 2px solid var(--border);
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--muted-foreground);
+    }
+
+    .sub-center { display: flex; align-items: center; gap: 10px; }
+
+    .view-btn {
+      width: 48px; height: 40px;
+      border-radius: var(--radius-sm);
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--primary); color: white;
+      flex-shrink: 0;
+      transition: background 0.15s, color 0.15s;
+    }
+    .view-btn.closed {
+      background: var(--muted);
+      color: var(--muted-foreground);
+    }
+
+    /* ── Progress bar ── */
+    .chapter-progress {
+      width: 220px;
+      height: 10px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .chapter-progress-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 999px;
+    }
+
+    /* ── Header right buttons ── */
+    .header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+    .resolve-btn {
+      padding: 0 14px;
+      height: 36px;
+      border: 1.5px solid #D97706;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font);
+      background: #FEF3C7;
+      color: #92400E;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex; align-items: center; gap: 6px;
+      transition: background 0.15s;
+    }
+    .resolve-btn:hover { background: #FDE68A; }
+
+    /* ── Send button ── */
+    .send-btn {
+      padding: 0 16px;
+      height: 36px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font);
+      background: var(--muted);
+      color: var(--muted-foreground);
+      cursor: not-allowed;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .send-btn.ready {
+      background: var(--primary);
+      color: white;
+      cursor: pointer;
+      border-color: var(--primary);
+    }
+    .send-btn.ready:hover { background: var(--primary-hover); }
+
+    /* ── Main layout ── */
+    .drafting-body {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* ── Resources panel ── */
+    .resources-panel {
+      width: 300px;
+      min-width: 0;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--background);
+      transition: width 0.25s ease;
+    }
+    .resources-panel.closed { width: 0; }
+
+    .resources-header {
+      padding: 14px 16px 10px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ── Chip row ── */
+    .chip-row-wrapper { position: relative; overflow: hidden; margin-bottom: 8px; flex-shrink: 0; }
+    .chip-row-scroll { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 4px 16px; scroll-behavior: smooth; }
+    .chip-row-scroll::-webkit-scrollbar { display: none; }
+    .chip {
+      flex-shrink: 0; padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
+      font-family: var(--font); cursor: pointer; white-space: nowrap;
+      border: 1.5px solid var(--primary); background: none; color: var(--primary);
+      transition: background 0.15s, color 0.15s; line-height: 1;
+    }
+    .chip.selected { background: var(--primary); color: white; }
+    .chip:hover:not(.selected) { background: var(--muted); }
+
+    .notes-list {
+      flex: 1; overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin: 0 4px 16px;
+    }
+
+    .note-toggle {
+      width: 100%; display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px; background: none; border: none; cursor: pointer;
+      font-size: 13px; font-weight: 500; color: var(--foreground);
+      font-family: var(--font); text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .note-toggle:last-of-type { border-bottom: none; }
+    .note-toggle:hover { background: var(--muted); }
+    .note-chevron { transition: transform 0.2s; flex-shrink: 0; color: var(--muted-foreground); }
+    .note-toggle.open .note-chevron { transform: rotate(180deg); }
+    .note-body { display: none; padding: 8px 16px 16px; font-size: 13px; line-height: 1.6; color: var(--foreground); border-bottom: 1px solid var(--border); }
+    .note-body.open { display: block; }
+    .note-verse-label { font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 5px; }
+
+    /* ── Resize handle ── */
+    .resize-handle {
+      width: 16px; flex-shrink: 0;
+      display: none;
+      align-items: center; justify-content: center;
+      cursor: col-resize; color: var(--muted-foreground);
+      opacity: 0; transition: opacity 0.15s; margin-right: 4px;
+    }
+    .resize-handle:hover, .resize-handle.dragging { opacity: 1; }
+
+    /* ── Verse section ── */
+    .verse-section {
+      flex: 1; display: flex; flex-direction: column;
+      min-height: 0; overflow: hidden;
+      padding-right: 16px; padding-bottom: 16px;
+    }
+
+    .verse-headers {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      flex-shrink: 0;
+    }
+
+    .verse-area {
+      flex: 1; overflow-y: auto; overflow-x: hidden;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      min-height: 0;
+    }
+
+    .verse-col-header {
+      padding: 12px 24px;
+      font-size: 1.25rem; font-weight: 600;
+      color: var(--foreground); flex-shrink: 0;
+      background: var(--background);
+    }
+
+    /* ── Verse rows ── */
+    .verse-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: start;
+      padding: 14px 24px;
+    }
+
+    .verse-source {
+      display: flex; align-items: flex-start;
+      gap: 10px; padding-right: 12px; min-width: 0;
+    }
+
+    .verse-num {
+      font-size: 1rem; font-weight: 500;
+      color: var(--muted-foreground);
+      min-width: 1.75rem;
+      padding-top: 9px;
+      flex-shrink: 0;
+    }
+
+    .source-card {
+      flex: 1; min-width: 0;
+      overflow-wrap: break-word;
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 8px 16px;
+      font-size: 1rem; line-height: 1.65;
+      color: var(--foreground);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    /* Read-only translation card */
+    .translation-card {
+      width: 100%;
+      padding: 8px 16px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      font-size: 1rem;
+      font-family: var(--font);
+      line-height: 1.65;
+      color: var(--foreground);
+      background: var(--card);
+      overflow-wrap: break-word;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+  </style>
+</head>
+<body data-role="manager">
+
+  <div id="fluent-header"></div>
+
+  <!-- Sub-header -->
+  <div class="sub-header">
+    <div class="sub-left">
+      <button class="back-btn" onclick="history.back()" aria-label="Back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span class="chapter-title">1 John 5</span>
+      <span class="draft-badge">Draft</span>
+    </div>
+    <div class="sub-center">
+      <button id="resources-toggle-btn" class="view-btn closed" title="Toggle resources" onclick="toggleResources()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M8 7h6"/><path d="M8 11h8"/></svg>
+      </button>
+      <!--div class="chapter-progress" title="Chapter progress">
+        <div class="chapter-progress-fill" style="width:100%"></div>
+      </div-->
+    </div>
+    <div class="header-actions">
+      <button class="resolve-btn" id="resolve-btn" onclick="window.location.href='conflict-resolution.html'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>
+        Resolve Conflict
+      </button>
+      <button class="send-btn" id="send-btn" onclick="handleSend()">Send to Community Review</button>
+    </div>
+  </div>
+
+  <!-- Main area -->
+  <div class="drafting-body">
+
+    <!-- Resources panel (closed by default) -->
+    <div id="resources-panel" class="resources-panel closed">
+      <div class="resources-header">Resources</div>
+      <div class="chip-row-wrapper">
+        <div class="chip-row-scroll">
+          <button class="chip selected" data-value="notes" onclick="selectChip(this)">TN</button>
+          <button class="chip" data-value="questions" onclick="selectChip(this)">TQ</button>
+          <button class="chip" data-value="words" onclick="selectChip(this)">TW</button>
+        </div>
+      </div>
+      <div id="notes-list" class="notes-list">
+        <button class="note-toggle open" onclick="toggleNote(this)">
+          <span>5:1 — born of God</span>
+          <svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="note-body open">
+          <div class="note-verse-label">5:1</div>
+          "Born of God" describes spiritual regeneration. Everyone who trusts that Jesus is the Messiah has been spiritually reborn through God. This sonship creates a family bond with other believers.
+        </div>
+        <button class="note-toggle" onclick="toggleNote(this)">
+          <span>5:4 — overcomes the world</span>
+          <svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="note-body">
+          <div class="note-verse-label">5:4</div>
+          "The world" here refers to the system of values and powers that oppose God. Faith is the means by which believers gain the victory that Christ has already won. Alternate translation: "conquers the world."
+        </div>
+        <button class="note-toggle" onclick="toggleNote(this)">
+          <span>5:6 — water and blood</span>
+          <svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="note-body">
+          <div class="note-verse-label">5:6</div>
+          Most interpreters understand "water" as Jesus' baptism and "blood" as his crucifixion, emphasizing that Jesus came as a fully human savior who both began his ministry and died a real death.
+        </div>
+        <button class="note-toggle" onclick="toggleNote(this)">
+          <span>5:16 — sin leading to death</span>
+          <svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="note-body">
+          <div class="note-verse-label">5:16</div>
+          This is a difficult passage. The "sin leading to death" has been interpreted as deliberate apostasy or willful rejection of Christ. John does not define it precisely. The passage encourages intercession for fellow believers.
+        </div>
+      </div>
+      <div id="questions-list" class="notes-list" style="display:none">
+        <div class="note-toggle" style="font-weight:500; font-size:13px; padding:14px 16px; border-bottom:1px solid var(--border);">5:4 — What gives the believer victory over the world?</div>
+        <div class="note-toggle" style="font-weight:500; font-size:13px; padding:14px 16px; border-bottom:1px solid var(--border);">5:11 — Where does eternal life reside, according to John?</div>
+        <div class="note-toggle" style="font-weight:500; font-size:13px; padding:14px 16px;">5:21 — What is John's final exhortation to believers?</div>
+      </div>
+      <div id="words-list" class="notes-list" style="display:none">
+        <div class="note-toggle" style="font-weight:500; font-size:13px; padding:14px 16px; border-bottom:1px solid var(--border);">Eternal Life</div>
+        <div class="note-toggle" style="font-weight:500; font-size:13px; padding:14px 16px; border-bottom:1px solid var(--border);">Faith / Belief</div>
+        <div class="note-toggle" style="font-weight:500; font-size:13px; padding:14px 16px;">Testimony / Witness</div>
+      </div>
+    </div>
+
+    <!-- Resize handle -->
+    <div class="resize-handle" id="resize-handle">
+      <svg width="12" height="20" viewBox="0 0 12 20" fill="currentColor">
+        <circle cx="4" cy="4" r="1.5"/><circle cx="4" cy="10" r="1.5"/><circle cx="4" cy="16" r="1.5"/>
+        <circle cx="8" cy="4" r="1.5"/><circle cx="8" cy="10" r="1.5"/><circle cx="8" cy="16" r="1.5"/>
+      </svg>
+    </div>
+
+    <!-- Verse section -->
+    <div class="verse-section">
+      <div class="verse-headers">
+        <div class="verse-col-header">IRV Gujarati</div>
+        <div class="verse-col-header">Kachi Koli</div>
+      </div>
+      <div class="verse-area">
+        <div id="verse-scroll"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const sourceText = {
+      1:  'જે કોઈ વિશ્વાસ કરે છે કે ઈસુ ખ્રિસ્ત છે, તે ઈશ્વર થકી જન્મ્યો છે; અને જે ઈશ્વરને ચાહે છે, તે ઈશ્વર થકી જન્મેલાને પણ ચાહે છે.',
+      2:  'આ પ્રકારે આપણે ઓળખીએ છીએ કે આપણે ઈશ્વરનાં બાળકોને ચાહીએ છીએ, જ્યારે આપણે ઈશ્વરને ચાહીએ છીએ અને ઈશ્વરની આજ્ઞા પ્રમાણે ચાલીએ છીએ.',
+      3:  'ઈશ્વર પ્રત્યેનો પ્રેમ એ છે કે આપણે તેની આજ્ઞાઓ પ્રમાણે ચાલીએ; અને તેની આજ્ઞાઓ ભારે નથી.',
+      4:  'કારણ કે ઈશ્વર થકી જન્મેલ દરેક જગતને જીતે છે; અને જે વિજય જગتને જીત્યો, તે આ છે, એટલે આપણો વિશ્વાસ.',
+      5:  'ઈસુ ઈશ્વરના પુત્ર છે, એ જ વિશ્વાસ કરે છે, એ સિવાય જગतने जीतनारो बीजो कोण छे?',
+      6:  'આ તે ઈસુ ખ્રિસ્ત છે, જે પાણી અને લોહી વડે આવ્યા; ફક્ત પાણી વડે નહિ, પણ પાણી અને લોહી વડે; અને આત્મા સાક્ષ આપે છે, કારણ આત્મા સત્ય છે.',
+      7:  'કારણ ત્રણ સાક્ષ આપનારા છે:',
+      8:  'આત્મા, પાણી, અને લોહી; અને આ ત્રણ એક છે.',
+      9:  'જો આપણે માણસોની સાક્ષ માની લઈએ, તો ઈશ્વરની સાક્ષ મોટી છે; ઈશ્વરની સાક્ષ આ છે, જે તેણે પોતાના દીકરા વિષે આપી છે.',
+      10: 'જે ઈશ્વરના દીકરામાં વિશ્વાસ કરે છે, તેણે પોતાનામાં સાક્ષ ધારણ કરી છે; જે ઈશ્વર પર વિશ્વાસ ન કરે, તેણે ઈશ્વરને જૂઠો ઠેરવ્યો.',
+      11: 'અને સાક્ષ આ છે, ઈશ્વરે આપણને અનંત જીવન આપ્યું, અને આ જીવન ઈશ્વરના પુત્રમાં છે.',
+      12: 'જેની પાસે પુત્ર છે, તેની પાસે જીવન છે; ઈશ્વરના પુત્ર વિના જે છે, તેની પાસે જીવન નથી.',
+      13: 'ઈશ્વરના પુત્રના નામ પર વિશ્વાસ કરનારા, તમને આ વાત મેં એટલા સારૂ લખ્યા છે, કે તમે જાણો કે તમને અનંત જીવન છે.',
+      14: 'ઈશ્વર આગળ આ આપણો ભરોસો છે, કે જો આપણે તેની ઇચ્છા પ્રમાણે કંઈ માગીએ, તો તે આપણું સાંભળે છે.',
+      15: 'અને જો આપણે જાણીએ છીએ કે આપણે જે કોઈ માગીએ તે તે સાંભળે છે, તો આપણે જાણીએ છીએ કે જે કોઈ આપણે માગ્યું, તે ફળ આપણને મળ્યું છે.',
+      16: 'જો કોઈ પોતાના ભાઈને મૃત્યુ ન નિવારે એવું પાપ કરતો જુએ, તો ઈશ્વર પ્રત્યે વિનંતી કરે; ઈશ્વર તે ભાઈ માટે જીવ આપશે. મૃત્યુ ન નિવારે એવું પાપ છે. હું એ પ્રકારના પાપ માટે વિનંતી કરવાનું કહેતો નથી.',
+      17: 'દરેક અન્યાય એ પાપ છે; પણ મૃત્યુ ન નિવારે, એ પ્રકારનું પણ પાપ છે.',
+      18: 'આપણે જાણીએ છીએ, ઈશ્વર થકી જન્મેલ દરેક પાપ કરતો રહેતો નથી; ઈશ્વર થકી જન્મેલો ખ્રિસ્ત તેની સંભાળ રાખે છે, અને દુષ્ટ તેને સ્પર્શ કરી શકતો નથી.',
+      19: 'આપણે જાણીએ છીએ, આપણે ઈશ્વરના છીએ, અને સઘળું જગत दुष्ट में पडेलुं छे.',
+      20: 'અને આપણે જાણીએ છીએ, ઈશ્વરનો દીકરો આવ્યો, ને સત્ય ઈશ્વરને ઓળખવા આપણને સૂઝ આપ્યી; અને આપણે સત્ય ઈશ્વરમાં, એટલે તેના દીકરા ઈસુ ખ્રિસ્તમાં, છીએ. આ જ સાચો ઈશ્વર અને અનંત જીવન છે.',
+      21: 'ઓ બાળકો, મૂર્તિઓ થી ચેતો.',
+    };
+
+    const translationText = {
+      1:  'જે કોઈ વિશ્વાસ કરે છે કે ઈસુ ખ્રિસ્ત છે, તે ઈશ્વર થકી જન્મ્યો છે; અને જે ઈશ્વરને ચાહે છે, તે ઈશ્વર થકી જન્મેલાને પણ ચાહે છે.',
+      2:  'આ પ્રકારે આપણે ઓળખીએ છીએ કે આપણે ઈશ્વરનાં બાળકોને ચાહીએ છીએ, જ્યારે આપણે ઈશ્વરને ચાહીએ છીએ અને ઈશ્વરની આજ્ઞા પ્રમાણે ચાલીએ છીએ.',
+      3:  'ઈશ્વર પ્રત્યેનો પ્રેમ એ છે કે આપણે તેની આજ્ઞાઓ પ્રમાણે ચાલીએ; અને તેની આજ્ઞાઓ ભારે નથી.',
+      4:  'કારણ કે ઈશ્વર થકી જન્મેલ દરેક જગતને જીતે છે; અને જે વિજય જગتને જીત્યો, તે આ છે, એટલે આપણો વિશ્વાસ.',
+      5:  'ઈસુ ઈશ્વરના પુત્ર છે, એ જ વિશ્વાસ કરે છે, એ સિવાય જગतने जीतनारो बीजो कोण छे?',
+      6:  'આ તે ઈસુ ખ્રિસ્ત છે, જે પાણી અને લોહી વડે આવ્યા; ફક્ત પાણી વડે નહિ, પણ પાણી અને લોહી વડે; અને આત્મા સાક્ષ આપે છે, કારણ આત્મા સત્ય છે.',
+      7:  'કારણ ત્રણ સાક્ષ આપનારા છે:',
+      8:  'આત્મા, પાણી, અને લોહી; અને આ ત્રણ એક છે.',
+      9:  'જો આપણે માણસોની સાક્ષ માની લઈએ, તો ઈશ્વરની સાક્ષ મોટી છે; ઈશ્વરની સાક્ષ આ છે, જે તેણે પોતાના દીકરા વિષે આપી છે.',
+      10: 'જે ઈશ્વરના દીકરામાં વિશ્વાસ કરે છે, તેણે પોતાનામાં સાક્ષ ધારણ કરી છે; જે ઈશ્વર પર વિશ્વાસ ન કરે, તેણે ઈશ્વરને જૂઠો ઠેરવ્યો.',
+      11: 'અને સાક્ષ આ છે, ઈશ્વરે આપણને અનંત જીવન આપ્યું, અને આ જીવન ઈશ્વરના પુત્રમાં છે.',
+      12: 'જેની પાસે પુત્ર છે, તેની પાસે જીવન છે; ઈશ્વરના પુત્ર વિના જે છે, તેની પાસે જીવન નથી.',
+      13: 'ઈશ્વરના પુત્રના નામ પર વિશ્વાસ કરનારા, તમને આ વાત મેં એટલા સારૂ લખ્યા છે, કે તમે જાણો કે તમને અનંત જીવન છે.',
+      14: 'ઈશ્વર આગળ આ આપણો ભરોસો છે, કે જો આપણે તેની ઇચ્છા પ્રમાણે કંઈ માગીએ, તો તે આપણું સાંભળે છે.',
+      15: 'અને જો આપણે જાણીએ છીએ કે આપણે જે કોઈ માગીએ તે તે સાંભળે છે, તો આપણે જાણીએ છીએ કે જે કોઈ આપણે માગ્યું, તે ફળ આપણને મળ્યું છે.',
+      16: 'જો કોઈ પોતાના ભાઈને મૃત્યુ ન નિવારે એવું પાપ કરતો જુએ, તો ઈશ્વર પ્રત્યે વિનંતી કરે; ઈશ્વર તે ભાઈ માટે જીવ આપશે. મૃત્યુ ન નિવારે એવું પાપ છે. હું એ પ્રકારના પાપ માટે વિનંતી કરવાનું કહેતો નથી.',
+      17: 'દરેક અન્યાય એ પાપ છે; પણ મૃત્યુ ન નિવારે, એ પ્રકારનું પણ પાપ છે.',
+      18: 'આપણે જાણીએ છીએ, ઈશ્વર થકી જન્મેલ દરેક પાપ કરતો રહેતો નથી; ઈશ્વર થકી જન્મેલો ખ્રિસ્ત તેની સંભાળ રાખે છે, અને દુષ્ટ તેને સ્પર્શ કરી શકતો નથી.',
+      19: 'આપણે જાણીએ છીએ, આપણે ઈશ્વરના છીએ, અને સઘળું જગत दुष्ट में पडेलुं छे.',
+      20: 'અને આપણે જાણીએ છીએ, ઈશ્વરનો દીકરો આવ્યો, ને સત્ય ઈશ્વરને ઓળખવા આપણને સૂઝ આપ્યી; અને આપણે સત્ય ઈશ્વરમાં, એટલે તેના દીકરા ઈસુ ખ્રિસ્તમાં, છીએ. આ જ સાચો ઈશ્વર અને અનંત જીવન છે.',
+      21: 'ઓ બાળકો, મૂર્તિઓ થી ચેતો.',
+    };
+
+    function esc(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function renderVerses() {
+      const container = document.getElementById('verse-scroll');
+      container.innerHTML = '';
+      for (let n = 1; n <= 21; n++) {
+        const row = document.createElement('div');
+        row.className = 'verse-row';
+        row.innerHTML =
+          '<div class="verse-source">' +
+            '<span class="verse-num">' + n + '</span>' +
+            '<div class="source-card">' + esc(sourceText[n] || '') + '</div>' +
+          '</div>' +
+          '<div><div class="translation-card">' + esc(translationText[n] || '') + '</div></div>';
+        container.appendChild(row);
+      }
+    }
+
+    function toggleResources() {
+      const panel  = document.getElementById('resources-panel');
+      const btn    = document.getElementById('resources-toggle-btn');
+      const handle = document.getElementById('resize-handle');
+      const isOpen = !panel.classList.contains('closed');
+      panel.classList.toggle('closed', isOpen);
+      btn.classList.toggle('closed', isOpen);
+      handle.style.display = isOpen ? 'none' : 'flex';
+    }
+
+    function selectChip(el) {
+      ['notes-list', 'questions-list', 'words-list'].forEach(function(id) {
+        document.getElementById(id).style.display = 'none';
+      });
+      document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('selected'); });
+      el.classList.add('selected');
+      const map = { notes: 'notes-list', questions: 'questions-list', words: 'words-list' };
+      const target = map[el.dataset.value];
+      if (target) document.getElementById(target).style.display = 'block';
+    }
+
+    function toggleNote(el) {
+      el.classList.toggle('open');
+      el.nextElementSibling.classList.toggle('open');
+    }
+
+    // Resize handle
+    (function() {
+      const handle = document.getElementById('resize-handle');
+      let dragging = false, startX = 0, startW = 0;
+      handle.addEventListener('mousedown', function(e) {
+        dragging = true; startX = e.clientX;
+        startW = document.getElementById('resources-panel').offsetWidth;
+        handle.classList.add('dragging');
+        document.body.style.userSelect = 'none';
+        document.body.style.cursor = 'col-resize';
+        e.preventDefault();
+      });
+      document.addEventListener('mousemove', function(e) {
+        if (!dragging) return;
+        const w = Math.max(200, Math.min(520, startW + e.clientX - startX));
+        document.getElementById('resources-panel').style.width = w + 'px';
+      });
+      document.addEventListener('mouseup', function() {
+        if (!dragging) return;
+        dragging = false;
+        handle.classList.remove('dragging');
+        document.body.style.userSelect = '';
+        document.body.style.cursor = '';
+      });
+    })();
+
+    function handleSend() {
+      if (document.getElementById('send-btn').classList.contains('ready')) {
+        alert('Chapter sent to Community Review.');
+      }
+    }
+
+    window.addEventListener('load', renderVerses);
+  </script>
+</body>
+</html>

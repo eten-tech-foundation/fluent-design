@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fluent — Drafting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <script src="components.js" defer></script>
+  <style>
+    html, body { height: 100%; overflow: hidden; }
+    body { display: flex; flex-direction: column; }
+
+    /* ── Sub-header ── */
+    .sub-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px 14px 20px;
+      background: var(--background);
+      flex-shrink: 0;
+      gap: 10px;
+    }
+
+    .sub-left { display: flex; align-items: center; gap: 12px; flex: 1; }
+
+    .back-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--foreground); padding: 4px 6px;
+      display: flex; align-items: center;
+      border-radius: var(--radius-sm);
+    }
+    .back-btn:hover { background: var(--muted); }
+
+    .chapter-title { font-size: 1.875rem; font-weight: 700; color: var(--foreground); }
+
+    .draft-badge {
+      display: inline-flex; align-items: center;
+      padding: 4px 12px;
+      border: 2px solid var(--border);
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--muted-foreground);
+    }
+
+    .sub-center { display: flex; align-items: center; gap: 10px; }
+
+    .view-btn {
+      width: 48px; height: 40px;
+      border-radius: var(--radius-sm);
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--primary); color: white;
+      flex-shrink: 0;
+      transition: background 0.15s, color 0.15s;
+    }
+    .view-btn.closed {
+      background: var(--muted);
+      color: var(--muted-foreground);
+    }
+
+    /* ── Auto-save indicator ── */
+    .save-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted-foreground);
+      white-space: nowrap;
+      min-width: 110px;
+      height: 20px;
+    }
+    .save-indicator.idle { opacity: 0; pointer-events: none; }
+    .save-indicator.error { color: #dc2626; }
+    .save-indicator.saved { color: #16a34a; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .save-spinner {
+      width: 14px; height: 14px;
+      border: 2px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    /* ── Progress bar ── */
+    .chapter-progress {
+      width: 220px;
+      height: 10px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .chapter-progress-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+
+    /* ── Send button ── */
+    .send-btn {
+      padding: 0 16px;
+      height: 36px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font);
+      background: var(--muted);
+      color: var(--muted-foreground);
+      cursor: not-allowed;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: background 0.15s, color 0.15s;
+    }
+    .send-btn.ready {
+      background: var(--primary);
+      color: white;
+      cursor: pointer;
+      border-color: var(--primary);
+    }
+    .send-btn.ready:hover { background: var(--primary-hover); }
+
+    /* ── Main layout ── */
+    .drafting-body {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* ── Resources panel ── */
+    .resources-panel {
+      width: 300px;
+      min-width: 0;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--background);
+      transition: width 0.25s ease;
+    }
+    .resources-panel.closed { width: 0; }
+
+    .resources-header {
+      padding: 14px 16px 10px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ── Chip row ── */
+    .chip-row-wrapper {
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 8px;
+      flex-shrink: 0;
+    }
+    .chip-row-scroll {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 4px 16px;
+      scroll-behavior: smooth;
+    }
+    .chip-row-scroll::-webkit-scrollbar { display: none; }
+
+    .chip {
+      flex-shrink: 0;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      white-space: nowrap;
+      border: 1.5px solid var(--primary);
+      background: none;
+      color: var(--primary);
+      transition: background 0.15s, color 0.15s;
+      line-height: 1;
+    }
+    .chip.selected { background: var(--primary); color: white; }
+    .chip:hover:not(.selected) { background: var(--muted); }
+
+    .chip-arrow {
+      position: absolute;
+      z-index: 2;
+      top: 0; bottom: 0;
+      width: 28px;
+      border: none; cursor: pointer;
+      color: var(--foreground);
+      display: flex; align-items: center; justify-content: center;
+      background: none; padding: 0;
+      opacity: 0.8;
+    }
+    .chip-arrow:hover { opacity: 1; }
+    .chip-arrow.hidden { display: none; }
+    .chip-arrow-left { left: 0; }
+    .chip-arrow-right { right: 0; }
+
+    .chip-fade {
+      position: absolute; z-index: 1;
+      top: 0; bottom: 0;
+      width: 44px;
+      pointer-events: none;
+    }
+    .chip-fade.hidden { display: none; }
+    .chip-fade-left { left: 0; background: linear-gradient(to right, var(--background) 40%, transparent); }
+    .chip-fade-right { right: 0; background: linear-gradient(to left, var(--background) 40%, transparent); }
+
+    .res-select {
+      width: 100%;
+      padding: 7px 28px 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-family: var(--font);
+      color: var(--foreground);
+      background: var(--background) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 9px center;
+      appearance: none; cursor: pointer;
+    }
+
+    .notes-list {
+      flex: 1;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin: 0 4px 16px;
+    }
+
+    .note-toggle {
+      width: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px;
+      background: none; border: none; cursor: pointer;
+      font-size: 13px; font-weight: 500;
+      color: var(--foreground);
+      font-family: var(--font); text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .note-toggle:last-of-type { border-bottom: none; }
+    .note-toggle:hover { background: var(--muted); }
+    .note-chevron { transition: transform 0.2s; flex-shrink: 0; color: var(--muted-foreground); }
+    .note-toggle.open .note-chevron { transform: rotate(180deg); }
+
+    .note-body {
+      display: none;
+      padding: 8px 16px 16px;
+      font-size: 13px; line-height: 1.6;
+      color: var(--foreground);
+      border-bottom: 1px solid var(--border);
+    }
+    .note-body.open { display: block; }
+    .note-verse-label { font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 5px; }
+
+    /* ── Bibles selector ── */
+    .bibles-selector {
+      display: none; flex-direction: column;
+      min-height: 0; flex: 1;
+      padding: 0 16px 16px; gap: 12px;
+    }
+    .bibles-selector.active { display: flex; }
+
+    .bible-version-list {
+      flex: 1; overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      display: flex; flex-direction: column;
+    }
+    .bible-version-option {
+      width: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px; padding: 14px 16px;
+      background: none; border: none;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px; font-weight: 500;
+      font-family: var(--font);
+      color: var(--foreground);
+      cursor: pointer; text-align: left;
+      transition: background 0.15s;
+    }
+    .bible-version-option:last-child { border-bottom: none; }
+    .bible-version-option:hover { background: var(--muted); }
+    .bible-version-option.selected {
+      width: calc(100% - 12px);
+      background: var(--background);
+      border: 1.5px solid var(--primary);
+      border-radius: var(--radius-md);
+      color: var(--primary); font-weight: 600;
+      margin: 2px 6px; padding: 12.5px 14.5px;
+    }
+    .bible-version-chevron { flex-shrink: 0; color: var(--muted-foreground); }
+    .bible-version-option.selected .bible-version-chevron { color: var(--primary); }
+
+    /* ── Images resource ── */
+    .images-list {
+      flex: 1; overflow-y: auto;
+      padding: 0 8px 16px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+
+    .no-resources {
+      flex: 1;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: var(--muted-foreground);
+      font-style: italic; padding: 32px 16px;
+    }
+
+    /* ── TQ ── */
+    .tq-toggle {
+      width: 100%;
+      display: flex; align-items: flex-start; gap: 8px;
+      padding: 12px 16px;
+      background: none; border: none; cursor: pointer;
+      text-align: left; font-family: var(--font);
+      color: var(--foreground);
+    }
+    .tq-toggle:hover { background: var(--muted); }
+    .tq-chev { flex-shrink: 0; margin-top: 3px; color: var(--muted-foreground); transition: transform 0.2s; }
+    .tq-toggle.open .tq-chev { transform: rotate(180deg); }
+    .tq-inner { display: flex; flex-direction: column; gap: 3px; flex: 1; }
+    .tq-ref { font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.04em; }
+    .tq-question { font-size: 13px; font-weight: 500; line-height: 1.45; }
+    .tq-body { display: none; padding: 4px 16px 14px 38px; font-size: 13px; line-height: 1.6; color: var(--muted-foreground); font-style: italic; }
+    .tq-body.open { display: block; }
+
+    /* ── TW ── */
+    .tw-toggle {
+      width: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px;
+      background: none; border: none; cursor: pointer;
+      font-size: 13px; font-weight: 600;
+      color: var(--foreground); font-family: var(--font); text-align: left;
+    }
+    .tw-toggle:hover { background: var(--muted); }
+    .tw-chev { flex-shrink: 0; transition: transform 0.2s; }
+    .tw-toggle.open .tw-chev { transform: rotate(180deg); }
+    .tw-body { display: none; padding: 4px 16px 16px; font-size: 13px; line-height: 1.6; color: var(--foreground); }
+    .tw-body.open { display: block; }
+    .tw-verses-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted-foreground); margin: 10px 0 6px; }
+    .tw-verse-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 14px; }
+    .tw-verse-tag { padding: 2px 8px; background: var(--muted); border-radius: 999px; font-size: 12px; font-weight: 500; color: var(--foreground); }
+    .tw-article { font-size: 13px; line-height: 1.65; }
+    .tw-article h1 { font-size: 14px; font-weight: 700; margin: 0 0 8px; }
+    .tw-article h2 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted-foreground); margin: 10px 0 5px; }
+    .tw-article ul { padding-left: 16px; margin: 4px 0; }
+    .tw-article li { margin: 3px 0; }
+    .tw-article p { margin: 5px 0; }
+
+    /* ── Resize handle ── */
+    .resize-handle {
+      width: 16px; flex-shrink: 0;
+      display: none;
+      align-items: center; justify-content: center;
+      cursor: col-resize;
+      color: var(--muted-foreground);
+      opacity: 0;
+      transition: opacity 0.15s;
+      margin-right: 4px;
+    }
+    .resize-handle:hover, .resize-handle.dragging { opacity: 1; }
+
+    /* ── Verse section ── */
+    .verse-section {
+      flex: 1;
+      display: flex; flex-direction: column;
+      min-height: 0; overflow: hidden;
+      padding-right: 16px;
+      padding-bottom: 16px;
+    }
+
+    .verse-headers {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      flex-shrink: 0;
+    }
+
+    .verse-area {
+      flex: 1;
+      overflow-y: auto; overflow-x: hidden;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      min-height: 0;
+    }
+
+    /* ── Source column tabs ── */
+    .source-tabs {
+      display: flex; align-items: center; gap: 20px;
+    }
+    .source-tab {
+      background: none; border: none;
+      border-bottom: 2px solid transparent;
+      padding: 0 0 6px;
+      font-size: 1.25rem; font-weight: 600;
+      font-family: var(--font);
+      color: var(--muted-foreground);
+      cursor: pointer;
+    }
+    .source-tab.active { color: var(--foreground); border-bottom-color: var(--primary); }
+
+    .tab-divider { width: 3px; height: 28px; background: var(--foreground); border-radius: 1.5px; }
+
+    .tab2-tab { display: inline-flex; align-items: center; gap: 6px; }
+    .tab2-tab .tab2-close {
+      background: none; border: none; cursor: pointer;
+      color: var(--muted-foreground); font-size: 18px; line-height: 1; padding: 0;
+      transition: color 0.15s;
+    }
+    .tab2-tab .tab2-close:hover { color: var(--foreground); }
+
+    .verse-col-header {
+      padding: 12px 24px;
+      font-size: 1.25rem; font-weight: 600;
+      color: var(--foreground); flex-shrink: 0;
+      background: var(--background);
+    }
+
+    /* ── Verse rows ──
+       Each row is a 2-col grid: source | target.
+       align-items: start ensures both cells top-align regardless of height.
+       minmax(0, 1fr) prevents overflow from long unbreakable content. */
+    .verse-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: start;
+      padding: 14px 24px;
+    }
+
+    .verse-source {
+      display: flex; align-items: flex-start;
+      gap: 10px;
+      padding-right: 12px;
+      min-width: 0;
+    }
+
+    .verse-num {
+      font-size: 1rem; font-weight: 500;
+      color: var(--muted-foreground);
+      min-width: 1.75rem;
+      padding-top: 9px;
+      flex-shrink: 0;
+    }
+
+    .source-card {
+      flex: 1; min-width: 0;
+      overflow-wrap: break-word;
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 8px 16px;
+      font-size: 1rem; line-height: 1.65;
+      color: var(--foreground);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .source-card.active-source { border-color: var(--primary); }
+
+    .translation-wrap {
+      display: flex; flex-direction: column; gap: 6px;
+    }
+
+    .translation-input {
+      width: 100%;
+      padding: 8px 16px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      font-size: 1rem; font-family: var(--font);
+      line-height: 1.65;
+      color: var(--foreground);
+      background: var(--background);
+      resize: none; outline: none;
+      overflow: hidden;
+      transition: border-color 0.15s, background 0.15s;
+      box-sizing: border-box;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      min-height: 44px;
+    }
+    /* Done: translator has filled this verse */
+    .translation-input.done {
+      background: var(--card);
+      border-color: var(--border);
+      cursor: pointer;
+    }
+    .translation-input.done:hover { border-color: #9fa8bb; }
+    /* Active: verse currently being edited */
+    .translation-input.active {
+      border-color: var(--primary);
+      background: #fff;
+    }
+    /* Pending: not yet reached — invisible, no box shown */
+    .translation-input.pending {
+      display: none;
+    }
+
+    /* ── Next Verse button ── */
+    .next-verse-wrap { display: flex; justify-content: flex-end; }
+
+    .next-verse-btn {
+      padding: 8px 18px;
+      background: var(--primary); color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 14px; font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .next-verse-btn:hover { background: var(--primary-hover); }
+  </style>
+</head>
+<body data-role="translator">
+
+  <div id="fluent-header"></div>
+
+  <!-- Sub-header -->
+  <div class="sub-header">
+    <div class="sub-left">
+      <button class="back-btn" onclick="history.back()" aria-label="Back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span class="chapter-title">Genesis 3</span>
+      <span class="draft-badge">Draft</span>
+    </div>
+    <div class="sub-center">
+      <button id="resources-toggle-btn" class="view-btn closed" title="Toggle resources" onclick="toggleResources()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M8 7h6"/><path d="M8 11h8"/></svg>
+      </button>
+      <div id="save-indicator" class="save-indicator idle" aria-live="polite">
+        <div class="save-spinner" id="save-spinner" style="display:none"></div>
+        <svg id="save-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>
+        <span id="save-label"></span>
+      </div>
+      <div class="chapter-progress" title="Chapter progress">
+        <div class="chapter-progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+    <button class="send-btn" id="send-btn" onclick="handleSend()">Send to Peer Checking</button>
+  </div>
+
+  <!-- Main drafting area -->
+  <div class="drafting-body">
+
+    <!-- Resources panel (closed by default) -->
+    <div id="resources-panel" class="resources-panel closed">
+      <div class="resources-header">Resources</div>
+
+      <!-- Chip row -->
+      <div class="chip-row-wrapper">
+        <button class="chip-arrow chip-arrow-left hidden" id="chip-arrow-left" onclick="scrollChips(-1)" aria-label="Scroll left">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="chip-fade chip-fade-left hidden" id="chip-fade-left"></div>
+        <div class="chip-row-scroll" id="chip-row-scroll">
+          <button class="chip selected" data-value="notes" onclick="selectChip(this)">TN</button>
+          <button class="chip" data-value="images" onclick="selectChip(this)">Images &amp; Maps</button>
+          <button class="chip" data-value="bibles" onclick="selectChip(this)">Bibles</button>
+          <button class="chip" data-value="questions" onclick="selectChip(this)">TQ</button>
+          <button class="chip" data-value="words" onclick="selectChip(this)">TW</button>
+          <button class="chip" data-value="aosn" onclick="selectChip(this)">AOSN</button>
+        </div>
+        <div class="chip-fade chip-fade-right" id="chip-fade-right"></div>
+        <button class="chip-arrow chip-arrow-right hidden" id="chip-arrow-right" onclick="scrollChips(1)" aria-label="Scroll right">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+
+      <!-- Bibles -->
+      <div id="bibles-list" class="bibles-selector">
+        <select class="res-select" id="bible-language-select" onchange="renderBibleVersionList(this.value)"></select>
+        <div class="bible-version-list" id="bible-version-list"></div>
+        <div class="no-resources" id="bible-empty-state" style="display:none;">No Bibles available.</div>
+      </div>
+
+      <!-- TN Notes -->
+      <div id="notes-list" class="notes-list">
+        <button class="note-toggle open" onclick="toggleNote(this)">
+          <span>3:1 — crafty</span>
+          <svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="note-body open">
+          <div class="note-verse-label">3:1</div>
+          The serpent is described as more crafty than any other beast. The Hebrew word can also mean "subtle" or "shrewd." The serpent used this craftiness to deceive the woman. Alternate translation: "more subtle," "more clever."
+        </div>
+        <button class="note-toggle" onclick="toggleNote(this)">
+          <span>3:1 — Did God really say</span>
+          <svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="note-body">
+          <div class="note-verse-label">3:1</div>
+          The serpent used a question to cause the woman to doubt what God had said. The serpent's question subtly distorts what God actually said. See verse 2–3 for what the woman understood God to have said.
+        </div>
+        <button class="note-toggle" onclick="toggleNote(this)">
+          <span>3:4 — You will not surely die</span>
+          <svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="note-body">
+          <div class="note-verse-label">3:4</div>
+          The serpent directly contradicted what God said. This is an emphatic denial using the same root word as God's original statement. Alternate translation: "You will certainly not die."
+        </div>
+        <button class="note-toggle" onclick="toggleNote(this)">
+          <span>3:5 — like God, knowing good and evil</span>
+          <svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="note-body">
+          <div class="note-verse-label">3:5</div>
+          Knowing good and evil refers to having the experience of all things. The serpent tempted the woman by suggesting she could be equal to God. Some languages may need to say "like the gods" because the word for "God" here is in the plural form.
+        </div>
+        <button class="note-toggle" onclick="toggleNote(this)">
+          <span>3:6 — good for food</span>
+          <svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="note-body">
+          <div class="note-verse-label">3:6</div>
+          The woman's decision was based on three things she observed about the fruit: it was good for food, pleasing to the eye, and desirable for gaining wisdom. Alternate translation: "good to eat."
+        </div>
+      </div>
+
+      <!-- Images & Maps -->
+      <div id="images-list" class="images-list" style="display:none">
+        <div class="no-resources">No images available for this passage.</div>
+      </div>
+
+      <!-- TQ -->
+      <div id="questions-list" class="notes-list" style="display:none">
+        <div class="tq-item">
+          <button class="tq-toggle" onclick="toggleTQ(this)">
+            <svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            <span class="tq-inner"><span class="tq-ref">3:1</span><span class="tq-question">What was the first question that the serpent asked the woman?</span></span>
+          </button>
+          <div class="tq-body">The serpent asked the woman, "Has God really said, 'You must not eat from any tree of the garden'?"</div>
+        </div>
+        <div class="tq-item">
+          <button class="tq-toggle" onclick="toggleTQ(this)">
+            <svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            <span class="tq-inner"><span class="tq-ref">3:4</span><span class="tq-question">When the woman said God told them they would die, what did the serpent say?</span></span>
+          </button>
+          <div class="tq-body">The serpent said, "You will surely not die."</div>
+        </div>
+        <div class="tq-item">
+          <button class="tq-toggle" onclick="toggleTQ(this)">
+            <svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            <span class="tq-inner"><span class="tq-ref">3:5</span><span class="tq-question">What did the serpent say would happen to them if they ate of the fruit?</span></span>
+          </button>
+          <div class="tq-body">The serpent said they would be like God, knowing good and evil.</div>
+        </div>
+        <div class="tq-item">
+          <button class="tq-toggle open" onclick="toggleTQ(this)">
+            <svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            <span class="tq-inner"><span class="tq-ref">3:6</span><span class="tq-question">What attracted the woman to the fruit of the tree?</span></span>
+          </button>
+          <div class="tq-body open">She saw it was good for food, pleasing to the eyes, and desirable to make one wise.</div>
+        </div>
+        <div class="tq-item">
+          <button class="tq-toggle" onclick="toggleTQ(this)">
+            <svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            <span class="tq-inner"><span class="tq-ref">3:6</span><span class="tq-question">Who ate of the fruit?</span></span>
+          </button>
+          <div class="tq-body">The woman ate, and gave some to her husband who also ate.</div>
+        </div>
+        <div class="tq-item">
+          <button class="tq-toggle" onclick="toggleTQ(this)">
+            <svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            <span class="tq-inner"><span class="tq-ref">3:7</span><span class="tq-question">What happened to them when they ate of the fruit?</span></span>
+          </button>
+          <div class="tq-body">When they ate, their eyes were opened and they knew that they were naked.</div>
+        </div>
+        <div class="tq-item">
+          <button class="tq-toggle" onclick="toggleTQ(this)">
+            <svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            <span class="tq-inner"><span class="tq-ref">3:8</span><span class="tq-question">What did the man and woman do when God came into the garden?</span></span>
+          </button>
+          <div class="tq-body">They hid themselves from God.</div>
+        </div>
+        <div class="tq-item">
+          <button class="tq-toggle" onclick="toggleTQ(this)">
+            <svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            <span class="tq-inner"><span class="tq-ref">3:12</span><span class="tq-question">Who did the man say was responsible for giving him the fruit?</span></span>
+          </button>
+          <div class="tq-body">The man said the woman was responsible.</div>
+        </div>
+        <div class="tq-item">
+          <button class="tq-toggle" onclick="toggleTQ(this)">
+            <svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            <span class="tq-inner"><span class="tq-ref">3:13</span><span class="tq-question">Who did the woman say was responsible for giving her the fruit?</span></span>
+          </button>
+          <div class="tq-body">The woman said that the serpent deceived her.</div>
+        </div>
+      </div>
+
+      <!-- TW -->
+      <div id="words-list" class="notes-list" style="display:none">
+        <div class="tw-item">
+          <button class="tw-toggle open" onclick="toggleTW(this)">
+            Adam
+            <svg class="tw-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="tw-body open">
+            <div class="tw-verses-label">Used in These Verses</div>
+            <div class="tw-verse-tags">
+              <span class="tw-verse-tag">3:8</span><span class="tw-verse-tag">3:9</span><span class="tw-verse-tag">3:12</span><span class="tw-verse-tag">3:17</span><span class="tw-verse-tag">3:20</span><span class="tw-verse-tag">3:21</span><span class="tw-verse-tag">3:22</span><span class="tw-verse-tag">3:24</span>
+            </div>
+            <div class="tw-article">
+              <h1>Adam</h1>
+              <h2>Facts</h2>
+              <p>Adam was the first person whom God created. He and his wife Eve were made in the image of God.</p>
+              <ul>
+                <li>God formed Adam from dirt and breathed life into him.</li>
+                <li>Adam's name sounds similar to the Hebrew word for "red dirt" or "ground."</li>
+                <li>All people are descendants of Adam and Eve.</li>
+              </ul>
+              <p>See also: death, Eve, human</p>
+            </div>
+          </div>
+        </div>
+        <div class="tw-item">
+          <button class="tw-toggle" onclick="toggleTW(this)">
+            Deceive
+            <svg class="tw-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="tw-body">
+            <div class="tw-verses-label">Used in These Verses</div>
+            <div class="tw-verse-tags"><span class="tw-verse-tag">3:13</span></div>
+            <div class="tw-article">
+              <h1>Deceive, lie, deception</h1>
+              <h2>Definition</h2>
+              <p>To "deceive" means to cause someone to believe something that is not true, often by telling a "lie."</p>
+              <p>See also: serpent, Satan, sin</p>
+            </div>
+          </div>
+        </div>
+        <div class="tw-item">
+          <button class="tw-toggle" onclick="toggleTW(this)">
+            Eve
+            <svg class="tw-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="tw-body">
+            <div class="tw-verses-label">Used in These Verses</div>
+            <div class="tw-verse-tags"><span class="tw-verse-tag">3:20</span></div>
+            <div class="tw-article">
+              <h1>Eve</h1>
+              <h2>Facts</h2>
+              <p>The name of the first woman. Her name means "life" or "living."</p>
+              <p>See also: Adam, serpent, sin</p>
+            </div>
+          </div>
+        </div>
+        <div class="tw-item">
+          <button class="tw-toggle" onclick="toggleTW(this)">
+            Serpent
+            <svg class="tw-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="tw-body">
+            <div class="tw-verses-label">Used in These Verses</div>
+            <div class="tw-verse-tags">
+              <span class="tw-verse-tag">3:1</span><span class="tw-verse-tag">3:2</span><span class="tw-verse-tag">3:3</span><span class="tw-verse-tag">3:4</span><span class="tw-verse-tag">3:13</span><span class="tw-verse-tag">3:14</span>
+            </div>
+            <div class="tw-article">
+              <h1>Serpent, snake, viper</h1>
+              <h2>Facts</h2>
+              <p>In the garden of Eden, Satan took the form of a serpent when he talked to Eve and tempted her to disobey God.</p>
+              <p>See also: curse, deceive, Satan</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resize handle -->
+    <div class="resize-handle" id="resize-handle">
+      <svg width="12" height="20" viewBox="0 0 12 20" fill="currentColor">
+        <circle cx="4" cy="4" r="1.5"/><circle cx="4" cy="10" r="1.5"/><circle cx="4" cy="16" r="1.5"/>
+        <circle cx="8" cy="4" r="1.5"/><circle cx="8" cy="10" r="1.5"/><circle cx="8" cy="16" r="1.5"/>
+      </svg>
+    </div>
+
+    <!-- Verse section -->
+    <div class="verse-section">
+      <div class="verse-headers">
+        <div class="verse-col-header source-tabs" id="source-tabs">
+          <button class="source-tab active" id="tab1-btn" onclick="switchSourceTab(1)">IRV Gujarati</button>
+          <div class="tab-divider" id="tab-divider" style="display:none"></div>
+          <div class="source-tab tab2-tab" id="tab2-tab" style="display:none" onclick="switchSourceTab(2)">
+            <span class="tab2-label" id="tab2-label"></span>
+            <button class="tab2-close" onclick="closeTab2(event)" aria-label="Close Bible tab">&#215;</button>
+          </div>
+        </div>
+        <div class="verse-col-header">Kachi Koli</div>
+      </div>
+      <div class="verse-area" id="verse-area">
+        <div id="verse-scroll"></div>
+      </div>
+    </div>
+
+  </div><!-- end .drafting-body -->
+
+  <script>
+    // ── Source text (Genesis 3, IRV Gujarati) ─────────────────────────────────
+
+    const sourceText = {
+      1:  'હવે યહોવાહ ઈશ્વરે ઉત્પન્ન કરેલાં સર્વ પ્રાણીઓમાં સાપ સૌથી વધારે ધૂર્ત હતો. તેણે સ્ત્રીને કહ્યું કે, "શું ઈશ્વરે ખરેખર તમને એવું કહ્યું છે કે, \'વાડીના કોઈપણ વૃક્ષનું ફળ તમારે ન ખાવું?"',
+      2:  'સ્ત્રીએ સાપને કહ્યું કે, "વાડીના વૃક્ષોનાં ફળ અમે ખાઈ શકીએ છીએ,',
+      3:  'પણ ઈશ્વરે કહેલું છે કે, જે વૃક્ષ વાડીની મધ્યમાં છે તેનું ફળ \'તમારે ખાવું નહિ કે અડકવું નહિ. જો ખાશો તો તમે મૃત્યુ પામશો."',
+      4:  'સાપે સ્ત્રીને કહ્યું કે, "તમે મૃત્યુ નહિ પામો.',
+      5:  'કેમ કે ઈશ્વર જાણે છે કે જે દિવસે તમે તેને ખાશો તે જ દિવસે તમારી આંખો ઊઘડી જશે અને તમે ઈશ્વરો સમાન સારું શું અને નરસું શું છે તે સમજનારાં થશો.',
+      6:  'તે વૃક્ષનું ફળ ખાવામાં સ્વાદિષ્ટ, જોવામાં સુંદર અને તે જ્ઞાન આપવાને ઇચ્છવાજોગ છે, એવું જાણીને સ્ત્રીએ તે ફળ તોડીને ખાધું અને તેની સાથે તેનો પતિ હતો તેને પણ આપ્યું. તેણે પણ ફળ ખાધું.',
+      7:  'ત્યારે તેઓ બઘ્ધેની આંખો ઊઘડી ગઈ અને તેઓ સમજ્યા કે અમે વસ્ત્રહીન છીએ. તેથી તેઓએ અઞ્જીરનાં પાંદડાં જોડીને પોતાને માટે આવરણ બનાવ્યાં.',
+      8:  'દિવસના ઠંડા પહોરે વાડીમાં પ્રભુ ઈશ્વરનો ચાલવાનો અવાજ તેઓના સાંભળવામાં આવ્યો, તેથી તે માણસ તથા તેની પત્ની પોતાને પ્રભુ ઈશ્વરના સાનિઘ્યથી દૂર રાખવા માટે વાડીના વૃક્ષોની વચ્ચે સંતાયાં.',
+      9:  'યહોવાહ ઈશ્વરે આદમને હાંક મારી કે, "તું ક્યાં છો?"',
+      10: 'આદમે કહ્યું કે, "મેં વાડીમાં તમારો અવાજ સાંભળ્યો અને હું ગભરાયો. કેમ કે હું વસ્ત્રહીન છું. તેથી હું સંતાઈ ગયો."',
+      11: 'ઈશ્વરે કહ્યું, "તને કોણે કહ્યું કે, તું નિવસ્ત્ર છે? જે ફળ ન ખાવાની મેં તને આજ્ઞા આપી હતી, તે ફળ તેં ખાધું છે શું?"',
+      12: 'તે માણસે કહ્યું કે, "મારી સહાયકારી તરીકે જે સ્ત્રી તમે મને આપી હતી તેણે મને ફળ આપ્યું અને મેં ખાધું."',
+      13: 'યહોવાહ ઈશ્વરે તે સ્ત્રીને કહ્યું, "આ તેં શું કર્યું?" સ્ત્રીએ કહ્યું કે, "સાપે મને છેતરી. તેથી મેં ફળ ખાધું."',
+      14: 'યહોવાહ ઈશ્વરે સાપને કહ્યું કે, "તેં આ કૃત્ય કર્યું છે, તેથી તું સર્વ ગ્રામ્યપશુઓ તથા વનપશુઓની વચ્ચે હવે શાપિત છે. તું પેટે ચાલશે અને પોતાના જીવનના સર્વ દિવસો સુધી તારે ધૂળ ખાવી પડશે.',
+      15: 'તારી અને સ્ત્રીની વચ્ચે તથા તારા સંતાનની અને તેના સંતાનની વચ્ચે હું વૈર કરાવીશ. તે તારું માથું છૂંદશે અને તું તેની એડીએ ડંખ મારશે."',
+      16: 'વળી યહોવાહ ઈશ્વરે સ્ત્રીને કહ્યું કે, "હું તારી ગર્ભવસ્થાનું દુઃખ ઘણું જ વધારીશ અને તું દુઃખે બાળકને જન્મ આપીશ. તું તારા પતિને માટે ઝંખીશ, પણ તે તારા પર અધિકાર ચલાવશે."',
+      17: 'તેમણે આદમને કહ્યું, "કેમ કે તેં તારી પત્નીની વાત માની લીધી છે અને જે સંબંધી મેં તને આજ્ઞા આપી હતી, \'તારે તે ન ખાવું\' તે વૃક્ષનું ફળ તેં ખાધું. તેથી તારા એ કૃત્યથી ભૂમિ શાપિત થઈ છે. તેમાંથી તું તારા આયુષ્યનાં સર્વ દિવસોમાં પરિશ્રમ કરીને ખોરાક મેળવશે.',
+      18: 'ભૂમિ તારે માટે કાંટા તથા ઝાંખરાં ઉગાવશે અને તું ખેતરનું શાક ખાશે.',
+      19: 'તું ભૂમિમાં પાછો જશે ત્યાં સુધી તું તારા મોંના પરસેવાથી રોટલી ખાશે કેમ કે તું ધૂળ છે અને પાછો ધૂળમાં ભળી જશે."',
+      20: 'તે માણસે તેની પત્નીનું નામ હવા પાડ્યું કેમ કે તે સમગ્ર માનવોની માતા થવાની હતી.',
+      21: 'યહોવાહ ઈશ્વરે આદમ અને તેની પત્ની માટે ચામડાનાં વસ્ત્રો બનાવ્યાં અને તેઓને પહેરાવ્યાં.',
+      22: 'યહોવાહ ઈશ્વરે કહ્યું, "જુઓ, માણસ સારાનરસાની ઓળખ કરવામાં આપણામાંના એક જેવો થઈ ગયો છે.',
+      23: 'તેથી યહોવાહ ઈશ્વરે ઇદન ની વાડીમાંથી તેને કાઢ્યો, કે જ્યાંથી તે લેવામાં આવ્યો હતો, ત્યાં જ ખેતી કરે.',
+      24: 'તેમણે આ માણસને હાંકી કાઢ્યો. ઇદન ની વાડીને પૂર્વ તરફ કરૂબીઓને ગોઠવ્યા, તથા ચારે બાજુ ફરતી અગ્નિની તલવાર, જ્ઞાન વૃક્ષ ના માર્ગ ના રક્ષણ માટે મૂકી.',
+    };
+
+    // Pre-filled translations for verses already "done" (verses 1–5)
+    const translations = {
+      1: 'ઈ ઈ યહ ઈશ્વ ઉ ક સ ગ પ સ સ વ ધ હ. ત સ ક ક, "ક ઈ ખ ત ઈ ક ક, \'વ ક વ ફ ત ન ખ?"',
+      2: 'સ સ ક ક, "વ વ ફ અ ખ ક ક,',
+      3: 'પ ઈ ક ક ક, જ વ વ મ ત ફ \'ત ખ ન ક ન. જ ખ ત ત મ."',
+      4: 'સ સ ક ક, "ત મ ન ..."',
+      5: 'ક ઈ ક ક ક જ દ ત ત ખ ત જ ત ત આ ઊ ક ત ઈ સ ...',
+    };
+
+    // ── State ─────────────────────────────────────────────────────────────────
+
+    const TOTAL_VERSES = 24;
+    let activeVerse = 6;
+    let maxVerse = 6;
+    let autoSaveTimer = null;
+    let saveRetryTimer = null;
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    function esc(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function autoResize(el) {
+      if (!el) return;
+      el.style.height = 'auto';
+      el.style.height = Math.max(44, el.scrollHeight) + 'px';
+    }
+
+    // ── Verse rendering ───────────────────────────────────────────────────────
+
+    function renderVerses() {
+      const container = document.getElementById('verse-scroll');
+      // Save current active textarea value before destroying DOM
+      const prevInput = document.getElementById('input-' + activeVerse);
+      if (prevInput) translations[activeVerse + '__live'] = prevInput.value;
+
+      container.innerHTML = '';
+
+      for (let n = 1; n <= TOTAL_VERSES; n++) {
+        const isActive  = (n === activeVerse);
+        const isDone    = !isActive && (translations[n] !== undefined) && n <= maxVerse;
+        const isPending = !isActive && !isDone;
+
+        const liveVal  = translations[n + '__live'];
+        const savedVal = translations[n] || '';
+        const textVal  = isActive ? (liveVal !== undefined ? liveVal : '') : (isDone ? savedVal : '');
+
+        let srcClass   = 'source-card' + (isActive ? ' active-source' : '');
+        let inputClass = 'translation-input' + (isActive ? ' active' : isDone ? ' done' : ' pending');
+
+        const row = document.createElement('div');
+        row.className = 'verse-row';
+        row.id = 'row-' + n;
+
+        const srcText = sourceText[n] || '';
+
+        row.innerHTML =
+          '<div class="verse-source">' +
+            '<span class="verse-num">' + n + '</span>' +
+            '<div class="' + srcClass + '" id="src-' + n + '">' + esc(srcText) + '</div>' +
+          '</div>' +
+          '<div class="translation-wrap" id="wrap-' + n + '">' +
+            '<textarea' +
+              ' class="' + inputClass + '"' +
+              ' id="input-' + n + '"' +
+              (isPending ? ' disabled' : '') +
+              (isActive ? ' placeholder="Type your translation here…"' : '') +
+              ' rows="1"' +
+            '>' + esc(textVal) + '</textarea>' +
+            (isActive
+              ? '<div class="next-verse-wrap"><button class="next-verse-btn" onclick="nextVerse()" title="Next Verse (Enter)">Next Verse</button></div>'
+              : '') +
+          '</div>';
+
+        container.appendChild(row);
+
+        const textarea = document.getElementById('input-' + n);
+        autoResize(textarea);
+
+        if (isActive) {
+          textarea.addEventListener('input', function() {
+            autoResize(textarea);
+            updateProgress();
+            triggerAutoSave();
+          });
+          textarea.addEventListener('keydown', handleKeydown);
+        } else if (isDone) {
+          textarea.addEventListener('click',  function() { activateVerse(n); });
+          textarea.addEventListener('focus',  function() { activateVerse(n); });
+        }
+      }
+
+      updateProgress();
+
+      // Focus active verse after render
+      const activeInput = document.getElementById('input-' + activeVerse);
+      if (activeInput) {
+        requestAnimationFrame(function() {
+          activeInput.focus();
+        });
+      }
+    }
+
+    function handleKeydown(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        nextVerse();
+      }
+    }
+
+    function nextVerse() {
+      // Persist current verse
+      const input = document.getElementById('input-' + activeVerse);
+      if (input) translations[activeVerse] = input.value;
+      delete translations[activeVerse + '__live'];
+
+      if (activeVerse >= TOTAL_VERSES) return;
+
+      activeVerse++;
+      if (activeVerse > maxVerse) maxVerse = activeVerse;
+
+      renderVerses();
+      requestAnimationFrame(scrollToActive);
+    }
+
+    function activateVerse(n) {
+      if (n === activeVerse) return;
+      // Persist current verse
+      const input = document.getElementById('input-' + activeVerse);
+      if (input) translations[activeVerse] = input.value;
+      delete translations[activeVerse + '__live'];
+
+      activeVerse = n;
+      renderVerses();
+      requestAnimationFrame(scrollToActive);
+    }
+
+    function scrollToActive() {
+      const verseArea = document.getElementById('verse-area');
+      if (!verseArea) return;
+
+      // Scroll so the verse ABOVE the active one is at the top
+      const targetRowId = activeVerse > 1 ? 'row-' + (activeVerse - 1) : 'row-' + activeVerse;
+      const targetRow = document.getElementById(targetRowId);
+      if (!targetRow) return;
+
+      const areaRect = verseArea.getBoundingClientRect();
+      const rowRect  = targetRow.getBoundingClientRect();
+      verseArea.scrollTop += (rowRect.top - areaRect.top);
+    }
+
+    // ── Progress bar ──────────────────────────────────────────────────────────
+
+    function updateProgress() {
+      let filled = 0;
+      for (let n = 1; n <= TOTAL_VERSES; n++) {
+        const input = document.getElementById('input-' + n);
+        const text  = input ? input.value : (translations[n] || '');
+        if (text.trim()) filled++;
+      }
+
+      const pct = (filled / TOTAL_VERSES) * 100;
+      document.getElementById('progress-fill').style.width = pct + '%';
+
+      const sendBtn = document.getElementById('send-btn');
+      if (filled >= TOTAL_VERSES) {
+        sendBtn.classList.add('ready');
+      } else {
+        sendBtn.classList.remove('ready');
+      }
+    }
+
+    function handleSend() {
+      const sendBtn = document.getElementById('send-btn');
+      if (!sendBtn.classList.contains('ready')) return;
+      alert('Chapter submitted for Peer Checking.');
+    }
+
+    // ── Auto-save ─────────────────────────────────────────────────────────────
+
+    function triggerAutoSave() {
+      clearTimeout(autoSaveTimer);
+      clearTimeout(saveRetryTimer);
+      showSaveState('saving');
+      autoSaveTimer = setTimeout(function() {
+        showSaveState('saved');
+        setTimeout(function() { showSaveState('idle'); }, 2500);
+      }, 2000);
+    }
+
+    function showSaveState(state) {
+      const indicator = document.getElementById('save-indicator');
+      const spinner   = document.getElementById('save-spinner');
+      const check     = document.getElementById('save-check');
+      const label     = document.getElementById('save-label');
+
+      indicator.className = 'save-indicator';
+      spinner.style.display = 'none';
+      check.style.display   = 'none';
+      label.textContent     = '';
+
+      if (state === 'idle') {
+        indicator.classList.add('idle');
+      } else if (state === 'saving') {
+        spinner.style.display = 'block';
+        label.textContent = 'Saving…';
+      } else if (state === 'saved') {
+        check.style.display = 'block';
+        indicator.classList.add('saved');
+        label.textContent = 'Saved';
+      } else if (state === 'error') {
+        indicator.classList.add('error');
+        label.textContent = 'Auto-save failed';
+      }
+    }
+
+    // ── Resources panel ───────────────────────────────────────────────────────
+
+    function toggleResources() {
+      const panel  = document.getElementById('resources-panel');
+      const btn    = document.getElementById('resources-toggle-btn');
+      const handle = document.getElementById('resize-handle');
+
+      const isOpen = !panel.classList.contains('closed');
+      panel.classList.toggle('closed', isOpen);
+      btn.classList.toggle('closed', isOpen);
+      handle.style.display = isOpen ? 'none' : 'flex';
+    }
+
+    // ── Chip row ──────────────────────────────────────────────────────────────
+
+    function selectChip(el) {
+      ['notes-list', 'images-list', 'questions-list', 'words-list'].forEach(function(id) {
+        document.getElementById(id).style.display = 'none';
+      });
+      document.getElementById('bibles-list').classList.remove('active');
+
+      document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('selected'); });
+      el.classList.add('selected');
+
+      switch (el.dataset.value) {
+        case 'notes':     document.getElementById('notes-list').style.display = 'block'; break;
+        case 'images':    document.getElementById('images-list').style.display = 'flex'; break;
+        case 'bibles':    document.getElementById('bibles-list').classList.add('active'); initBiblesPanel(); break;
+        case 'questions': document.getElementById('questions-list').style.display = 'block'; break;
+        case 'words':     document.getElementById('words-list').style.display = 'block'; break;
+      }
+    }
+
+    function scrollChips(dir) {
+      document.getElementById('chip-row-scroll').scrollBy({ left: dir * 150, behavior: 'smooth' });
+      setTimeout(updateChipScrollArrows, 150);
+    }
+
+    function updateChipScrollArrows() {
+      const el     = document.getElementById('chip-row-scroll');
+      const atLeft  = el.scrollLeft <= 0;
+      const atRight = el.scrollLeft >= el.scrollWidth - el.clientWidth - 1;
+      document.getElementById('chip-arrow-left').classList.toggle('hidden', atLeft);
+      document.getElementById('chip-fade-left').classList.toggle('hidden', atLeft);
+      document.getElementById('chip-arrow-right').classList.toggle('hidden', atRight);
+      document.getElementById('chip-fade-right').classList.toggle('hidden', atRight);
+    }
+
+    // ── TQ / TW / TN toggles ──────────────────────────────────────────────────
+
+    function toggleNote(el) {
+      el.classList.toggle('open');
+      el.nextElementSibling.classList.toggle('open');
+    }
+
+    function toggleTQ(el) {
+      el.classList.toggle('open');
+      el.nextElementSibling.classList.toggle('open');
+    }
+
+    function toggleTW(el) {
+      el.classList.toggle('open');
+      el.nextElementSibling.classList.toggle('open');
+    }
+
+    // ── Bibles / Tab 2 ────────────────────────────────────────────────────────
+
+    const bibleData = {
+      Gujarati: [
+        { id: 'guj-irv',  abbr: 'IRV Gujarati', label: 'Gujarati IRV'  },
+        { id: 'guj-cl',   abbr: 'CL Gujarati',  label: 'Gujarati CL'   },
+        { id: 'guj-gerv', abbr: 'GERV Gujarati', label: 'Gujarati GERV' },
+      ],
+      English: [
+        { id: 'eng-bsb', abbr: 'BSB', label: 'Berean Standard Bible' },
+      ],
+    };
+
+    const bibleText = {
+      'guj-irv': {
+        1: 'હવે યહોવાહ ઈશ્વરે ઉત્પન્ન કરેલાં સર્વ પ્રાણીઓમાં સાપ સૌથી વધારે ધૂર્ત હતો. તેણે સ્ત્રીને કહ્યું...',
+        2: 'સ્ત્રીએ સાપને કહ્યું કે, "વાડીના વૃક્ષોનાં ફળ અમે ખાઈ શકીએ છીએ,',
+        3: 'પણ ઈશ્વરે કહેલું છે કે, જે વૃક્ષ વાડીની મધ્યમાં છે...',
+        4: 'સાપે સ્ત્રીને કહ્યું કે, "તમે મૃત્યુ નહિ પામો.',
+        5: 'કેમ કે ઈશ્વર જાણે છે...',
+        6: 'તે વૃક્ષનું ફળ ખાવામાં સ્વાદિષ્ટ...',
+        7: 'ત્યારે તેઓ બઘ્ધેની આંખો ઊઘડી ગઈ...',
+        8: 'દિવસના ઠંડા પહોરે વાડીમાં...',
+        9: 'યહોવાહ ઈશ્વરે આદમને હાંક મારી કે, "તું ક્યાં છો?"',
+      },
+      'guj-cl': {
+        1: 'હવે યહોવા ઈશ્વરે બનાવેલા સર્વ વનચર પ્રાણીઓમાં સાપ સૌથી ચાલાક હતો...',
+        2: 'સ્ત્રીએ સાપને જવાબ આપ્યો, "વાડીનાં વૃક્ષોનું ફળ અમે ખાઈ શકીએ છીએ,',
+        3: 'પણ વાડીની મધ્યમાં જે વૃક્ષ છે...',
+        4: 'સાપે સ્ત્રીને કહ્યું, "તમે ખરેખર મરી નહિ જાઓ.',
+        5: 'ઈશ્વર જાણે છે કે...',
+        6: 'સ્ત્રીએ જોયું કે તે વૃક્ષનું ફળ...',
+      },
+      'guj-gerv': {
+        1: 'યહોવા પરમેશ્વરે બનાવેલાં ખેતરનાં સર્વ પ્રાણીઓમાં સાપ સૌથી હોશિયાર હતો...',
+        2: 'સ્ત્રીએ સાપને કહ્યું, "વાડીનાં ઝાડનાં ફળ અમે ખાઈ શકીએ છીએ,',
+        3: 'પણ વાડીની વચ્ચે આવેલા ઝાડના ફળ વિષે...',
+        4: 'સાપે સ્ત્રીને કહ્યું, "તમે નિશ્ચે મરી નહિ જાઓ.',
+        5: 'કેમ કે પરમેશ્વર જાણે છે...',
+        6: 'તે ઝાડનું ફળ ખાવાને સારું...',
+      },
+      'eng-bsb': {
+        1:  'Now the serpent was more crafty than any beast of the field that the LORD God had made. And he said to the woman, "Did God really say, \'You must not eat from any tree in the garden?\'"',
+        2:  'The woman answered the serpent, "We may eat the fruit of the trees of the garden,',
+        3:  'but about the fruit of the tree in the middle of the garden, God has said, \'You must not eat of it or touch it, or you will die.\'"',
+        4:  '"You will not surely die," the serpent told the woman.',
+        5:  '"For God knows that in the day you eat of it, your eyes will be opened and you will be like God, knowing good and evil."',
+        6:  'When the woman saw that the tree was good for food and pleasing to the eyes, and that it was desirable for obtaining wisdom, she took the fruit and ate it. She also gave some to her husband who was with her, and he ate it.',
+        7:  'And the eyes of both of them were opened, and they knew that they were naked; so they sewed together fig leaves and made coverings for themselves.',
+        8:  'Then the man and his wife heard the voice of the LORD God walking in the garden in the breeze of the day, and they hid themselves from the presence of the LORD God among the trees of the garden.',
+        9:  'But the LORD God called out to the man, "Where are you?"',
+        10: '"I heard Your voice in the garden," he replied, "and I was afraid because I was naked; so I hid myself."',
+        11: '"Who told you that you were naked?" asked the LORD God. "Have you eaten from the tree of which I commanded you not to eat?"',
+        12: 'And the man answered, "The woman whom You gave me, she gave me fruit from the tree, and I ate it."',
+        13: 'Then the LORD God said to the woman, "What is this you have done?" "The serpent deceived me," she replied, "and I ate."',
+        14: 'So the LORD God said to the serpent: "Because you have done this, cursed are you above all livestock and every beast of the field! On your belly will you go, and dust you will eat, all the days of your life.',
+        15: 'And I will put enmity between you and the woman, and between your seed and her seed. He will crush your head, and you will strike his heel."',
+        16: 'To the woman He said: "I will sharply increase your pain in childbirth; in pain you will bring forth children. Your desire will be for your husband, and he will rule over you."',
+        17: 'And to Adam He said: "Because you have listened to the voice of your wife and have eaten from the tree of which I commanded you not to eat, cursed is the ground because of you; through toil you will eat of it all the days of your life.',
+        18: 'Both thorns and thistles it will yield for you, and you will eat the plants of the field.',
+        19: 'By the sweat of your brow you will eat your bread, until you return to the ground — because out of it were you taken. For dust you are, and to dust you shall return."',
+        20: 'And Adam named his wife Eve, because she would be the mother of all the living.',
+      },
+    };
+
+    let currentBibleLanguage = null;
+    let currentBibleVersion  = null;
+    const chevSvg = '<svg class="bible-version-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+
+    function initBiblesPanel() {
+      const langs  = Object.keys(bibleData).sort();
+      const select = document.getElementById('bible-language-select');
+      const empty  = document.getElementById('bible-empty-state');
+
+      if (!langs.length) {
+        select.style.display = 'none';
+        document.getElementById('bible-version-list').style.display = 'none';
+        empty.style.display = 'block';
+        return;
+      }
+      select.style.display = '';
+      empty.style.display  = 'none';
+      select.innerHTML = langs.map(function(l) { return '<option value="' + l + '">' + l + '</option>'; }).join('');
+      select.value = currentBibleLanguage || langs[0];
+      renderBibleVersionList(select.value);
+    }
+
+    function renderBibleVersionList(language) {
+      const listEl   = document.getElementById('bible-version-list');
+      const empty    = document.getElementById('bible-empty-state');
+      const versions = (bibleData[language] || []).slice().sort(function(a, b) { return a.label.localeCompare(b.label); });
+
+      listEl.innerHTML = '';
+      if (!versions.length) {
+        listEl.style.display = 'none';
+        empty.style.display  = 'block';
+        return;
+      }
+      listEl.style.display = 'flex';
+      empty.style.display  = 'none';
+
+      versions.forEach(function(version) {
+        const isSel = currentBibleLanguage === language && currentBibleVersion === version.id;
+        const btn   = document.createElement('button');
+        btn.className = 'bible-version-option' + (isSel ? ' selected' : '');
+        btn.innerHTML = '<span>' + version.label + '</span>' + chevSvg;
+        btn.onclick   = function() { openBibleTab(language, version); };
+        listEl.appendChild(btn);
+      });
+    }
+
+    function switchSourceTab(n) {
+      document.getElementById('tab1-btn').classList.toggle('active', n === 1);
+      document.getElementById('tab2-tab').classList.toggle('active', n === 2);
+    }
+
+    function openBibleTab(language, version) {
+      currentBibleLanguage = language;
+      currentBibleVersion  = version.id;
+
+      document.getElementById('tab2-label').textContent = version.abbr;
+      document.getElementById('tab2-tab').style.display  = 'inline-flex';
+      document.getElementById('tab-divider').style.display = 'block';
+
+      const verses = bibleText[version.id] || {};
+      document.querySelectorAll('.source-card[id^="src-"]').forEach(function(card) {
+        if (!card.dataset.tab1) card.dataset.tab1 = card.textContent;
+        const n = parseInt(card.id.replace('src-', ''), 10);
+        card.textContent = verses[n] !== undefined ? verses[n] : '';
+      });
+      switchSourceTab(2);
+      renderBibleVersionList(language);
+    }
+
+    function closeTab2(e) {
+      e.stopPropagation();
+      document.getElementById('tab2-tab').style.display    = 'none';
+      document.getElementById('tab-divider').style.display = 'none';
+
+      document.querySelectorAll('.source-card[id^="src-"]').forEach(function(card) {
+        if (card.dataset.tab1 !== undefined) {
+          card.textContent = card.dataset.tab1;
+          delete card.dataset.tab1;
+        }
+      });
+      switchSourceTab(1);
+      const closedLang     = currentBibleLanguage;
+      currentBibleLanguage = null;
+      currentBibleVersion  = null;
+      const sel = document.getElementById('bible-language-select');
+      if (sel && sel.value === closedLang) renderBibleVersionList(sel.value);
+    }
+
+    // ── Resize handle drag ────────────────────────────────────────────────────
+
+    (function() {
+      const handle = document.getElementById('resize-handle');
+      let dragging = false, startX = 0, startW = 0;
+
+      handle.addEventListener('mousedown', function(e) {
+        dragging = true;
+        startX   = e.clientX;
+        startW   = document.getElementById('resources-panel').offsetWidth;
+        handle.classList.add('dragging');
+        document.body.style.userSelect = 'none';
+        document.body.style.cursor     = 'col-resize';
+        e.preventDefault();
+      });
+      document.addEventListener('mousemove', function(e) {
+        if (!dragging) return;
+        const w = Math.max(200, Math.min(520, startW + e.clientX - startX));
+        document.getElementById('resources-panel').style.width = w + 'px';
+      });
+      document.addEventListener('mouseup', function() {
+        if (!dragging) return;
+        dragging = false;
+        handle.classList.remove('dragging');
+        document.body.style.userSelect = '';
+        document.body.style.cursor     = '';
+      });
+    })();
+
+    // ── Init ─────────────────────────────────────────────────────────────────
+
+    window.addEventListener('load', function() {
+      updateChipScrollArrows();
+      document.getElementById('chip-row-scroll').addEventListener('scroll', updateChipScrollArrows);
+      renderVerses();
+    });
+
+    window.addEventListener('resize', function() {
+      document.querySelectorAll('.translation-input').forEach(autoResize);
+    });
+  </script>
+</body>
+</html>

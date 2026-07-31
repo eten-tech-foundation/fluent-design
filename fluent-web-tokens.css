@@ -1,0 +1,106 @@
+/* Fluent Web Design Tokens — sourced from eten-tech-foundation/fluent-web src/index.css */
+/* Font: Inter (all variants) | Border radius: 0.75rem | Component library: shadcn/ui + Tailwind v4 */
+
+:root {
+  --background: #ffffff;
+  --foreground: #1a1a1a;
+  --hover: #e7edf1;
+
+  --card: #eaeef5;
+  --card-hover: #0940a8;
+  --card-foreground: #1a1a1a;
+
+  --popover: #dde3ed;
+  --popover-hover: #d4dbe7;
+  --popover-foreground: #1a1a1a;
+
+  --text-primary: #1a1a1a;
+  --text-disabled: #a0a0a0;
+
+  --primary: #0b50d0;
+  --primary-foreground: #ffffff;
+  --primary-hover: #0940a8;
+
+  --muted: #f2f4f8;
+  --muted-foreground: #555555;
+
+  --accent: #e0e6f5;
+  --accent-foreground: #1a1a1a;
+
+  --border: #c4cad6;
+  --input: #c4cad6;
+  --ring: #0b50d0;
+
+  --sidebar: #f5f7fa;
+  --sidebar-foreground: #1a1a1a;
+  --sidebar-primary: #0b50d0;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e0e6f2;
+  --sidebar-accent-foreground: #1a1a1a;
+  --sidebar-border: #d0d6e0;
+
+  --destructive: #df0c07;
+  --destructive-foreground: #ffffff;
+
+  --success: #11875d;
+  --success-foreground: #ffffff;
+
+  --warning: #e48f06;
+  --warning-foreground: #ffffff;
+
+  --error: #d64545;
+  --error-foreground: #ffffff;
+
+  --radius: 0.75rem;
+  --radius-sm: calc(var(--radius) - 4px);   /* 0.5rem */
+  --radius-md: calc(var(--radius) - 2px);   /* 0.625rem */
+  --radius-lg: var(--radius);               /* 0.75rem */
+  --radius-xl: calc(var(--radius) + 4px);   /* 1rem */
+}
+
+.dark {
+  --background: #0d1117;
+  --foreground: #e6e6e6;
+  --hover: #1c222d;
+
+  --card: #1c222d;
+  --card-hover: #242c39;
+  --card-foreground: #e6e6e6;
+
+  --popover: #2a3240;
+  --popover-hover: #333c4c;
+  --popover-foreground: #e6e6e6;
+
+  --primary: #3d7cf2;
+  --primary-foreground: #ffffff;
+  --primary-hover: #336ad6;
+
+  --text-primary: #f1f1f1;
+  --text-disabled: #666667;
+
+  --muted: #202630;
+  --muted-foreground: #9da6b5;
+
+  --accent: #2a3442;
+  --accent-foreground: #f2f4f7;
+
+  --border: #3d4552;
+  --input: #5c6a75;
+
+  --sidebar: #151a22;
+  --sidebar-foreground: #e6e6e6;
+  --sidebar-accent: #2a3240;
+  --sidebar-border: #2a3240;
+
+  --destructive: #ff4c4c;
+  --success: #17b26a;
+  --warning: #e48f06;
+  --error: #f04438;
+}
+
+/* Phase badge colors (from vault memory) */
+/* Drafting:  #D97706  (yellow)  */
+/* Peer/Group: #EA580C (orange)  */
+/* Community: #9333EA  (purple)  */
+/* Advanced:  #0284C7  (blue)    */
+/* Complete:  #16A34A  (green)   */
