@@ -137,7 +137,7 @@
 
     /* ── Resources panel ── */
     .resources-panel {
-      width: 300px;
+      width: 392px;
       min-width: 0;
       flex-shrink: 0;
       display: flex;
@@ -176,12 +176,12 @@
       flex-shrink: 0;
       padding: 10px 18px;
       border-radius: 14px;
-      font-size: 12px;
+      font-size: .875rem;
       font-weight: 600;
       font-family: var(--font);
       cursor: pointer;
       white-space: nowrap;
-      border: 1.5px solid var(--primary);
+      border: 2px solid var(--primary);
       background: none;
       color: var(--primary);
       transition: background 0.15s, color 0.15s;
@@ -221,11 +221,17 @@
       padding: 7px 28px 7px 10px;
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      font-size: 13px;
+      font-size: .875rem;
+      font-weight: 600;
       font-family: var(--font);
       color: var(--foreground);
-      background: var(--background) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 9px center;
+      background: var(--background) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2020/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 9px center;
       appearance: none; cursor: pointer;
+    }
+
+    .res-lang-bar {
+      padding: 0 16px 10px;
+      flex-shrink: 0;
     }
 
     .notes-list {
@@ -233,33 +239,30 @@
       overflow-y: auto;
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      margin: 0 4px 16px;
+      margin: 0 16px 16px;
     }
 
     .note-toggle {
       width: 100%;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 16px;
+      padding: 20px 32px;
       background: none; border: none; cursor: pointer;
-      font-size: 13px; font-weight: 500;
+      font-size: 1rem; font-weight: 700;
       color: var(--foreground);
       font-family: var(--font); text-align: left;
-      border-bottom: 1px solid var(--border);
     }
-    .note-toggle:last-of-type { border-bottom: none; }
     .note-toggle:hover { background: var(--muted); }
     .note-chevron { transition: transform 0.2s; flex-shrink: 0; color: var(--muted-foreground); }
     .note-toggle.open .note-chevron { transform: rotate(180deg); }
 
     .note-body {
       display: none;
-      padding: 8px 16px 16px;
+      padding: 8px 32px 24px;
       font-size: 13px; line-height: 1.6;
       color: var(--foreground);
-      border-bottom: 1px solid var(--border);
     }
     .note-body.open { display: block; }
-    .note-verse-label { font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 5px; }
+    .note-verse-label { font-size: .75rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
 
     /* ── Bibles selector ── */
     .bibles-selector {
@@ -572,6 +575,17 @@
         </button>
       </div>
 
+      <!-- Language selector (TN / TQ / TW / AOSN) -->
+      <div id="res-lang-bar" class="res-lang-bar">
+        <select class="res-select" id="res-language-select">
+          <option value="en" selected>English</option>
+          <option value="es">Spanish</option>
+          <option value="fr">French</option>
+          <option value="pt">Portuguese</option>
+          <option value="hi">Hindi</option>
+        </select>
+      </div>
+
       <!-- Bibles -->
       <div id="bibles-list" class="bibles-selector">
         <select class="res-select" id="bible-language-select" onchange="renderBibleVersionList(this.value)"></select>
@@ -580,48 +594,7 @@
       </div>
 
       <!-- TN Notes -->
-      <div id="notes-list" class="notes-list">
-        <button class="note-toggle open" onclick="toggleNote(this)">
-          <span>3:1 — crafty</span>
-          <svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="note-body open">
-          <div class="note-verse-label">3:1</div>
-          The serpent is described as more crafty than any other beast. The Hebrew word can also mean "subtle" or "shrewd." The serpent used this craftiness to deceive the woman. Alternate translation: "more subtle," "more clever."
-        </div>
-        <button class="note-toggle" onclick="toggleNote(this)">
-          <span>3:1 — Did God really say</span>
-          <svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="note-body">
-          <div class="note-verse-label">3:1</div>
-          The serpent used a question to cause the woman to doubt what God had said. The serpent's question subtly distorts what God actually said. See verse 2–3 for what the woman understood God to have said.
-        </div>
-        <button class="note-toggle" onclick="toggleNote(this)">
-          <span>3:4 — You will not surely die</span>
-          <svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="note-body">
-          <div class="note-verse-label">3:4</div>
-          The serpent directly contradicted what God said. This is an emphatic denial using the same root word as God's original statement. Alternate translation: "You will certainly not die."
-        </div>
-        <button class="note-toggle" onclick="toggleNote(this)">
-          <span>3:5 — like God, knowing good and evil</span>
-          <svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="note-body">
-          <div class="note-verse-label">3:5</div>
-          Knowing good and evil refers to having the experience of all things. The serpent tempted the woman by suggesting she could be equal to God. Some languages may need to say "like the gods" because the word for "God" here is in the plural form.
-        </div>
-        <button class="note-toggle" onclick="toggleNote(this)">
-          <span>3:6 — good for food</span>
-          <svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="note-body">
-          <div class="note-verse-label">3:6</div>
-          The woman's decision was based on three things she observed about the fruit: it was good for food, pleasing to the eye, and desirable for gaining wisdom. Alternate translation: "good to eat."
-        </div>
-      </div>
+      <div id="notes-list" class="notes-list"></div>
 
       <!-- Images & Maps -->
       <div id="images-list" class="images-list" style="display:none">
@@ -961,6 +934,68 @@
       requestAnimationFrame(scrollToActive);
     }
 
+    // ── TN notes data ─────────────────────────────────────────────────────────
+
+    const TN_NOTES = {
+      1: [
+        { key: 'Now the serpent', body: 'The conjunction Now introduces background information about the serpent. See how you translated this conjunction in Gen 2:5, 8, 19.' },
+        { key: 'was more crafty than every living thing of the field', body: 'Make sure that your translation of crafty means that the snake had evil intent and was clever in a way that was not good. See how you translated living thing of the field in Gen 2:19–20. Alternate translation: "was more deceptive and clever than any of the other creatures that live in the wild"' },
+        { key: 'that Yahweh God had made', body: 'Make sure your translation of this phrase refers to the animals that God had made, not the fields. Also see how you translated Yahweh God in chapter 2, beginning in verse 4. Alternate translation: "that Yahweh who is God had made" or "that God whose name is Yahweh had made"' },
+        { key: 'And he said to the woman', body: 'If you use a pronoun (he) here in your translation, make sure it refers to the serpent, not God. Also, since the snake asked a question, some languages have to be more specific and say "asked" in the quote margin. Do what is best in your language. Alternate translation: "One day the snake went to the woman and asked her,"' },
+        { key: 'Did God really say, \'You must not eat', body: 'Consider whether it is better in your language to translate this embedded quote as a direct or indirect quote. Alternate translation: "Did God actually command you to not eat" or "Is it true that God commanded you not to eat"' },
+        { key: 'from any tree of the garden', body: 'See how you translated garden in Genesis 2, beginning in verse 8. Alternate translation: "fruit from any of the trees that is in the garden?" or "any fruit from the trees in the garden?"' },
+      ],
+      2: [
+        { key: 'Then the woman said to the serpent', body: 'Consider what is the best way to translate this quote margin in your language. Alternate translation: "The woman answered the snake," or "The woman responded to him," or "The woman replied,"' },
+        { key: 'We may eat', body: 'The woman is not including the snake when she says "we" here. Alternate translation: "No, we have permission from God to eat" or "No, God has given us permission to eat"' },
+        { key: 'from the fruit of', body: 'See how you translated fruit in Gen 1:11–12, 29. Alternate translation: "the fruit from"' },
+        { key: 'the tree{s} of the garden', body: 'Alternate translation: "all of the trees that are in the garden," or "any tree in the garden,"' },
+      ],
+      3: [
+        { key: 'except from the fruit of the tree that {is} in the middle of the garden', body: 'For some languages it is necessary to put the exception clause first and say, "No, it is only the tree in the middle of the garden that God said we must not eat any fruit from, but the fruit of all the rest of the trees in the garden we may eat." Alternate translation: "except fruit from the tree that is in the middle of the garden." or "except there is one tree that we may not eat fruit from, which is in the center of the garden."' },
+        { key: 'God said, \'You must not eat from it', body: 'Consider whether it is better in your language to translate this embedded quote as a direct or indirect quote. Alternate translation: "God told us to not eat any of that fruit,"' },
+        { key: 'and you must not touch it', body: 'Alternate translation: "and do not even touch it,"' },
+        { key: 'or else you will die', body: 'Make sure the way you translate this clause fits with whether you translated the first part of the sentence as a direct (you) or indirect ("we") quote. Alternate translation: "because if you do eat it or touch it, you will die!" or "because if we do eat it or touch it, we will die!"' },
+      ],
+      4: [
+        { key: 'But the serpent said to the woman', body: 'See how you translated serpent in verses 1–2. Alternate translation: "But the snake replied to her," or "But the snake replied,"' },
+      ],
+      5: [
+        { key: 'For God knows', body: 'The connecting word For introduces an explanation here. Consider what is the best way to do that in your language. Alternate translation: "Actually, he knows" or "The reason God said that is because he knows"' },
+        { key: 'that on the day', body: 'Alternate translation: "that if"' },
+        { key: 'you eat from it', body: 'The pronouns you and your are plural in this verse and refer to the man and the woman. Some languages have a special dual pronoun for this. Alternate translation: "you eat any of that fruit,"' },
+        { key: 'then your eyes will be opened', body: 'Consider whether your language has an idiom like your eyes will be opened that would fit well here. Alternate translation: "your mind will be opened" or "you will gain new understanding," or "you will know new things,"' },
+        { key: 'and you will be like God in knowing good and evil', body: 'The Hebrew word "Elohim" is ambiguous in this context. It could mean: (1) God, which is what it means everywhere else in the first 30 chapters of Genesis; or (2) "gods" or "divine beings" or (3) "angels". See how you translated good and evil in Gen 2:9, 17. Alternate translation: "and as a result you will be like God because you will know what is good and what is evil" or "so that you will know what is good and what is evil just like God does."' },
+      ],
+      6: [
+        { key: 'And the woman saw that', body: 'Alternate translation: "The woman observed that"' },
+        { key: 'the tree', body: 'The word tree refers here to the fruit that is produced by that tree. Make sure that is clear in your translation. Alternate translation: "the tree produced fruit that" or "the fruit of that tree"' },
+        { key: '{was} good for food', body: 'Alternate translation: "was good to eat"' },
+        { key: 'and that it {was} pleasant to the eyes', body: 'Alternate translation: "and that the tree itself looked very beautiful,"' },
+        { key: 'and {that} the tree was desirable for gaining wisdom', body: 'Consider whether or not it is better in your language to begin a new sentence here. Alternate translation: "and she thought that the fruit from the tree would make her wise" or "She also desired to eat the fruit so that it would make her wise"' },
+        { key: 'So she took some of its fruit and ate {it}', body: 'Alternate translation: "So she took some of the fruit off the tree and ate it."' },
+        { key: 'and he ate {it}', body: 'Alternate translation: "and he ate some too." or "and he also ate it"' },
+      ],
+    };
+
+    const CHEVRON_SVG = '<svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>';
+
+    function renderNotes() {
+      const container = document.getElementById('notes-list');
+      const notes = TN_NOTES[activeVerse] || [];
+      const ref = '3:' + activeVerse;
+      container.innerHTML = notes.map(function(note, i) {
+        const open = i === 0;
+        return '<button class="note-toggle' + (open ? ' open' : '') + '" onclick="toggleNote(this)">'
+          + '<span>' + ref + ' — ' + note.key + '</span>' + CHEVRON_SVG
+          + '</button>'
+          + '<div class="note-body' + (open ? ' open' : '') + '">'
+          + '<div class="note-verse-label">' + ref + '</div>'
+          + note.body
+          + '</div>';
+      }).join('');
+    }
+
     function activateVerse(n) {
       if (n === activeVerse) return;
       // Persist current verse
@@ -970,6 +1005,7 @@
 
       activeVerse = n;
       renderVerses();
+      renderNotes();
       requestAnimationFrame(scrollToActive);
     }
 
@@ -1075,6 +1111,9 @@
 
       document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('selected'); });
       el.classList.add('selected');
+
+      const showLang = ['notes', 'questions', 'words', 'aosn'].includes(el.dataset.value);
+      document.getElementById('res-lang-bar').style.display = showLang ? '' : 'none';
 
       switch (el.dataset.value) {
         case 'notes':     document.getElementById('notes-list').style.display = 'block'; break;
@@ -1305,6 +1344,7 @@
       updateChipScrollArrows();
       document.getElementById('chip-row-scroll').addEventListener('scroll', updateChipScrollArrows);
       renderVerses();
+      renderNotes();
     });
 
     window.addEventListener('resize', function() {
