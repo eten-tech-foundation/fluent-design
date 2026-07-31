@@ -1933,6 +1933,7 @@ function closeSettings() {
 function setScripture(mode, btn) {
   document.querySelectorAll('#scripture-seg button').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  if (typeof setViewMode === 'function') setViewMode(mode);
 }
 
 function toggleAiExpand() {

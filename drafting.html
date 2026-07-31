@@ -600,6 +600,87 @@
       transition: background 0.15s;
     }
     .next-verse-btn:hover { background: var(--primary-hover); }
+
+    /* ── Pericope mode ── */
+    .pericope-block {
+      padding: 16px 24px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .pericope-block:last-child { border-bottom: none; }
+
+    .pericope-range-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      margin-bottom: 8px;
+    }
+    .pericope-range-label {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .pericope-content-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: start;
+    }
+
+    .pericope-source-col { padding-right: 12px; }
+
+    .pericope-src-card {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .pericope-src-verse {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .pericope-src-verse .verse-num { padding-top: 0; }
+
+    .pericope-draft-card {
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 8px 16px;
+      background: var(--background);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .pericope-draft-card.active { border-color: var(--primary); }
+    .pericope-draft-card.done { background: var(--card); cursor: pointer; }
+    .pericope-draft-card .translation-input {
+      border: none;
+      background: transparent;
+      box-shadow: none;
+      padding: 0;
+      min-height: unset;
+    }
+    .pericope-draft-card .translation-input:focus { outline: none; }
+
+    .pericope-input-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .pericope-input-group .verse-num { padding-top: 0; }
+
+    .next-pericope-wrap { display: flex; justify-content: flex-end; margin-top: 2px; }
+    .next-pericope-btn {
+      padding: 8px 18px;
+      background: var(--primary); color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 14px; font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .next-pericope-btn:hover { background: var(--primary-hover); }
   </style>
 </head>
 <body data-role="translator">
@@ -621,7 +702,7 @@
         <svg id="save-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>
         <span id="save-label"></span>
       </div>
-      <button id="resources-toggle-btn" class="view-btn" title="Toggle resources" onclick="toggleResources()">
+<button id="resources-toggle-btn" class="view-btn" title="Toggle resources" onclick="toggleResources()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M8 7h6"/><path d="M8 11h8"/></svg>
       </button>
       <div class="chapter-progress" title="Chapter progress">
@@ -869,6 +950,18 @@
     let autoSaveTimer = null;
     let saveRetryTimer = null;
 
+    // Pericope state
+    let viewMode = 'verse';
+    let activePericope = 0;
+
+    const PERICOPES = [
+      { label: '3:1–5',   verses: [1, 2, 3, 4, 5] },
+      { label: '3:6–8',   verses: [6, 7, 8] },
+      { label: '3:9–13',  verses: [9, 10, 11, 12, 13] },
+      { label: '3:14–19', verses: [14, 15, 16, 17, 18, 19] },
+      { label: '3:20–24', verses: [20, 21, 22, 23, 24] },
+    ];
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     function esc(str) {
@@ -980,6 +1073,189 @@
 
       renderVerses();
       requestAnimationFrame(scrollToActive);
+    }
+
+    // ── Pericope rendering ────────────────────────────────────────────────────
+
+    function renderPericopes() {
+      const container = document.getElementById('verse-scroll');
+
+      // Persist any live values from DOM before destroying it
+      PERICOPES.forEach(function(p) {
+        p.verses.forEach(function(n) {
+          const inp = document.getElementById('input-' + n);
+          if (inp) translations[n + '__live'] = inp.value;
+        });
+      });
+
+      container.innerHTML = '';
+
+      PERICOPES.forEach(function(p, pi) {
+        const isActive  = (pi === activePericope);
+        const isDone    = (pi < activePericope);
+        const isPending = (pi > activePericope);
+
+        const block = document.createElement('div');
+        block.className = 'pericope-block';
+        block.id = 'pericope-' + pi;
+
+        // Verse range labels (above each card column)
+        const rangeRow = document.createElement('div');
+        rangeRow.className = 'pericope-range-row';
+        rangeRow.innerHTML =
+          '<div class="pericope-range-label">' + p.label + '</div>' +
+          '<div class="pericope-range-label">' + p.label + '</div>';
+
+        // Two-column content row
+        const contentRow = document.createElement('div');
+        contentRow.className = 'pericope-content-row';
+
+        // ── Source column ──
+        const srcCol = document.createElement('div');
+        srcCol.className = 'pericope-source-col';
+
+        const srcCard = document.createElement('div');
+        srcCard.className = 'source-card pericope-src-card' + (isActive ? ' active-source' : '');
+        p.verses.forEach(function(n) {
+          const line = document.createElement('div');
+          line.className = 'pericope-src-verse';
+          line.innerHTML =
+            '<span class="verse-num">' + n + '</span>' +
+            '<span>' + esc(sourceText[n] || '') + '</span>';
+          srcCard.appendChild(line);
+        });
+        srcCol.appendChild(srcCard);
+
+        // ── Draft column ──
+        const draftCol = document.createElement('div');
+        draftCol.className = 'pericope-draft-col';
+
+        if (!isPending) {
+          const cardState = isActive ? 'active' : 'done';
+          const draftCard = document.createElement('div');
+          draftCard.className = 'pericope-draft-card ' + cardState;
+
+          p.verses.forEach(function(n) {
+            const liveVal  = translations[n + '__live'];
+            const savedVal = translations[n] || '';
+            const textVal  = isDone ? savedVal : (liveVal !== undefined ? liveVal : savedVal);
+
+            const group = document.createElement('div');
+            group.className = 'pericope-input-group';
+
+            const numEl = document.createElement('span');
+            numEl.className = 'verse-num';
+            numEl.textContent = n;
+
+            group.appendChild(numEl);
+
+            if (isDone) {
+              // Plain text — no input box
+              const textEl = document.createElement('span');
+              textEl.style.flex = '1';
+              textEl.style.fontSize = '1rem';
+              textEl.style.lineHeight = '1.65';
+              textEl.style.paddingTop = '1px';
+              textEl.textContent = textVal;
+              group.appendChild(textEl);
+              draftCard.appendChild(group);
+              draftCard.addEventListener('click', function() { activatePericope(pi); });
+            } else {
+              const ta = document.createElement('textarea');
+              ta.className = 'translation-input';
+              ta.id = 'input-' + n;
+              ta.rows = 1;
+              ta.style.flex = '1';
+              ta.placeholder = 'Type here…';
+              if (textVal) ta.value = textVal;
+
+              group.appendChild(ta);
+              draftCard.appendChild(group);
+
+              autoResize(ta);
+              ta.addEventListener('input', function() {
+                autoResize(ta);
+                updateProgress();
+                triggerAutoSave();
+              });
+            }
+          });
+
+          // Next Pericope button on active pericope (not the last one)
+          if (isActive && pi < PERICOPES.length - 1) {
+            const nextWrap = document.createElement('div');
+            nextWrap.className = 'next-pericope-wrap';
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'next-pericope-btn';
+            nextBtn.textContent = 'Next Pericope';
+            nextBtn.onclick = nextPericope;
+            nextWrap.appendChild(nextBtn);
+            draftCard.appendChild(nextWrap);
+          }
+
+          draftCol.appendChild(draftCard);
+        }
+
+        contentRow.appendChild(srcCol);
+        contentRow.appendChild(draftCol);
+        block.appendChild(rangeRow);
+        block.appendChild(contentRow);
+        container.appendChild(block);
+      });
+
+      updateProgress();
+
+      const firstVerse = PERICOPES[activePericope].verses[0];
+      const firstInput = document.getElementById('input-' + firstVerse);
+      if (firstInput) {
+        requestAnimationFrame(function() { firstInput.focus(); });
+      }
+    }
+
+    function nextPericope() {
+      // Persist all inputs of the current pericope
+      PERICOPES[activePericope].verses.forEach(function(n) {
+        const inp = document.getElementById('input-' + n);
+        if (inp) {
+          translations[n] = inp.value;
+          delete translations[n + '__live'];
+        }
+      });
+
+      if (activePericope >= PERICOPES.length - 1) return;
+      activePericope++;
+
+      renderPericopes();
+      renderNotesForMode();
+      renderQuestionsForMode();
+      requestAnimationFrame(scrollToActivePericope);
+    }
+
+    function activatePericope(pi) {
+      if (pi === activePericope) return;
+      PERICOPES[activePericope].verses.forEach(function(n) {
+        const inp = document.getElementById('input-' + n);
+        if (inp) {
+          translations[n] = inp.value;
+          delete translations[n + '__live'];
+        }
+      });
+      activePericope = pi;
+      renderPericopes();
+      renderNotesForMode();
+      renderQuestionsForMode();
+      requestAnimationFrame(scrollToActivePericope);
+    }
+
+    function scrollToActivePericope() {
+      const verseArea = document.getElementById('verse-area');
+      if (!verseArea) return;
+      const targetId = activePericope > 0 ? 'pericope-' + (activePericope - 1) : 'pericope-0';
+      const target = document.getElementById(targetId);
+      if (!target) return;
+      const areaRect   = verseArea.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+      verseArea.scrollTop += (targetRect.top - areaRect.top);
     }
 
     // ── TN notes data ─────────────────────────────────────────────────────────
@@ -1184,6 +1460,79 @@
         indicator.classList.add('error');
         label.textContent = 'Auto-save failed';
       }
+    }
+
+    // ── Mode switching ────────────────────────────────────────────────────────
+
+    function setViewMode(mode) {
+      if (mode === viewMode) return;
+      viewMode = mode;
+
+      if (mode === 'pericope') {
+        // Find which pericope contains the current active verse
+        activePericope = 0;
+        for (var pi = 0; pi < PERICOPES.length; pi++) {
+          if (PERICOPES[pi].verses.indexOf(activeVerse) !== -1) {
+            activePericope = pi;
+            break;
+          }
+        }
+        renderPericopes();
+        renderNotesForMode();
+        renderQuestionsForMode();
+      } else {
+        // Returning to verse mode: land on first verse of the active pericope
+        var lastVerse = PERICOPES[activePericope].verses[PERICOPES[activePericope].verses.length - 1];
+        activeVerse = PERICOPES[activePericope].verses[0];
+        maxVerse = Math.max(maxVerse, lastVerse);
+        renderVerses();
+        renderNotes();
+        renderQuestions();
+      }
+    }
+
+    function renderNotesForMode() {
+      if (viewMode === 'verse') { renderNotes(); return; }
+      var container = document.getElementById('notes-list');
+      var notes = [];
+      PERICOPES[activePericope].verses.forEach(function(n) {
+        (TN_NOTES[n] || []).forEach(function(note) { notes.push(note); });
+      });
+      if (!notes.length) {
+        container.innerHTML = '<div class="no-resources">No resources available for this pericope.</div>';
+        return;
+      }
+      container.innerHTML = notes.map(function(note, i) {
+        var open = i === 0;
+        return '<button class="note-toggle' + (open ? ' open' : '') + '" onclick="toggleNote(this)">'
+          + '<span>' + note.ref + '</span>' + CHEVRON_SVG
+          + '</button>'
+          + '<div class="note-body' + (open ? ' open' : '') + '">'
+          + '<strong>"' + note.key + '"</strong><br/><br/> ' + note.body
+          + '</div>';
+      }).join('');
+    }
+
+    function renderQuestionsForMode() {
+      if (viewMode === 'verse') { renderQuestions(); return; }
+      var container = document.getElementById('questions-list');
+      var questions = [];
+      PERICOPES[activePericope].verses.forEach(function(n) {
+        (TQ_DATA[n] || []).forEach(function(q) { questions.push(q); });
+      });
+      if (!questions.length) {
+        container.innerHTML = '<div class="no-resources">No resources available.</div>';
+        return;
+      }
+      container.innerHTML = questions.map(function(q) {
+        return '<div class="tq-item">'
+          + '<button class="tq-toggle" onclick="toggleTQ(this)">'
+          + '<span class="tq-inner"><span class="tq-ref">' + q.ref + '</span><span class="tq-question">' + q.question + '</span></span>'
+          + TQ_CHEV_SVG
+          + '</button>'
+          + '<div class="tq-body">' + q.answer + '</div>'
+          + '</div>';
+      }).join('');
     }
 
     // ── Resources panel ───────────────────────────────────────────────────────
