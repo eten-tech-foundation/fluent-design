@@ -1210,11 +1210,6 @@ const HEADER_HTML = `
         </button>
         <hr class="user-menu-divider">
         <div class="user-menu-label" id="user-menu-label">Chad M</div>
-        <button class="user-menu-item" id="role-switch-btn" onclick="switchRole()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3l4 4-4 4"/><path d="M20 7H4"/><path d="M8 21l-4-4 4-4"/><path d="M4 17h16"/></svg>
-          <span id="role-switch-label">Switch to Translator</span>
-        </button>
-        <hr class="user-menu-divider">
         <button class="user-menu-item">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           Logout
