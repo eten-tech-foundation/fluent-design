@@ -271,6 +271,7 @@
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       margin: 0 4px 16px 16px;
+      padding-top: 8px;
     }
 
     .note-toggle {
@@ -400,8 +401,8 @@
     /* ── TQ ── */
     .tq-toggle {
       width: 100%;
-      display: flex; align-items: flex-start; gap: 8px;
-      padding: 12px 16px;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
+      padding: 12px 24px;
       background: none; border: none; cursor: pointer;
       text-align: left; font-family: var(--font);
       color: var(--foreground);
@@ -409,10 +410,11 @@
     .tq-toggle:hover { background: var(--muted); }
     .tq-chev { flex-shrink: 0; margin-top: 3px; color: var(--muted-foreground); transition: transform 0.2s; }
     .tq-toggle.open .tq-chev { transform: rotate(180deg); }
+    .tq-item { margin-top: 8px; }
     .tq-inner { display: flex; flex-direction: column; gap: 3px; flex: 1; }
-    .tq-ref { font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.04em; }
-    .tq-question { font-size: 13px; font-weight: 500; line-height: 1.45; }
-    .tq-body { display: none; padding: 4px 16px 14px 38px; font-size: 13px; line-height: 1.6; color: var(--muted-foreground); font-style: italic; }
+    .tq-ref { font-size: 12px; font-weight: 700; color: var(--muted-foreground); text-transform: uppercase; letter-spacing: 0.05em; }
+    .tq-question { font-size: 14px; font-weight: 600; line-height: 1.45; }
+    .tq-body { display: none; padding: 4px 16px 14px 38px; font-size: 14px; line-height: 1.6;  }
     .tq-body.open { display: block; }
 
     /* ── TW ── */
@@ -421,17 +423,18 @@
       display: flex; align-items: center; justify-content: space-between;
       padding: 14px 16px;
       background: none; border: none; cursor: pointer;
-      font-size: 13px; font-weight: 600;
+      font-size: 15px; font-weight: 700;
       color: var(--foreground); font-family: var(--font); text-align: left;
     }
     .tw-toggle:hover { background: var(--muted); }
     .tw-chev { flex-shrink: 0; transition: transform 0.2s; }
     .tw-toggle.open .tw-chev { transform: rotate(180deg); }
-    .tw-body { display: none; padding: 4px 16px 16px; font-size: 13px; line-height: 1.6; color: var(--foreground); }
+    .tw-item { padding: 0 12px; }
+    .tw-body { display: none; padding: 4px 32px 16px; font-size: 14px; line-height: 1.6; color: var(--foreground); }
     .tw-body.open { display: block; }
-    .tw-verses-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted-foreground); margin: 10px 0 6px; }
+    .tw-verses-label { font-size: 14px; font-weight: 700; color: var(--foreground); margin: 10px 0 6px; }
     .tw-verse-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 14px; }
-    .tw-verse-tag { padding: 2px 8px; background: var(--muted); border-radius: 999px; font-size: 12px; font-weight: 500; color: var(--foreground); }
+    .tw-verse-tag { padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 500; color: var(--foreground); }
     .tw-article { font-size: 13px; line-height: 1.65; }
     .tw-article h1 { font-size: 14px; font-weight: 700; margin: 0 0 8px; }
     .tw-article h2 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted-foreground); margin: 10px 0 5px; }
@@ -711,71 +714,7 @@
       </div>
 
       <!-- TQ -->
-      <div id="questions-list" class="notes-list" style="display:none">
-        <div class="tq-item">
-          <button class="tq-toggle" onclick="toggleTQ(this)">
-            <svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            <span class="tq-inner"><span class="tq-ref">3:1</span><span class="tq-question">What was the first question that the serpent asked the woman?</span></span>
-          </button>
-          <div class="tq-body">The serpent asked the woman, "Has God really said, 'You must not eat from any tree of the garden'?"</div>
-        </div>
-        <div class="tq-item">
-          <button class="tq-toggle" onclick="toggleTQ(this)">
-            <svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            <span class="tq-inner"><span class="tq-ref">3:4</span><span class="tq-question">When the woman said God told them they would die, what did the serpent say?</span></span>
-          </button>
-          <div class="tq-body">The serpent said, "You will surely not die."</div>
-        </div>
-        <div class="tq-item">
-          <button class="tq-toggle" onclick="toggleTQ(this)">
-            <svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            <span class="tq-inner"><span class="tq-ref">3:5</span><span class="tq-question">What did the serpent say would happen to them if they ate of the fruit?</span></span>
-          </button>
-          <div class="tq-body">The serpent said they would be like God, knowing good and evil.</div>
-        </div>
-        <div class="tq-item">
-          <button class="tq-toggle open" onclick="toggleTQ(this)">
-            <svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            <span class="tq-inner"><span class="tq-ref">3:6</span><span class="tq-question">What attracted the woman to the fruit of the tree?</span></span>
-          </button>
-          <div class="tq-body open">She saw it was good for food, pleasing to the eyes, and desirable to make one wise.</div>
-        </div>
-        <div class="tq-item">
-          <button class="tq-toggle" onclick="toggleTQ(this)">
-            <svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            <span class="tq-inner"><span class="tq-ref">3:6</span><span class="tq-question">Who ate of the fruit?</span></span>
-          </button>
-          <div class="tq-body">The woman ate, and gave some to her husband who also ate.</div>
-        </div>
-        <div class="tq-item">
-          <button class="tq-toggle" onclick="toggleTQ(this)">
-            <svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            <span class="tq-inner"><span class="tq-ref">3:7</span><span class="tq-question">What happened to them when they ate of the fruit?</span></span>
-          </button>
-          <div class="tq-body">When they ate, their eyes were opened and they knew that they were naked.</div>
-        </div>
-        <div class="tq-item">
-          <button class="tq-toggle" onclick="toggleTQ(this)">
-            <svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            <span class="tq-inner"><span class="tq-ref">3:8</span><span class="tq-question">What did the man and woman do when God came into the garden?</span></span>
-          </button>
-          <div class="tq-body">They hid themselves from God.</div>
-        </div>
-        <div class="tq-item">
-          <button class="tq-toggle" onclick="toggleTQ(this)">
-            <svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            <span class="tq-inner"><span class="tq-ref">3:12</span><span class="tq-question">Who did the man say was responsible for giving him the fruit?</span></span>
-          </button>
-          <div class="tq-body">The man said the woman was responsible.</div>
-        </div>
-        <div class="tq-item">
-          <button class="tq-toggle" onclick="toggleTQ(this)">
-            <svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            <span class="tq-inner"><span class="tq-ref">3:13</span><span class="tq-question">Who did the woman say was responsible for giving her the fruit?</span></span>
-          </button>
-          <div class="tq-body">The woman said that the serpent deceived her.</div>
-        </div>
-      </div>
+      <div id="questions-list" class="notes-list" style="display:none"></div>
 
       <!-- TW -->
       <div id="words-list" class="notes-list" style="display:none">
@@ -1087,6 +1026,56 @@
       ],
     };
 
+    // ── TQ data ───────────────────────────────────────────────────────────────
+
+    const TQ_DATA = {
+      1: [
+        { ref: 'Genesis 3:1', question: 'What was the first question that the serpent asked the woman?', answer: 'The serpent asked the woman, “Has God really said, ‘You must not eat from any tree of the garden’?”' },
+      ],
+      4: [
+        { ref: 'Genesis 3:4', question: 'When the woman said God told them they would die, what did the serpent say?', answer: 'The serpent said, “You will surely not die.”' },
+      ],
+      5: [
+        { ref: 'Genesis 3:5', question: 'What did the serpent say would happen to the man and woman if they ate of the fruit?', answer: 'The serpent said they would be like God, knowing good and evil.' },
+      ],
+      6: [
+        { ref: 'Genesis 3:6', question: 'What attracted the woman to the fruit of the tree?', answer: 'She saw it was good for food, pleasing to the eyes, and desirable to make one wise.' },
+        { ref: 'Genesis 3:6', question: 'Who ate of the fruit?', answer: 'The woman ate, and gave some to her husband who also ate.' },
+      ],
+      7: [
+        { ref: 'Genesis 3:7', question: 'What happened to them when they ate of the fruit?', answer: 'When they ate, their eyes were opened and they knew that they were naked.' },
+      ],
+      8: [
+        { ref: 'Genesis 3:8', question: 'What did the man and woman do when God came into the garden?', answer: 'They hid themselves from God.' },
+      ],
+      12: [
+        { ref: 'Genesis 3:12', question: 'Who did the man say was responsible for giving him the fruit?', answer: 'The man said the woman was responsible.' },
+      ],
+      13: [
+        { ref: 'Genesis 3:13', question: 'Who did the woman say was responsible for giving her the fruit?', answer: 'The woman said that the serpent deceived her.' },
+      ],
+    };
+
+    const TQ_CHEV_SVG = '<svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>';
+
+    function renderQuestions() {
+      const container = document.getElementById('questions-list');
+      const questions = TQ_DATA[activeVerse] || [];
+      if (!questions.length) {
+        container.innerHTML = '<div class="no-resources">No resources available.</div>';
+        return;
+      }
+      container.innerHTML = questions.map(function(q) {
+        return '<div class="tq-item">'
+          + '<button class="tq-toggle" onclick="toggleTQ(this)">'
+          + '<span class="tq-inner"><span class="tq-ref">' + q.ref + '</span><span class="tq-question">' + q.question + '</span></span>'
+          + TQ_CHEV_SVG
+          + '</button>'
+          + '<div class="tq-body">' + q.answer + '</div>'
+          + '</div>';
+      }).join('');
+    }
+
     const CHEVRON_SVG = '<svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>';
 
     function renderNotes() {
@@ -1114,6 +1103,7 @@
       activeVerse = n;
       renderVerses();
       renderNotes();
+      renderQuestions();
       requestAnimationFrame(scrollToActive);
     }
 
@@ -1531,6 +1521,7 @@
       document.getElementById('chip-row-scroll').addEventListener('scroll', updateChipScrollArrows);
       renderVerses();
       renderNotes();
+      renderQuestions();
     });
 
     window.addEventListener('resize', function() {
