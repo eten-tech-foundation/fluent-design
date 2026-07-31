@@ -11,6 +11,7 @@ const SHARED_CSS = `
     --primary-hover: #0940a8;
     --muted: #f2f4f8;
     --muted-foreground: #555555;
+    --text-disabled: #a0a0a0;
     --popover: #dde3ed;
     --border: #c4cad6;
     --radius: 0.75rem;
@@ -38,14 +39,14 @@ const SHARED_CSS = `
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px;
-    height: 52px;
+    padding: 0 18px;
+    height: 56px;
     position: sticky;
     top: 0;
     z-index: 100;
   }
 
-  .header-left  { display: flex; align-items: center; gap: 14px; }
+  .header-left  { display: flex; align-items: center; gap: 32px; }
   .header-right { display: flex; align-items: center; gap: 10px; }
 
   /* ── Org switcher ── */
@@ -146,20 +147,20 @@ const SHARED_CSS = `
   .dark .org-role-chip { background: #2a3240; }
 
   .logo { display: flex; align-items: center; }
-  .logo img { height: 48px; width: auto; }
+  .logo img { height: 52px; width: auto; }
 
   .hamburger-wrap { position: relative; }
 
   .hamburger {
-    width: 34px; height: 34px;
+    width: 40px; height: 40px;
     background: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 10px;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     gap: 4px; cursor: pointer; padding: 0;
   }
-  .hamburger span { display: block; width: 16px; height: 3px; background: var(--foreground); border-radius: 3px; }
+  .hamburger span { display: block; width: 20px; height: 3px; background: var(--foreground); border-radius: 3px; }
 
   /* ── Main menu dropdown ── */
   .main-menu {
@@ -196,10 +197,10 @@ const SHARED_CSS = `
   .main-menu-item:hover { background: var(--muted); }
 
   .user-btn {
-    width: 34px; height: 34px;
+    width: 40px; height: 40px;
     background: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer;
     position: relative;
@@ -1193,7 +1194,7 @@ const HEADER_HTML = `
   <div class="header-right">
     <div class="org-switcher" id="org-switcher"></div>
     <div class="user-btn" id="user-menu-btn" onclick="toggleUserMenu(event)">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="3" y="3" width="18" height="18" rx="3"/>
         <circle cx="12" cy="10" r="3"/>
         <path d="M6 21c0-3.3 2.7-6 6-6s6 2.7 6 6"/>

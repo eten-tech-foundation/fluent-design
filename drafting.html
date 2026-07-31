@@ -17,7 +17,9 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 24px 14px 20px;
+      height: 56px;
+      padding: 0 20px 0 12px;
+      margin: 24px 0 16px 0;
       background: var(--background);
       flex-shrink: 0;
       gap: 10px;
@@ -42,7 +44,7 @@
       border-radius: 999px;
       font-size: 14px;
       font-weight: 700;
-      color: var(--muted-foreground);
+      color: var(--text-disabled);
     }
 
     .sub-center { display: flex; align-items: center; gap: 10px; }
@@ -111,7 +113,7 @@
       font-weight: 600;
       font-family: var(--font);
       background: var(--muted);
-      color: var(--muted-foreground);
+      color: var(--text-disabled);
       cursor: not-allowed;
       white-space: nowrap;
       flex-shrink: 0;
@@ -162,18 +164,18 @@
     }
     .chip-row-scroll {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       overflow-x: auto;
       scrollbar-width: none;
-      padding: 4px 16px;
+      padding: 6px 16px;
       scroll-behavior: smooth;
     }
     .chip-row-scroll::-webkit-scrollbar { display: none; }
 
     .chip {
       flex-shrink: 0;
-      padding: 5px 10px;
-      border-radius: 999px;
+      padding: 10px 18px;
+      border-radius: 14px;
       font-size: 12px;
       font-weight: 600;
       font-family: var(--font);
@@ -357,7 +359,7 @@
     /* ── Resize handle ── */
     .resize-handle {
       width: 16px; flex-shrink: 0;
-      display: none;
+      display: flex;
       align-items: center; justify-content: center;
       cursor: col-resize;
       color: var(--muted-foreground);
@@ -398,7 +400,7 @@
       background: none; border: none;
       border-bottom: 2px solid transparent;
       padding: 0 0 6px;
-      font-size: 1.25rem; font-weight: 600;
+      font-size: 1.5rem; font-weight: 700;
       font-family: var(--font);
       color: var(--muted-foreground);
       cursor: pointer;
@@ -417,7 +419,7 @@
 
     .verse-col-header {
       padding: 12px 24px;
-      font-size: 1.25rem; font-weight: 600;
+      font-size: 1.5rem; font-weight: 700;
       color: var(--foreground); flex-shrink: 0;
       background: var(--background);
     }
@@ -522,13 +524,13 @@
   <div class="sub-header">
     <div class="sub-left">
       <button class="back-btn" onclick="history.back()" aria-label="Back">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
       <span class="chapter-title">Genesis 3</span>
       <span class="draft-badge">Draft</span>
     </div>
     <div class="sub-center">
-      <button id="resources-toggle-btn" class="view-btn closed" title="Toggle resources" onclick="toggleResources()">
+      <button id="resources-toggle-btn" class="view-btn" title="Toggle resources" onclick="toggleResources()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M8 7h6"/><path d="M8 11h8"/></svg>
       </button>
       <div id="save-indicator" class="save-indicator idle" aria-live="polite">
@@ -547,7 +549,7 @@
   <div class="drafting-body">
 
     <!-- Resources panel (closed by default) -->
-    <div id="resources-panel" class="resources-panel closed">
+    <div id="resources-panel" class="resources-panel">
       <div class="resources-header">Resources</div>
 
       <!-- Chip row -->
@@ -831,11 +833,11 @@
 
     // Pre-filled translations for verses already "done" (verses 1–5)
     const translations = {
-      1: 'ઈ ઈ યહ ઈશ્વ ઉ ક સ ગ પ સ સ વ ધ હ. ત સ ક ક, "ક ઈ ખ ત ઈ ક ક, \'વ ક વ ફ ત ન ખ?"',
-      2: 'સ સ ક ક, "વ વ ફ અ ખ ક ક,',
-      3: 'પ ઈ ક ક ક, જ વ વ મ ત ફ \'ત ખ ન ક ન. જ ખ ત ત મ."',
-      4: 'સ સ ક ક, "ત મ ન ..."',
-      5: 'ક ઈ ક ક ક જ દ ત ત ખ ત જ ત ત આ ઊ ક ત ઈ સ ...',
+      1: 'હવે યહોવાહ ઈશ્વરે ઉત્પન્ન કરેલાં સર્વ પ્રાણીઓમાં સાપ સૌથી વધારે ધૂર્ત હતો. તેણે સ્ત્રીને કહ્યું કે, "શું ઈશ્વરે ખરેખર તમને એવું કહ્યું છે કે, \'વાડીના કોઈપણ વૃક્ષનું ફળ તમારે ન ખાવું?"',
+      2: 'સ્ત્રીએ સાપને કહ્યું કે, "વાડીના વૃક્ષોનાં ફળ અમે ખાઈ શકીએ છીએ,',
+      3: 'પણ ઈશ્વરે કહેલું છે કે, જે વૃક્ષ વાડીની મધ્યમાં છે તેનું ફળ \'તમારે ખાવું નહિ કે અડકવું નહિ. જો ખાશો તો તમે મૃત્યુ પામશો."',
+      4: 'સાપે સ્ત્રીને કહ્યું કે, "તમે મૃત્યુ નહિ પામો.',
+      5: 'કેમ કે ઈશ્વર જાણે છે કે જે દિવસે તમે તેને ખાશો તે જ દિવસે તમારી આંખો ઊઘડી જશે અને તમે ઈશ્વરો સમાન સારું શું અને નરસું શું છે તે સમજનારાં થશો.',
     };
 
     // ── State ─────────────────────────────────────────────────────────────────
@@ -1060,7 +1062,7 @@
       const isOpen = !panel.classList.contains('closed');
       panel.classList.toggle('closed', isOpen);
       btn.classList.toggle('closed', isOpen);
-      handle.style.display = isOpen ? 'none' : 'flex';
+      handle.style.display = isOpen ? 'none' : '';
     }
 
     // ── Chip row ──────────────────────────────────────────────────────────────
