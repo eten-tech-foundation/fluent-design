@@ -635,10 +635,14 @@
       <!-- Images & Maps -->
       <div id="images-list" class="images-list" style="display:none">
         <!--div class="no-resources">No images available for this passage.</div-->
+        <div class="thumbnail" onclick="openImage('images/viper.png')"><img class="thumbnail-img" src="images/viper.png"/></div>
         <div class="thumbnail" onclick="openImage('images/figs.png')"><img class="thumbnail-img" src="images/figs.png"/></div>
         <div class="thumbnail" onclick="openImage('images/fig-tree.png')"><img class="thumbnail-img" src="images/fig-tree.png"/></div>
         <div class="thumbnail" onclick="openImage('images/snake.png')"><img class="thumbnail-img" src="images/snake.png"/></div>
+        <div class="thumbnail" onclick="openImage('images/tamarind-seedling.png')"><img class="thumbnail-img" src="images/tamarind-seedling.png"/></div>
         <div class="thumbnail" onclick="openImage('images/thistles.png')"><img class="thumbnail-img" src="images/thistles.png"/></div>
+        <div class="thumbnail" onclick="openImage('images/vegetable-market.png')"><img class="thumbnail-img" src="images/vegetable-market.png"/></div>
+        <div class="thumbnail" onclick="openImage('images/viper.png')"><img class="thumbnail-img" src="images/viper.png"/></div>
       </div>
 
       <!-- Image overlay -->
@@ -1163,7 +1167,7 @@
 
       switch (el.dataset.value) {
         case 'notes':     document.getElementById('notes-list').style.display = 'block'; break;
-        case 'images':    document.getElementById('images-list').style.display = 'flex'; break;
+        case 'images':    document.getElementById('images-list').style.display = 'grid'; break;
         case 'bibles':    document.getElementById('bibles-list').classList.add('active'); initBiblesPanel(); break;
         case 'questions': document.getElementById('questions-list').style.display = 'block'; break;
         case 'words':     document.getElementById('words-list').style.display = 'block'; break;
