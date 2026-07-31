@@ -239,7 +239,7 @@
       overflow-y: auto;
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      margin: 0 16px 16px;
+      margin: 0 4px 16px 16px;
     }
 
     .note-toggle {
@@ -257,7 +257,7 @@
 
     .note-body {
       display: none;
-      padding: 8px 32px 24px;
+      padding: 8px 32px 24px 48px;
       font-size: 13px; line-height: 1.6;
       color: var(--foreground);
     }
@@ -306,8 +306,44 @@
     /* ── Images resource ── */
     .images-list {
       flex: 1; overflow-y: auto;
-      padding: 0 8px 16px;
-      display: flex; flex-direction: column; gap: 16px;
+      padding: 8px 16px 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      align-content: start;
+    }
+    .thumbnail {
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      aspect-ratio: 4 / 3;
+      background: var(--muted);
+    }
+    .thumbnail:hover { opacity: 0.85; }
+    .thumbnail-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ── Image overlay ── */
+    .img-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.72);
+      align-items: center; justify-content: center;
+    }
+    .img-overlay.open { display: flex; }
+    .img-overlay-inner {
+      max-width: 80vw; max-height: 80vh;
+      border-radius: 12px; overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+    }
+    .img-overlay-inner img {
+      display: block;
+      max-width: 80vw; max-height: 80vh;
+      object-fit: contain;
     }
 
     .no-resources {
@@ -598,7 +634,18 @@
 
       <!-- Images & Maps -->
       <div id="images-list" class="images-list" style="display:none">
-        <div class="no-resources">No images available for this passage.</div>
+        <!--div class="no-resources">No images available for this passage.</div-->
+        <div class="thumbnail" onclick="openImage('images/figs.png')"><img class="thumbnail-img" src="images/figs.png"/></div>
+        <div class="thumbnail" onclick="openImage('images/fig-tree.png')"><img class="thumbnail-img" src="images/fig-tree.png"/></div>
+        <div class="thumbnail" onclick="openImage('images/snake.png')"><img class="thumbnail-img" src="images/snake.png"/></div>
+        <div class="thumbnail" onclick="openImage('images/thistles.png')"><img class="thumbnail-img" src="images/thistles.png"/></div>
+      </div>
+
+      <!-- Image overlay -->
+      <div id="img-overlay" class="img-overlay" onclick="closeImage()">
+        <div class="img-overlay-inner" onclick="event.stopPropagation()">
+          <img id="img-overlay-img" src="" alt=""/>
+        </div>
       </div>
 
       <!-- TQ -->
@@ -938,43 +985,43 @@
 
     const TN_NOTES = {
       1: [
-        { key: 'Now the serpent', body: 'The conjunction Now introduces background information about the serpent. See how you translated this conjunction in Gen 2:5, 8, 19.' },
-        { key: 'was more crafty than every living thing of the field', body: 'Make sure that your translation of crafty means that the snake had evil intent and was clever in a way that was not good. See how you translated living thing of the field in Gen 2:19–20. Alternate translation: "was more deceptive and clever than any of the other creatures that live in the wild"' },
-        { key: 'that Yahweh God had made', body: 'Make sure your translation of this phrase refers to the animals that God had made, not the fields. Also see how you translated Yahweh God in chapter 2, beginning in verse 4. Alternate translation: "that Yahweh who is God had made" or "that God whose name is Yahweh had made"' },
-        { key: 'And he said to the woman', body: 'If you use a pronoun (he) here in your translation, make sure it refers to the serpent, not God. Also, since the snake asked a question, some languages have to be more specific and say "asked" in the quote margin. Do what is best in your language. Alternate translation: "One day the snake went to the woman and asked her,"' },
-        { key: 'Did God really say, \'You must not eat', body: 'Consider whether it is better in your language to translate this embedded quote as a direct or indirect quote. Alternate translation: "Did God actually command you to not eat" or "Is it true that God commanded you not to eat"' },
-        { key: 'from any tree of the garden', body: 'See how you translated garden in Genesis 2, beginning in verse 8. Alternate translation: "fruit from any of the trees that is in the garden?" or "any fruit from the trees in the garden?"' },
+        { ref: 'Genesis 3:1 (#1)', key: 'Now the serpent', body: 'The conjunction Now introduces background information about the serpent. See how you translated this conjunction in Gen 2:5, 8, 19.' },
+        { ref: 'Genesis 3:1 (#2)', key: 'was more crafty than every living thing of the field', body: 'Make sure that your translation of crafty means that the snake had evil intent and was clever in a way that was not good. See how you translated living thing of the field in Gen 2:19–20. Alternate translation: "was more deceptive and clever than any of the other creatures that live in the wild"' },
+        { ref: 'Genesis 3:1 (#3)', key: 'that Yahweh God had made', body: 'Make sure your translation of this phrase refers to the animals that God had made, not the fields. Also see how you translated Yahweh God in chapter 2, beginning in verse 4. Alternate translation: "that Yahweh who is God had made" or "that God whose name is Yahweh had made"' },
+        { ref: 'Genesis 3:1 (#4)', key: 'And he said to the woman', body: 'If you use a pronoun (he) here in your translation, make sure it refers to the serpent, not God. Also, since the snake asked a question, some languages have to be more specific and say "asked" in the quote margin. Do what is best in your language. Alternate translation: "One day the snake went to the woman and asked her,"' },
+        { ref: 'Genesis 3:1 (#5)', key: 'Did God really say, \'You must not eat', body: 'Consider whether it is better in your language to translate this embedded quote as a direct or indirect quote. Alternate translation: "Did God actually command you to not eat" or "Is it true that God commanded you not to eat"' },
+        { ref: 'Genesis 3:1 (#6)', key: 'from any tree of the garden', body: 'See how you translated garden in Genesis 2, beginning in verse 8. Alternate translation: "fruit from any of the trees that is in the garden?" or "any fruit from the trees in the garden?"' },
       ],
       2: [
-        { key: 'Then the woman said to the serpent', body: 'Consider what is the best way to translate this quote margin in your language. Alternate translation: "The woman answered the snake," or "The woman responded to him," or "The woman replied,"' },
-        { key: 'We may eat', body: 'The woman is not including the snake when she says "we" here. Alternate translation: "No, we have permission from God to eat" or "No, God has given us permission to eat"' },
-        { key: 'from the fruit of', body: 'See how you translated fruit in Gen 1:11–12, 29. Alternate translation: "the fruit from"' },
-        { key: 'the tree{s} of the garden', body: 'Alternate translation: "all of the trees that are in the garden," or "any tree in the garden,"' },
+        { ref: 'Genesis 3:2 (#1)', key: 'Then the woman said to the serpent', body: 'Consider what is the best way to translate this quote margin in your language. Alternate translation: "The woman answered the snake," or "The woman responded to him," or "The woman replied,"' },
+        { ref: 'Genesis 3:2 (#2)', key: 'We may eat', body: 'The woman is not including the snake when she says "we" here. Alternate translation: "No, we have permission from God to eat" or "No, God has given us permission to eat"' },
+        { ref: 'Genesis 3:2 (#3)', key: 'from the fruit of', body: 'See how you translated fruit in Gen 1:11–12, 29. Alternate translation: "the fruit from"' },
+        { ref: 'Genesis 3:2 (#4)', key: 'the tree{s} of the garden', body: 'Alternate translation: "all of the trees that are in the garden," or "any tree in the garden,"' },
       ],
       3: [
-        { key: 'except from the fruit of the tree that {is} in the middle of the garden', body: 'For some languages it is necessary to put the exception clause first and say, "No, it is only the tree in the middle of the garden that God said we must not eat any fruit from, but the fruit of all the rest of the trees in the garden we may eat." Alternate translation: "except fruit from the tree that is in the middle of the garden." or "except there is one tree that we may not eat fruit from, which is in the center of the garden."' },
-        { key: 'God said, \'You must not eat from it', body: 'Consider whether it is better in your language to translate this embedded quote as a direct or indirect quote. Alternate translation: "God told us to not eat any of that fruit,"' },
-        { key: 'and you must not touch it', body: 'Alternate translation: "and do not even touch it,"' },
-        { key: 'or else you will die', body: 'Make sure the way you translate this clause fits with whether you translated the first part of the sentence as a direct (you) or indirect ("we") quote. Alternate translation: "because if you do eat it or touch it, you will die!" or "because if we do eat it or touch it, we will die!"' },
+        { ref: 'Genesis 3:3 (#1)', key: 'except from the fruit of the tree that {is} in the middle of the garden', body: 'For some languages it is necessary to put the exception clause first and say, "No, it is only the tree in the middle of the garden that God said we must not eat any fruit from, but the fruit of all the rest of the trees in the garden we may eat." Alternate translation: "except fruit from the tree that is in the middle of the garden." or "except there is one tree that we may not eat fruit from, which is in the center of the garden."' },
+        { ref: 'Genesis 3:3 (#2)', key: 'God said, \'You must not eat from it', body: 'Consider whether it is better in your language to translate this embedded quote as a direct or indirect quote. Alternate translation: "God told us to not eat any of that fruit,"' },
+        { ref: 'Genesis 3:3 (#3)', key: 'and you must not touch it', body: 'Alternate translation: "and do not even touch it,"' },
+        { ref: 'Genesis 3:3 (#4)', key: 'or else you will die', body: 'Make sure the way you translate this clause fits with whether you translated the first part of the sentence as a direct (you) or indirect ("we") quote. Alternate translation: "because if you do eat it or touch it, you will die!" or "because if we do eat it or touch it, we will die!"' },
       ],
       4: [
-        { key: 'But the serpent said to the woman', body: 'See how you translated serpent in verses 1–2. Alternate translation: "But the snake replied to her," or "But the snake replied,"' },
+        { ref: 'Genesis 3:4 (#1)', key: 'But the serpent said to the woman', body: 'See how you translated serpent in verses 1–2. Alternate translation: "But the snake replied to her," or "But the snake replied,"' },
       ],
       5: [
-        { key: 'For God knows', body: 'The connecting word For introduces an explanation here. Consider what is the best way to do that in your language. Alternate translation: "Actually, he knows" or "The reason God said that is because he knows"' },
-        { key: 'that on the day', body: 'Alternate translation: "that if"' },
-        { key: 'you eat from it', body: 'The pronouns you and your are plural in this verse and refer to the man and the woman. Some languages have a special dual pronoun for this. Alternate translation: "you eat any of that fruit,"' },
-        { key: 'then your eyes will be opened', body: 'Consider whether your language has an idiom like your eyes will be opened that would fit well here. Alternate translation: "your mind will be opened" or "you will gain new understanding," or "you will know new things,"' },
-        { key: 'and you will be like God in knowing good and evil', body: 'The Hebrew word "Elohim" is ambiguous in this context. It could mean: (1) God, which is what it means everywhere else in the first 30 chapters of Genesis; or (2) "gods" or "divine beings" or (3) "angels". See how you translated good and evil in Gen 2:9, 17. Alternate translation: "and as a result you will be like God because you will know what is good and what is evil" or "so that you will know what is good and what is evil just like God does."' },
+        { ref: 'Genesis 3:5 (#1)', key: 'For God knows', body: 'The connecting word For introduces an explanation here. Consider what is the best way to do that in your language. Alternate translation: "Actually, he knows" or "The reason God said that is because he knows"' },
+        { ref: 'Genesis 3:5 (#2)', key: 'that on the day', body: 'Alternate translation: "that if"' },
+        { ref: 'Genesis 3:5 (#3)', key: 'you eat from it', body: 'The pronouns you and your are plural in this verse and refer to the man and the woman. Some languages have a special dual pronoun for this. Alternate translation: "you eat any of that fruit,"' },
+        { ref: 'Genesis 3:5 (#4)', key: 'then your eyes will be opened', body: 'Consider whether your language has an idiom like your eyes will be opened that would fit well here. Alternate translation: "your mind will be opened" or "you will gain new understanding," or "you will know new things,"' },
+        { ref: 'Genesis 3:5 (#5)', key: 'and you will be like God in knowing good and evil', body: 'The Hebrew word "Elohim" is ambiguous in this context. It could mean: (1) God, which is what it means everywhere else in the first 30 chapters of Genesis; or (2) "gods" or "divine beings" or (3) "angels". See how you translated good and evil in Gen 2:9, 17. Alternate translation: "and as a result you will be like God because you will know what is good and what is evil" or "so that you will know what is good and what is evil just like God does."' },
       ],
       6: [
-        { key: 'And the woman saw that', body: 'Alternate translation: "The woman observed that"' },
-        { key: 'the tree', body: 'The word tree refers here to the fruit that is produced by that tree. Make sure that is clear in your translation. Alternate translation: "the tree produced fruit that" or "the fruit of that tree"' },
-        { key: '{was} good for food', body: 'Alternate translation: "was good to eat"' },
-        { key: 'and that it {was} pleasant to the eyes', body: 'Alternate translation: "and that the tree itself looked very beautiful,"' },
-        { key: 'and {that} the tree was desirable for gaining wisdom', body: 'Consider whether or not it is better in your language to begin a new sentence here. Alternate translation: "and she thought that the fruit from the tree would make her wise" or "She also desired to eat the fruit so that it would make her wise"' },
-        { key: 'So she took some of its fruit and ate {it}', body: 'Alternate translation: "So she took some of the fruit off the tree and ate it."' },
-        { key: 'and he ate {it}', body: 'Alternate translation: "and he ate some too." or "and he also ate it"' },
+        { ref: 'Genesis 3:6 (#1)', key: 'And the woman saw that', body: 'Alternate translation: "The woman observed that"' },
+        { ref: 'Genesis 3:6 (#2)', key: 'the tree', body: 'The word tree refers here to the fruit that is produced by that tree. Make sure that is clear in your translation. Alternate translation: "the tree produced fruit that" or "the fruit of that tree"' },
+        { ref: 'Genesis 3:6 (#3)', key: '{was} good for food', body: 'Alternate translation: "was good to eat"' },
+        { ref: 'Genesis 3:6 (#4)', key: 'and that it {was} pleasant to the eyes', body: 'Alternate translation: "and that the tree itself looked very beautiful,"' },
+        { ref: 'Genesis 3:6 (#5)', key: 'and {that} the tree was desirable for gaining wisdom', body: 'Consider whether or not it is better in your language to begin a new sentence here. Alternate translation: "and she thought that the fruit from the tree would make her wise" or "She also desired to eat the fruit so that it would make her wise"' },
+        { ref: 'Genesis 3:6 (#6)', key: 'So she took some of its fruit and ate {it}', body: 'Alternate translation: "So she took some of the fruit off the tree and ate it."' },
+        { ref: 'Genesis 3:6 (#7)', key: 'and he ate {it}', body: 'Alternate translation: "and he ate some too." or "and he also ate it"' },
       ],
     };
 
@@ -987,11 +1034,10 @@
       container.innerHTML = notes.map(function(note, i) {
         const open = i === 0;
         return '<button class="note-toggle' + (open ? ' open' : '') + '" onclick="toggleNote(this)">'
-          + '<span>' + ref + ' — ' + note.key + '</span>' + CHEVRON_SVG
+          + '<span>' + note.ref + '</span>' + CHEVRON_SVG
           + '</button>'
           + '<div class="note-body' + (open ? ' open' : '') + '">'
-          + '<div class="note-verse-label">' + ref + '</div>'
-          + note.body
+          + '<strong>"' + note.key + '"</strong>' + '<br/><br/> ' + note.body
           + '</div>';
       }).join('');
     }
@@ -1349,6 +1395,18 @@
 
     window.addEventListener('resize', function() {
       document.querySelectorAll('.translation-input').forEach(autoResize);
+    });
+
+    function openImage(src) {
+      var overlay = document.getElementById('img-overlay');
+      document.getElementById('img-overlay-img').src = src;
+      overlay.classList.add('open');
+    }
+    function closeImage() {
+      document.getElementById('img-overlay').classList.remove('open');
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeImage();
     });
   </script>
 </body>
