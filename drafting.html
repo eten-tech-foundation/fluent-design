@@ -314,17 +314,28 @@
     }
     .thumbnail {
       border-radius: 10px;
-      overflow: hidden;
       cursor: pointer;
-      aspect-ratio: 4 / 3;
       background: var(--muted);
+      overflow: hidden;
     }
     .thumbnail:hover { opacity: 0.85; }
     .thumbnail-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
       display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+    }
+    .thumbnail-title {
+      display: block;
+      padding: 5px 6px 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--primary);
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: var(--background);
     }
 
     /* ── Image overlay ── */
@@ -635,10 +646,12 @@
       <!-- Images & Maps -->
       <div id="images-list" class="images-list" style="display:none">
         <!--div class="no-resources">No images available for this passage.</div-->
-        <div class="thumbnail" onclick="openImage('images/viper.png')"><img class="thumbnail-img" src="images/viper.png"/></div>
+        <div class="thumbnail" onclick="openImage('images/cherubim.png')"><img class="thumbnail-img" src="images/cherubim.png"/></div>
+        <div class="thumbnail" onclick="openImage('images/cherubim1.png')"><img class="thumbnail-img" src="images/cherubim1.png"/></div>
         <div class="thumbnail" onclick="openImage('images/figs.png')"><img class="thumbnail-img" src="images/figs.png"/></div>
         <div class="thumbnail" onclick="openImage('images/fig-tree.png')"><img class="thumbnail-img" src="images/fig-tree.png"/></div>
         <div class="thumbnail" onclick="openImage('images/snake.png')"><img class="thumbnail-img" src="images/snake.png"/></div>
+        <div class="thumbnail" onclick="openImage('images/sword.png')"><img class="thumbnail-img" src="images/sword.png"/></div>
         <div class="thumbnail" onclick="openImage('images/tamarind-seedling.png')"><img class="thumbnail-img" src="images/tamarind-seedling.png"/></div>
         <div class="thumbnail" onclick="openImage('images/thistles.png')"><img class="thumbnail-img" src="images/thistles.png"/></div>
         <div class="thumbnail" onclick="openImage('images/vegetable-market.png')"><img class="thumbnail-img" src="images/vegetable-market.png"/></div>
