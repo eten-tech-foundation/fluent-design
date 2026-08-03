@@ -1164,10 +1164,10 @@ const HEADER_HTML = `
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             Dashboard
           </a>
-          <button class="main-menu-item">
+          <a class="main-menu-item" href="manager-dashboard.html">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
             Projects
-          </button>
+          </a>
           <a class="main-menu-item" href="users.html">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             Users
@@ -1178,18 +1178,28 @@ const HEADER_HTML = `
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             Dashboard
           </a>
-          <a class="main-menu-item" href="translator-dashboard.html#work">
+          <!--a class="main-menu-item" href="project-list-translator.html">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Projects
+          </a-->
+          <!--a class="main-menu-item" href="translator-dashboard.html#work">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             My Work
           </a>
           <a class="main-menu-item" href="translator-dashboard.html#history">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             My History
+          </a-->
+        </div>
+        <div id="menu-observer" style="display:none">
+          <a class="main-menu-item" href="observer-dashboard.html">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Projects
           </a>
         </div>
       </div>
     </div>
-    <a class="logo" href="manager-dashboard.html"><img src="Fluent-White Logo Only.svg" alt="fluent"></a>
+    <a class="logo" id="logo-link" href="manager-dashboard.html"><img src="Fluent-White Logo Only.svg" alt="fluent"></a>
   </div>
   <div class="header-right">
     <div class="org-switcher" id="org-switcher"></div>
@@ -1223,19 +1233,15 @@ const HEADER_HTML = `
 // ── Role state ───────────────────────────────────────────────────────────────
 let currentRole = 'manager';
 
-function switchRole() {
-  const next = currentRole === 'manager' ? 'translator' : 'manager';
-  window.location.href = next === 'translator'
-    ? 'translator-dashboard.html'
-    : 'manager-dashboard.html';
-}
-
 function applyRoleUI() {
-  const isManager = currentRole === 'manager';
-  document.getElementById('user-menu-label').textContent   = isManager ? 'Chad M' : 'Chad T';
-  document.getElementById('role-switch-label').textContent = isManager ? 'Switch to Translator' : 'Switch to Manager';
-  document.getElementById('menu-manager').style.display    = isManager ? '' : 'none';
-  document.getElementById('menu-translator').style.display = isManager ? 'none' : '';
+  const isManager    = currentRole === 'manager';
+  const isTranslator = currentRole === 'translator';
+  const isObserver   = currentRole === 'observer';
+  document.getElementById('user-menu-label').textContent  = isManager ? 'Chad M' : 'Chad T';
+  document.getElementById('logo-link').href                = ORG_ROLE_DASHBOARDS[currentRole] || ORG_ROLE_DASHBOARDS.manager;
+  document.getElementById('menu-manager').style.display   = isManager    ? '' : 'none';
+  document.getElementById('menu-translator').style.display = isTranslator ? '' : 'none';
+  document.getElementById('menu-observer').style.display   = isObserver   ? '' : 'none';
 }
 
 // ── Toggle menus ─────────────────────────────────────────────────────────────
@@ -1950,13 +1956,13 @@ function toggleAiExpand() {
 const DEFAULT_ORG_CONFIG = {
   orgs: [
     { id: 'bcs-india', name: 'BCS', roles: ['manager', 'translator'] },
-    { id: 'wycliffe-assoc', name: 'Wycliffe', roles: ['translator'] },
+    { id: 'wycliffe', name: 'Wycliffe', roles: ['translator', 'observer'] },
   ],
   activeOrgId: 'bcs-india',
 };
 
-const ORG_ROLE_LABELS = { manager: 'Project Manager', translator: 'Translator' };
-const ORG_ROLE_DASHBOARDS = { manager: 'manager-dashboard.html', translator: 'translator-dashboard.html' };
+const ORG_ROLE_LABELS = { manager: 'Project Manager', translator: 'Translator', observer: 'Observer' };
+const ORG_ROLE_DASHBOARDS = { manager: 'manager-dashboard.html', translator: 'translator-dashboard.html', observer: 'observer-dashboard.html' };
 
 function getOrgState() {
   const config = window.ORG_CONFIG || DEFAULT_ORG_CONFIG;

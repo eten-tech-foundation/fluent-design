@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fluent — Observer Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <script src="language-data.js" defer></script>
+  <script src="components.js" defer></script>
+  <style>
+    /* ── Page Content ── */
+    .content { padding: 18px 20px; }
+
+    .page-title { font-size: 26px; font-weight: 700; margin-bottom: 20px; }
+
+    /* ── Toolbar ── */
+    .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      padding: 0 16px;
+      height: 36px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+
+    /* ── Table ── */
+    .table-wrap {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--card);
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    thead tr { background: var(--card); }
+
+    thead th {
+      padding: 11px 16px;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--foreground);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    tbody tr { background: var(--background); border-bottom: 1px solid var(--border); transition: background 0.1s; cursor: pointer; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--muted); }
+
+    tbody td { padding: 12px 16px; font-size: 14px; }
+    tbody td a { color: inherit; text-decoration: none; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-active    { background: #0b50d0; color: white; }
+    .badge-stalled   { background: #e48f06; color: white; }
+    .badge-outline   { background: transparent; color: var(--muted-foreground); border: 1px solid var(--border); }
+
+    /* ── Progress bar ── */
+    .progress {
+      width: 160px;
+      height: 10px;
+      background: #C4CAD6;
+      border-radius: 99px;
+      overflow: hidden;
+      display: flex;
+    }
+    .p-complete  { background: #16A34A; height: 100%; }
+    .p-advanced  { background: #1D9BF0; height: 100%; }
+    .p-community { background: #9333EA; height: 100%; }
+    .p-peer      { background: #EA580C; height: 100%; }
+    .p-drafting  { background: #FDE047; height: 100%; }
+  </style>
+</head>
+<body data-role="translator">
+
+  <div id="fluent-header"></div>
+
+  <main class="content">
+    <h1 class="page-title">Observer Dashboard</h1>
+
+    <!--div class="toolbar">
+      <button class="btn-primary" onclick="openCreateProject()">Create Project</button>
+      <select class="select" id="sort-select" onchange="applyFilters()">
+        <option value="recent">Recent</option>
+        <option value="title">Title</option>
+        <option value="targetLanguage">Target Language</option>
+      </select>
+      <select class="select" id="status-select" onchange="applyFilters()">
+        <option value="all">Show All</option>
+        <option value="potentially_stalled">Potentially Stalled</option>
+        <option value="not_assigned">Not Assigned</option>
+      </select>
+    </div-->
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Source Language</th>
+            <th>Target Language</th>
+            <th>Source Bible</th>
+            <!--th>Status</th-->
+            <th>Progress</th>
+          </tr>
+        </thead>
+        <tbody id="projects-tbody">
+          <tr onclick="window.location='view-project-observer.html'"
+              data-title="ISV_Koli Kachhi" data-target="Kachi Koli"
+              data-activity="2026-06-03" data-status="active">
+            <td>ISV_Koli Kachhi</td>
+            <td>Gujarati</td>
+            <td>Kachi Koli</td>
+            <td>IRV Gujarati</td>
+            <!--td><span class="badge badge-active">Active</span></td-->
+            <td><div class="progress"><div class="p-complete" style="width:5%"></div><div class="p-advanced" style="width:8%"></div><div class="p-community" style="width:10%"></div></div></td>
+          </tr>
+          <tr onclick="window.location='view-project-observer.html'"
+              data-title="Test Project" data-target="Gujarati"
+              data-activity="2026-05-10" data-status="potentially_stalled">
+            <td>Test Project</td>
+            <td>Gujarati</td>
+            <td>Gujarati</td>
+            <td>IRV Gujarati</td>
+            <!--td><span class="badge badge-stalled">Potentially Stalled</span></td-->
+            <td><div class="progress"><div class="p-complete" style="width:38%"></div><div class="p-advanced" style="width:12%"></div><div class="p-community" style="width:10%"></div><div class="p-peer" style="width:5%"></div></div></td>
+          </tr>
+          
+          <tr onclick="window.location='view-project-observer.html'"
+              data-title="Jonah_Test" data-target="Varli Davri"
+              data-activity="2026-05-05" data-status="potentially_stalled">
+            <td>Jonah_Test</td>
+            <td>Gujarati</td>
+            <td>Varli Davri</td>
+            <td>IRV Gujarati</td>
+            <!--td><span class="badge badge-stalled">Potentially Stalled</span></td-->
+            <td><div class="progress"><div class="p-complete" style="width:12%"></div><div class="p-community" style="width:5%"></div><div class="p-drafting" style="width:3%"></div></div></td>
+          </tr>
+          <tr onclick="window.location='view-project-observer.html'"
+              data-title="ISV_Koli Kachhi" data-target="Kachi Koli"
+              data-activity="2026-04-20" data-status="potentially_stalled">
+            <td>ISV_Koli Kachhi</td>
+            <td>Gujarati</td>
+            <td>Kachi Koli</td>
+            <td>IRV Gujarati</td>
+            <!--td><span class="badge badge-stalled">Potentially Stalled</span></td-->
+            <td><div class="progress"><div class="p-complete" style="width:28%"></div><div class="p-advanced" style="width:15%"></div><div class="p-community" style="width:20%"></div></div></td>
+          </tr>
+          <tr onclick="window.location='view-project-observer.html'"
+              data-title="ISV_Koli Kachhi" data-target="Kachi Koli"
+              data-activity="" data-status="not_assigned">
+            <td>ISV_Koli Kachhi</td>
+            <td>Gujarati</td>
+            <td>Kachi Koli</td>
+            <td>IRV Gujarati</td>
+            <!--td><span class="badge badge-outline">Not Assigned</span></td-->
+            <td><div class="progress"><div class="p-drafting" style="width:3%"></div></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</body>
+</html>
