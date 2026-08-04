@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fluent — Hierarchy Redesign Mockups</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0b50d0;
+      --border: #c4cad6;
+      --card: #eaeef5;
+      --muted: #f2f4f8;
+      --muted-foreground: #555555;
+      --radius: 0.75rem;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+      background: #ffffff;
+      color: #1a1a1a;
+      font-size: 16px;
+      font-weight: 450;
+      padding: 48px 40px;
+    }
+    h1 { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+    .subtitle { font-size: 14px; color: var(--muted-foreground); margin-bottom: 36px; }
+    .screen-list { display: flex; flex-direction: column; gap: 12px; max-width: 640px; }
+    .screen-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 16px 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.15s;
+    }
+    .screen-item:hover { background: #e0e6f5; }
+    .screen-num {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted-foreground);
+      min-width: 20px;
+      padding-top: 1px;
+    }
+    .screen-info { flex: 1; }
+    .screen-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 3px;
+    }
+    .screen-desc {
+      font-size: 13px;
+      color: var(--muted-foreground);
+      line-height: 1.5;
+    }
+    .arrow { color: var(--muted-foreground); padding-top: 2px; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+  <h1>Fluent — Hierarchy Redesign Mockups</h1>
+  <p class="subtitle">Parallel to current mockups. Manager flow only.</p>
+
+  <div class="screen-list">
+    <a class="screen-item" href="manager-dashboard.html">
+      <span class="screen-num">1</span>
+      <div class="screen-info">
+        <div class="screen-name">manager-dashboard.html</div>
+        <div class="screen-desc">Projects listing page. Rows now represent language-scope projects (e.g., "Gujarati NT") and navigate to the new project detail screen.</div>
+      </div>
+      <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </a>
+
+    <a class="screen-item" href="view-project.html">
+      <span class="screen-num">2</span>
+      <div class="screen-info">
+        <div class="screen-name">view-project.html</div>
+        <div class="screen-desc">New language-scope project detail. Shows rolled-up progress and a milestones table (Gospels, Epistles). Each milestone row navigates to the milestone detail.</div>
+      </div>
+      <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </a>
+
+    <a class="screen-item" href="view-milestone.html">
+      <span class="screen-num">3</span>
+      <div class="screen-info">
+        <div class="screen-name">view-milestone.html</div>
+        <div class="screen-desc">Milestone detail (Gospels: Matthew, Mark, Luke, John). Same left-panel + chapter-table layout as the current view-project, but scoped to a milestone with a three-level breadcrumb.</div>
+      </div>
+      <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </a>
+
+    <a class="screen-item" href="view-chapter.html">
+      <span class="screen-num">4</span>
+      <div class="screen-info">
+        <div class="screen-name">view-chapter.html</div>
+        <div class="screen-desc">Chapter drafting view (Matthew 1). Unchanged from current mockup except the breadcrumb reflects the full four-level hierarchy.</div>
+      </div>
+      <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </a>
+  </div>
+</body>
+</html>

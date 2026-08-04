@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fluent — Observer Dashboard</title>
+  <title>Fluent — Projects</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
-  <script src="language-data.js" defer></script>
-  <script src="components.js" defer></script>
+  <script src="../language-data.js" defer></script>
+  <script src="../components.js" defer></script>
   <style>
     /* ── Page Content ── */
     .content { padding: 18px 20px; }
@@ -32,6 +32,19 @@
       transition: background 0.15s;
     }
     .btn-primary:hover { background: var(--primary-hover); }
+
+    .select {
+      height: 36px;
+      padding: 0 30px 0 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-family: var(--font);
+      color: var(--foreground);
+      background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;
+      appearance: none;
+      cursor: pointer;
+    }
 
     /* ── Table ── */
     .table-wrap {
@@ -92,14 +105,14 @@
     .p-drafting  { background: #FDE047; height: 100%; }
   </style>
 </head>
-<body data-role="observer">
+<body>
 
   <div id="fluent-header"></div>
 
   <main class="content">
-    <h1 class="page-title">Observer Dashboard</h1>
+    <h1 class="page-title">Projects</h1>
 
-    <!--div class="toolbar">
+    <div class="toolbar">
       <button class="btn-primary" onclick="openCreateProject()">Create Project</button>
       <select class="select" id="sort-select" onchange="applyFilters()">
         <option value="recent">Recent</option>
@@ -111,73 +124,125 @@
         <option value="potentially_stalled">Potentially Stalled</option>
         <option value="not_assigned">Not Assigned</option>
       </select>
-    </div-->
+    </div>
 
     <div class="table-wrap">
       <table>
         <thead>
           <tr>
-            <th>Title</th>
-            <th>Source Bible</th>
+            <th>Project</th>
+            <th>Source Language</th>
             <th>Target Language</th>
-            <th>Progress</th>
+            <th>Milestones</th>
+            <th>Status</th>
+            <th>Overall Progress</th>
           </tr>
         </thead>
         <tbody id="projects-tbody">
-          <tr onclick="window.location='view-project-observer.html'"
-              data-title="ISV_Koli Kachhi" data-target="Kachi Koli"
+          <tr onclick="window.location='view-project.html'"
+              data-title="Gujarati NT" data-target="Kachi Koli"
               data-activity="2026-06-03" data-status="active">
-            <td>ISV_Koli Kachhi</td>
-            <td>IRV Gujarati (Gujarati)</td>
-            <td>Kachi Koli</td>
-            <!--td>IRV Gujarati</td-->
-            <!--td><span class="badge badge-active">Active</span></td-->
+            <td>Gujarati NT</td>
+            <td>English (ULT)</td>
+            <td>Gujarati</td>
+            <td>2</td>
+            <td><span class="badge badge-active">Active</span></td>
             <td><div class="progress"><div class="p-complete" style="width:5%"></div><div class="p-advanced" style="width:8%"></div><div class="p-community" style="width:10%"></div></div></td>
           </tr>
-          <tr onclick="window.location='view-project-observer.html'"
-              data-title="Test Project" data-target="Gujarati"
+          <tr onclick="window.location='view-project.html'"
+              data-title="Hindi NT" data-target="Hindi"
               data-activity="2026-05-10" data-status="potentially_stalled">
-            <td>Test Project</td>
-            <td>IRV Gujarati (Gujarati)</td>
-            <td>Gujarati</td>
-            <!--td>IRV Gujarati</td-->
-            <!--td><span class="badge badge-stalled">Potentially Stalled</span></td-->
+            <td>Hindi NT</td>
+            <td>English (ULT)</td>
+            <td>Hindi</td>
+            <td>3</td>
+            <td><span class="badge badge-stalled">Potentially Stalled</span></td>
             <td><div class="progress"><div class="p-complete" style="width:38%"></div><div class="p-advanced" style="width:12%"></div><div class="p-community" style="width:10%"></div><div class="p-peer" style="width:5%"></div></div></td>
           </tr>
-          
-          <tr onclick="window.location='view-project-observer.html'"
-              data-title="Jonah_Test" data-target="Varli Davri"
+          <tr onclick="window.location='view-project.html'"
+              data-title="Kukna NT" data-target="Kukna"
+              data-activity="2026-05-15" data-status="potentially_stalled">
+            <td>Kukna NT</td>
+            <td>English (ULT)</td>
+            <td>Kukna</td>
+            <td>1</td>
+            <td><span class="badge badge-stalled">Potentially Stalled</span></td>
+            <td><div class="progress"><div class="p-complete" style="width:52%"></div><div class="p-advanced" style="width:10%"></div><div class="p-peer" style="width:4%"></div></div></td>
+          </tr>
+          <tr onclick="window.location='view-project.html'"
+              data-title="Varli NT" data-target="Varli Davri"
               data-activity="2026-05-05" data-status="potentially_stalled">
-            <td>Jonah_Test</td>
-            <td>IRV Gujarati (Gujarati)</td>
+            <td>Varli NT</td>
+            <td>English (ULT)</td>
             <td>Varli Davri</td>
-            <!--td>IRV Gujarati</td-->
-            <!--td><span class="badge badge-stalled">Potentially Stalled</span></td-->
+            <td>2</td>
+            <td><span class="badge badge-stalled">Potentially Stalled</span></td>
             <td><div class="progress"><div class="p-complete" style="width:12%"></div><div class="p-community" style="width:5%"></div><div class="p-drafting" style="width:3%"></div></div></td>
           </tr>
-          <tr onclick="window.location='view-project-basic.html'"
-              data-title="ISV_Koli Kachhi" data-target="Kachi Koli"
+          <tr onclick="window.location='view-project.html'"
+              data-title="Kachi Koli NT" data-target="Kachi Koli"
               data-activity="2026-04-20" data-status="potentially_stalled">
-            <td>ISV_Koli Kachhi</td>
-            <td>IRV Gujarati (Gujarati)</td>
+            <td>Kachi Koli NT</td>
+            <td>English (ULT)</td>
             <td>Kachi Koli</td>
-            <!--td>IRV Gujarati</td-->
-            <!--td><span class="badge badge-stalled">Potentially Stalled</span></td-->
+            <td>2</td>
+            <td><span class="badge badge-stalled">Potentially Stalled</span></td>
             <td><div class="progress"><div class="p-complete" style="width:28%"></div><div class="p-advanced" style="width:15%"></div><div class="p-community" style="width:20%"></div></div></td>
           </tr>
-          <tr onclick="window.location='view-project-basic.html'"
-              data-title="ISV_Koli Kachhi" data-target="Kachi Koli"
+          <tr onclick="window.location='view-project.html'"
+              data-title="Nepali NT" data-target="Nepali"
               data-activity="" data-status="not_assigned">
-            <td>ISV_Koli Kachhi</td>
-            <td>IRV Gujarati (Gujarati)</td>
-            <td>Kachi Koli</td>
-            <!--td>IRV Gujarati</td-->
-            <!--td><span class="badge badge-outline">Not Assigned</span></td-->
-            <td><div class="progress"><div class="p-drafting" style="width:3%"></div></div></td>
+            <td>Nepali NT</td>
+            <td>English (ULT)</td>
+            <td>Nepali</td>
+            <td>0</td>
+            <td><span class="badge badge-outline">Not Assigned</span></td>
+            <td><div class="progress"></div></td>
+          </tr>
+          <tr onclick="window.location='view-project.html'"
+              data-title="Ewe NT" data-target="Ewe"
+              data-activity="2026-05-20" data-status="potentially_stalled">
+            <td>Ewe NT</td>
+            <td>English (ULT)</td>
+            <td>Ewe</td>
+            <td>1</td>
+            <td><span class="badge badge-stalled">Potentially Stalled</span></td>
+            <td><div class="progress"><div class="p-complete" style="width:15%"></div><div class="p-advanced" style="width:20%"></div><div class="p-community" style="width:25%"></div></div></td>
           </tr>
         </tbody>
       </table>
     </div>
   </main>
+
+  <script>
+    function applyFilters() {
+      const sortBy     = document.getElementById('sort-select').value;
+      const statusFilter = document.getElementById('status-select').value;
+      const tbody      = document.getElementById('projects-tbody');
+      const rows       = Array.from(tbody.querySelectorAll('tr'));
+
+      rows.sort((a, b) => {
+        if (sortBy === 'recent') {
+          const da = a.dataset.activity ? new Date(a.dataset.activity).getTime() : 0;
+          const db = b.dataset.activity ? new Date(b.dataset.activity).getTime() : 0;
+          return db - da;
+        }
+        if (sortBy === 'title')
+          return a.dataset.title.localeCompare(b.dataset.title);
+        if (sortBy === 'targetLanguage')
+          return a.dataset.target.localeCompare(b.dataset.target);
+        return 0;
+      });
+
+      rows.forEach(row => {
+        const match = statusFilter === 'all' || row.dataset.status === statusFilter;
+        row.style.display = match ? '' : 'none';
+        tbody.appendChild(row);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', applyFilters);
+  </script>
+
 </body>
 </html>
