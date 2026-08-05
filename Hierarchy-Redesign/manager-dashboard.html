@@ -113,7 +113,6 @@
     <h1 class="page-title">Projects</h1>
 
     <div class="toolbar">
-      <button class="btn-primary" onclick="openCreateProject()">Create Project</button>
       <select class="select" id="sort-select" onchange="applyFilters()">
         <option value="recent">Recent</option>
         <option value="title">Title</option>
@@ -131,82 +130,58 @@
         <thead>
           <tr>
             <th>Project</th>
-            <th>Source Language</th>
-            <th>Target Language</th>
+            <th>Language Pair</th>
             <th>Milestones</th>
-            <th>Status</th>
             <th>Overall Progress</th>
           </tr>
         </thead>
         <tbody id="projects-tbody">
           <tr onclick="window.location='view-project.html'"
-              data-title="Gujarati NT" data-target="Kachi Koli"
-              data-activity="2026-06-03" data-status="active">
-            <td>Gujarati NT</td>
-            <td>English (ULT)</td>
-            <td>Gujarati</td>
-            <td>2</td>
-            <td><span class="badge badge-active">Active</span></td>
-            <td><div class="progress"><div class="p-complete" style="width:5%"></div><div class="p-advanced" style="width:8%"></div><div class="p-community" style="width:10%"></div></div></td>
-          </tr>
-          <tr onclick="window.location='view-project.html'"
-              data-title="Hindi NT" data-target="Hindi"
-              data-activity="2026-05-10" data-status="potentially_stalled">
-            <td>Hindi NT</td>
-            <td>English (ULT)</td>
-            <td>Hindi</td>
-            <td>3</td>
-            <td><span class="badge badge-stalled">Potentially Stalled</span></td>
-            <td><div class="progress"><div class="p-complete" style="width:38%"></div><div class="p-advanced" style="width:12%"></div><div class="p-community" style="width:10%"></div><div class="p-peer" style="width:5%"></div></div></td>
-          </tr>
-          <tr onclick="window.location='view-project.html'"
               data-title="Kukna NT" data-target="Kukna"
               data-activity="2026-05-15" data-status="potentially_stalled">
             <td>Kukna NT</td>
-            <td>English (ULT)</td>
-            <td>Kukna</td>
+            <td>Gujarati - Kukna</td>
             <td>1</td>
-            <td><span class="badge badge-stalled">Potentially Stalled</span></td>
             <td><div class="progress"><div class="p-complete" style="width:52%"></div><div class="p-advanced" style="width:10%"></div><div class="p-peer" style="width:4%"></div></div></td>
           </tr>
           <tr onclick="window.location='view-project.html'"
               data-title="Varli NT" data-target="Varli Davri"
               data-activity="2026-05-05" data-status="potentially_stalled">
             <td>Varli NT</td>
-            <td>English (ULT)</td>
-            <td>Varli Davri</td>
+            <td>Gujarati - Varli Davri</td>
             <td>2</td>
-            <td><span class="badge badge-stalled">Potentially Stalled</span></td>
             <td><div class="progress"><div class="p-complete" style="width:12%"></div><div class="p-community" style="width:5%"></div><div class="p-drafting" style="width:3%"></div></div></td>
           </tr>
           <tr onclick="window.location='view-project.html'"
               data-title="Kachi Koli NT" data-target="Kachi Koli"
               data-activity="2026-04-20" data-status="potentially_stalled">
             <td>Kachi Koli NT</td>
-            <td>English (ULT)</td>
-            <td>Kachi Koli</td>
+            <td>Gujarati - Kachi Koli</td>
             <td>2</td>
-            <td><span class="badge badge-stalled">Potentially Stalled</span></td>
             <td><div class="progress"><div class="p-complete" style="width:28%"></div><div class="p-advanced" style="width:15%"></div><div class="p-community" style="width:20%"></div></div></td>
           </tr>
           <tr onclick="window.location='view-project.html'"
-              data-title="Nepali NT" data-target="Nepali"
+              data-title="Tamang NT" data-target="Tamang"
               data-activity="" data-status="not_assigned">
-            <td>Nepali NT</td>
-            <td>English (ULT)</td>
-            <td>Nepali</td>
+            <td>Tamang NT</td>
+            <td>Nepali - Tamang</td>
             <td>0</td>
-            <td><span class="badge badge-outline">Not Assigned</span></td>
+            <td><div class="progress"></div></td>
+          </tr>
+          <tr onclick="window.location='view-project.html'"
+              data-title="Western Magar NT" data-target="Western Magar"
+              data-activity="" data-status="not_assigned">
+            <td>Western Magar NT</td>
+            <td>Nepali - Western Magar</td>
+            <td>1</td>
             <td><div class="progress"></div></td>
           </tr>
           <tr onclick="window.location='view-project.html'"
               data-title="Ewe NT" data-target="Ewe"
               data-activity="2026-05-20" data-status="potentially_stalled">
             <td>Ewe NT</td>
-            <td>English (ULT)</td>
-            <td>Ewe</td>
+            <td>French - Ewe</td>
             <td>1</td>
-            <td><span class="badge badge-stalled">Potentially Stalled</span></td>
             <td><div class="progress"><div class="p-complete" style="width:15%"></div><div class="p-advanced" style="width:20%"></div><div class="p-community" style="width:25%"></div></div></td>
           </tr>
         </tbody>

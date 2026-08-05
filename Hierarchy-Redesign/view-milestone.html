@@ -348,7 +348,7 @@
     <nav class="breadcrumb">
       <a href="manager-dashboard.html">Projects</a>
       <span class="breadcrumb-sep">/</span>
-      <a href="view-project.html">Gujarati NT</a>
+      <a href="view-project.html">Kachi Koli NT</a>
       <span class="breadcrumb-sep">/</span>
       <span class="breadcrumb-current">Gospels</span>
     </nav>
@@ -374,7 +374,7 @@
           </div>
           <div class="meta-row">
             <span class="meta-label">Project</span>
-            <span class="meta-value">Gujarati NT</span>
+            <span class="meta-value">Kachi Koli NT</span>
           </div>
           <div class="meta-row">
             <span class="meta-label">Books</span>
@@ -382,7 +382,7 @@
           </div>
           <div class="meta-row">
             <span class="meta-label">Source Bible</span>
-            <span class="meta-value">English (ULT)</span>
+            <span class="meta-value">IRV Gujarati</span>
           </div>
           <div class="meta-row">
             <span class="meta-label">Last Activity</span>
@@ -391,12 +391,12 @@
 
           <div class="progress-wrap">
             <div class="progress-bar" id="project-progress-bar">
-              <div style="background:#16A34A; width:6%"  class="progress-segment" data-label="Complete"         data-percentage="6"></div>
-              <div style="background:#1D9BF0; width:8%"  class="progress-segment" data-label="Advanced Check"   data-percentage="8"></div>
-              <div style="background:#9333EA; width:7%"  class="progress-segment" data-label="Community Review" data-percentage="7"></div>
-              <div style="background:#EA580C; width:13%" class="progress-segment" data-label="Peer Check"        data-percentage="13"></div>
-              <div style="background:#FDE047; width:14%" class="progress-segment" data-label="Drafting"          data-percentage="14"></div>
-              <div style="background:#C4CAD6; width:52%" class="progress-segment" data-label="Not Started"       data-percentage="52"></div>
+              <div style="background:#16A34A; width:42%" class="progress-segment" data-label="Complete"         data-percentage="42"></div>
+              <div style="background:#1D9BF0; width:4%"  class="progress-segment" data-label="Advanced Check"   data-percentage="4"  data-breakdown='[{"label":"Consultant Check","percentage":2},{"label":"Theologian Check","percentage":1},{"label":"Linguist Check","percentage":1}]'></div>
+              <div style="background:#9333EA; width:5%"  class="progress-segment" data-label="Community Review" data-percentage="5"></div>
+              <div style="background:#EA580C; width:8%"  class="progress-segment" data-label="Peer Check"        data-percentage="8"></div>
+              <div style="background:#FDE047; width:7%"  class="progress-segment" data-label="Drafting"          data-percentage="7"></div>
+              <div style="background:#C4CAD6; width:34%" class="progress-segment" data-label="Not Started"       data-percentage="34"></div>
             </div>
             <div class="progress-tooltip" id="progress-tooltip"></div>
             <div class="legend">
@@ -411,7 +411,7 @@
         </div>
 
         <!-- Milestone Team -->
-        <div class="users-section">
+        <!--div class="users-section">
           <div class="users-header">
             Milestone Team
             <button class="btn-icon-add" onclick="openAddUserModal()">+</button>
@@ -465,7 +465,7 @@
               </tbody>
             </table>
           </div>
-        </div>
+        </div-->
 
       </div><!-- /left-panel -->
 
@@ -496,23 +496,99 @@
               </tr>
             </thead>
             <tbody>
-              <!-- Matthew -->
+              <!-- Matthew – all Complete -->
               <tr data-book="Matthew" onclick="openChapter(event,'Matthew',1)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>1</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>25 of 25</td></tr>
-              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',2)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>2</td><td>Roslin T</td><td>Seema T</td><td>Advanced Check</td><td>23 of 23</td></tr>
-              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',3)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>3</td><td>Roslin T</td><td>Roslin P</td><td>Peer Check</td><td>17 of 17</td></tr>
-              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',4)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>4</td><td>Seema T</td><td>Roslin P</td><td>Drafting</td><td>16 of 25</td></tr>
-              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',5)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>5</td><td>Seema T</td><td>Roslin P</td><td>Drafting</td><td>11 of 48</td></tr>
-              <!-- Mark -->
-              <tr data-book="Mark" onclick="openChapter(event,'Mark',1)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>1</td><td>Roslin T</td><td>Seema T</td><td>Community Review</td><td>45 of 45</td></tr>
-              <tr data-book="Mark" onclick="openChapter(event,'Mark',2)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>2</td><td>Roslin T</td><td>Roslin P</td><td>Peer Check</td><td>28 of 28</td></tr>
-              <tr data-book="Mark" onclick="openChapter(event,'Mark',3)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>3</td><td>Seema T</td><td>Roslin P</td><td>Draft</td><td>0 of 35</td></tr>
-              <!-- Luke -->
-              <tr data-book="Luke" onclick="openChapter(event,'Luke',1)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>1</td><td>Roslin T</td><td>Seema T</td><td>Peer Check</td><td>80 of 80</td></tr>
-              <tr data-book="Luke" onclick="openChapter(event,'Luke',2)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>2</td><td>Roslin T</td><td>Roslin P</td><td>Draft</td><td>8 of 52</td></tr>
-              <!-- John -->
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',2)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>2</td><td>Seema T</td><td>Roslin P</td><td>Complete</td><td>23 of 23</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',3)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>3</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>17 of 17</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',4)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>4</td><td>Seema T</td><td>Seema T</td><td>Complete</td><td>25 of 25</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',5)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>5</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>48 of 48</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',6)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>6</td><td>Seema T</td><td>Roslin P</td><td>Complete</td><td>34 of 34</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',7)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>7</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>29 of 29</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',8)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>8</td><td>Seema T</td><td>Seema T</td><td>Complete</td><td>34 of 34</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',9)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>9</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>38 of 38</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',10)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>10</td><td>Seema T</td><td>Roslin P</td><td>Complete</td><td>42 of 42</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',11)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>11</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>30 of 30</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',12)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>12</td><td>Seema T</td><td>Seema T</td><td>Complete</td><td>50 of 50</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',13)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>13</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>58 of 58</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',14)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>14</td><td>Seema T</td><td>Roslin P</td><td>Complete</td><td>36 of 36</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',15)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>15</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>39 of 39</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',16)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>16</td><td>Seema T</td><td>Seema T</td><td>Complete</td><td>28 of 28</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',17)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>17</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>27 of 27</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',18)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>18</td><td>Seema T</td><td>Roslin P</td><td>Complete</td><td>35 of 35</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',19)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>19</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>30 of 30</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',20)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>20</td><td>Seema T</td><td>Seema T</td><td>Complete</td><td>34 of 34</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',21)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>21</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>46 of 46</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',22)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>22</td><td>Seema T</td><td>Roslin P</td><td>Complete</td><td>46 of 46</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',23)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>23</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>39 of 39</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',24)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>24</td><td>Seema T</td><td>Seema T</td><td>Complete</td><td>51 of 51</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',25)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>25</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>46 of 46</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',26)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>26</td><td>Seema T</td><td>Roslin P</td><td>Complete</td><td>75 of 75</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',27)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>27</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>66 of 66</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',28)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>28</td><td>Seema T</td><td>Roslin P</td><td>Complete</td><td>20 of 20</td></tr>
+              <!-- Mark – scattered progress -->
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',1)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>1</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>45 of 45</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',2)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>2</td><td>Seema T</td><td>Roslin P</td><td>Complete</td><td>28 of 28</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',3)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>3</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>35 of 35</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',4)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>4</td><td>Seema T</td><td>Seema T</td><td>Complete</td><td>41 of 41</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',5)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>5</td><td>Roslin T</td><td>Roslin P</td><td>Linguist Check</td><td>43 of 43</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',6)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>6</td><td>Seema T</td><td>Roslin P</td><td>Consultant Check</td><td>56 of 56</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',7)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>7</td><td>Roslin T</td><td>Roslin P</td><td>Community Review</td><td>37 of 37</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',8)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>8</td><td>Seema T</td><td>Roslin P</td><td>Community Review</td><td>38 of 38</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',9)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>9</td><td>Roslin T</td><td>Roslin P</td><td>Peer Check</td><td>50 of 50</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',10)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>10</td><td>Seema T</td><td>Roslin P</td><td>Peer Check</td><td>52 of 52</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',11)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>11</td><td>Roslin T</td><td>Seema T</td><td>Peer Check</td><td>33 of 33</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',12)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>12</td><td>Seema T</td><td>—</td><td>Drafting</td><td>22 of 44</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',13)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>13</td><td>Roslin T</td><td>—</td><td>Drafting</td><td>0 of 37</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',14)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>14</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 72</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',15)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>15</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 47</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',16)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>16</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 20</td></tr>
+              <!-- Luke – scattered progress -->
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',1)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>1</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>80 of 80</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',2)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>2</td><td>Seema T</td><td>Roslin P</td><td>Complete</td><td>52 of 52</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',3)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>3</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>38 of 38</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',4)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>4</td><td>Seema T</td><td>Seema T</td><td>Complete</td><td>44 of 44</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',5)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>5</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>39 of 39</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',6)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>6</td><td>Seema T</td><td>Roslin P</td><td>Theologian Check</td><td>49 of 49</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',7)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>7</td><td>Roslin T</td><td>Roslin P</td><td>Consultant Check</td><td>50 of 50</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',8)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>8</td><td>Seema T</td><td>Roslin P</td><td>Community Review</td><td>56 of 56</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',9)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>9</td><td>Roslin T</td><td>Roslin P</td><td>Community Review</td><td>62 of 62</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',10)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>10</td><td>Seema T</td><td>Roslin P</td><td>Peer Check</td><td>42 of 42</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',11)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>11</td><td>Roslin T</td><td>Roslin P</td><td>Peer Check</td><td>54 of 54</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',12)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>12</td><td>Seema T</td><td>Seema T</td><td>Peer Check</td><td>59 of 59</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',13)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>13</td><td>Roslin T</td><td>Roslin P</td><td>Peer Check</td><td>35 of 35</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',14)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>14</td><td>Seema T</td><td>—</td><td>Drafting</td><td>20 of 35</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',15)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>15</td><td>Roslin T</td><td>—</td><td>Drafting</td><td>15 of 32</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',16)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>16</td><td>Seema T</td><td>—</td><td>Drafting</td><td>8 of 31</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',17)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>17</td><td>Roslin T</td><td>—</td><td>Drafting</td><td>0 of 37</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',18)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>18</td><td>—</td><td>—</td><td>Drafting</td><td>0 of 43</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',19)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>19</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 48</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',20)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>20</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 47</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',21)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>21</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 38</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',22)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>22</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 71</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',23)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>23</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 56</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',24)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>24</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 53</td></tr>
+              <!-- John – all Not Started -->
               <tr data-book="John" onclick="openChapter(event,'John',1)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>John</td><td>1</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 51</td></tr>
               <tr data-book="John" onclick="openChapter(event,'John',2)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>John</td><td>2</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 25</td></tr>
               <tr data-book="John" onclick="openChapter(event,'John',3)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>John</td><td>3</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 36</td></tr>
+              <tr data-book="John" onclick="openChapter(event,'John',4)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>John</td><td>4</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 54</td></tr>
+              <tr data-book="John" onclick="openChapter(event,'John',5)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>John</td><td>5</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 47</td></tr>
+              <tr data-book="John" onclick="openChapter(event,'John',6)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>John</td><td>6</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 71</td></tr>
+              <tr data-book="John" onclick="openChapter(event,'John',7)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>John</td><td>7</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 53</td></tr>
+              <tr data-book="John" onclick="openChapter(event,'John',8)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>John</td><td>8</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 59</td></tr>
+              <tr data-book="John" onclick="openChapter(event,'John',9)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>John</td><td>9</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 41</td></tr>
+              <tr data-book="John" onclick="openChapter(event,'John',10)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>John</td><td>10</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 42</td></tr>
+              <tr data-book="John" onclick="openChapter(event,'John',11)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>John</td><td>11</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 57</td></tr>
+              <tr data-book="John" onclick="openChapter(event,'John',12)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>John</td><td>12</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 50</td></tr>
+              <tr data-book="John" onclick="openChapter(event,'John',13)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>John</td><td>13</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 38</td></tr>
+              <tr data-book="John" onclick="openChapter(event,'John',14)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>John</td><td>14</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 31</td></tr>
+              <tr data-book="John" onclick="openChapter(event,'John',15)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>John</td><td>15</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 27</td></tr>
+              <tr data-book="John" onclick="openChapter(event,'John',16)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>John</td><td>16</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 33</td></tr>
+              <tr data-book="John" onclick="openChapter(event,'John',17)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>John</td><td>17</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 26</td></tr>
+              <tr data-book="John" onclick="openChapter(event,'John',18)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>John</td><td>18</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 40</td></tr>
+              <tr data-book="John" onclick="openChapter(event,'John',19)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>John</td><td>19</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 42</td></tr>
+              <tr data-book="John" onclick="openChapter(event,'John',20)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>John</td><td>20</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 31</td></tr>
+              <tr data-book="John" onclick="openChapter(event,'John',21)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>John</td><td>21</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 25</td></tr>
             </tbody>
           </table>
         </div>
@@ -657,7 +733,12 @@
           for (let i = 0; i < segments.length; i++) {
             cum += parseFloat(segments[i].style.width);
             if (pct <= cum) {
-              tooltip.innerHTML = `${segments[i].dataset.label}: ${segments[i].dataset.percentage}%`;
+              const breakdown = segments[i].dataset.breakdown;
+              if (breakdown) {
+                tooltip.innerHTML = JSON.parse(breakdown).map(b => `${b.label}: ${b.percentage}%`).join('<br>');
+              } else {
+                tooltip.innerHTML = `${segments[i].dataset.label}: ${segments[i].dataset.percentage}%`;
+              }
               tooltip.style.display = 'block';
               const segRect = segments[i].getBoundingClientRect();
               tooltip.style.left = (segRect.left + segRect.width / 2 - tooltip.offsetWidth / 2) + 'px';

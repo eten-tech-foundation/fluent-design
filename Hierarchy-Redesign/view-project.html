@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fluent — Gujarati NT</title>
+  <title>Fluent — Kachi Koli NT</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
@@ -38,6 +38,20 @@
       margin-bottom: 20px;
       flex-shrink: 0;
     }
+    .page-title-group { display: flex; align-items: center; gap: 10px; }
+    .back-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius);
+      color: var(--muted-foreground);
+      text-decoration: none;
+      flex-shrink: 0;
+      transition: background 0.1s, color 0.1s;
+    }
+    .back-btn:hover { background: var(--muted); color: var(--foreground); }
     .page-title { font-size: 24px; font-weight: 700; }
 
     /* ── Two-column body ── */
@@ -66,8 +80,42 @@
     /* ── Progress bar ── */
     .progress-section { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 14px; }
     .progress-label { font-size: 12px; font-weight: 600; color: var(--muted-foreground); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
-    .progress-bar { width: 100%; height: 10px; border-radius: 99px; overflow: hidden; display: flex; }
+    .progress-bar { width: 100%; height: 10px; border-radius: 99px; overflow: hidden; display: flex; position: relative; }
 
+    .progress-tooltip {
+      position: fixed;
+      background: var(--popover);
+      color: var(--foreground);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 6px 10px;
+      font-size: 12px;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      display: none;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .progress-tooltip::before {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 6px;
+      border-style: solid;
+      border-color: var(--border) transparent transparent transparent;
+    }
+    .progress-tooltip::after {
+      content: '';
+      position: absolute;
+      top: calc(100% - 1px);
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 5px;
+      border-style: solid;
+      border-color: var(--popover) transparent transparent transparent;
+    }
     .p-complete  { background: #16A34A; height: 100%; }
     .p-advanced  { background: #1D9BF0; height: 100%; }
     .p-community { background: #9333EA; height: 100%; }
@@ -292,12 +340,17 @@
     <nav class="breadcrumb">
       <a href="manager-dashboard.html">Projects</a>
       <span class="breadcrumb-sep">/</span>
-      <span class="breadcrumb-current">Gujarati NT</span>
+      <span class="breadcrumb-current">Kachi Koli NT</span>
     </nav>
 
     <!-- Page header -->
     <div class="page-header">
-      <h1 class="page-title">Gujarati NT</h1>
+      <div class="page-title-group">
+        <a href="manager-dashboard.html" class="back-btn" title="Back to Projects">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </a>
+        <h1 class="page-title">Kachi Koli NT</h1>
+      </div>
       <button class="btn-add-milestone" onclick="openAddMilestone()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Add Milestone
@@ -312,15 +365,19 @@
         <div class="meta-card">
           <div class="meta-row">
             <span class="meta-label">Project</span>
-            <span class="meta-value">Gujarati NT</span>
+            <span class="meta-value">Kachi Koli NT</span>
           </div>
           <div class="meta-row">
             <span class="meta-label">Source Language</span>
-            <span class="meta-value">English (ULT)</span>
+            <span class="meta-value">Gujarati</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Source Bible</span>
+            <span class="meta-value">IRV Gujarati</span>
           </div>
           <div class="meta-row">
             <span class="meta-label">Target Language</span>
-            <span class="meta-value">Gujarati</span>
+            <span class="meta-value">Kachi Koli</span>
           </div>
           <div class="meta-row">
             <span class="meta-label">Milestones</span>
@@ -329,21 +386,22 @@
 
           <div class="progress-section">
             <div class="progress-label">Project Progress</div>
-            <div class="progress-bar">
-              <div class="p-complete"  style="width:5%"></div>
-              <div class="p-advanced"  style="width:8%"></div>
-              <div class="p-community" style="width:6%"></div>
-              <div class="p-peer"      style="width:8%"></div>
-              <div class="p-drafting"  style="width:7%"></div>
-              <div class="p-empty"     style="width:66%"></div>
+            <div class="progress-bar" id="project-progress-bar">
+              <div class="progress-segment p-complete"  style="width:16%" data-label="Complete"         data-percentage="16"></div>
+              <div class="progress-segment p-advanced"  style="width:2%"  data-label="Advanced Check"   data-percentage="2"  data-breakdown='[{"label":"Consultant Check","percentage":1},{"label":"Theologian Check","percentage":1}]'></div>
+              <div class="progress-segment p-community" style="width:2%"  data-label="Community Review" data-percentage="2"></div>
+              <div class="progress-segment p-peer"      style="width:3%"  data-label="Peer Check"        data-percentage="3"></div>
+              <div class="progress-segment p-drafting"  style="width:3%"  data-label="Drafting"          data-percentage="3"></div>
+              <div class="progress-segment p-empty"     style="width:74%" data-label="Not Started"       data-percentage="74"></div>
             </div>
+            <div class="progress-tooltip" id="progress-tooltip"></div>
             <div class="legend">
-              <div class="legend-item"><div class="legend-dot" style="background:#16A34A"></div>Complete (5%)</div>
-              <div class="legend-item"><div class="legend-dot" style="background:#1D9BF0"></div>Advanced (8%)</div>
-              <div class="legend-item"><div class="legend-dot" style="background:#9333EA"></div>Community (6%)</div>
-              <div class="legend-item"><div class="legend-dot" style="background:#EA580C"></div>Peer Check (8%)</div>
-              <div class="legend-item"><div class="legend-dot" style="background:#FDE047"></div>Drafting (7%)</div>
-              <div class="legend-item"><div class="legend-dot" style="background:#C4CAD6"></div>Not Started (66%)</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#16A34A"></div>Complete</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#1D9BF0"></div>Advanced Checks</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#9333EA"></div>Community Review</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#EA580C"></div>Peer Check</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#FDE047"></div>Drafting</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#C4CAD6"></div>Not Started</div>
             </div>
           </div>
         </div>
@@ -399,7 +457,7 @@
             <thead>
               <tr>
                 <th>Milestone</th>
-                <th>Books</th>
+                <th>Scope</th>
                 <th>Progress</th>
                 <th>Status</th>
               </tr>
@@ -421,9 +479,13 @@
                 <td>
                   <div class="progress-cell">
                     <div class="progress-mini">
-                      <div class="progress-mini-fill" style="width:34%"></div>
+                      <div class="p-complete"  style="width:42%"></div>
+                      <div class="p-advanced"  style="width:4%"></div>
+                      <div class="p-community" style="width:5%"></div>
+                      <div class="p-peer"      style="width:8%"></div>
+                      <div class="p-drafting"  style="width:7%"></div>
                     </div>
-                    <span class="progress-pct">34%</span>
+                    <span class="progress-pct">66%</span>
                   </div>
                 </td>
                 <td><span class="status-badge status-in-progress">In Progress</span></td>
@@ -471,6 +533,46 @@
   </div>
 
   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const progressBar = document.getElementById('project-progress-bar');
+      const tooltip = document.getElementById('progress-tooltip');
+      if (progressBar) {
+        progressBar.addEventListener('mousemove', function(e) {
+          const rect = progressBar.getBoundingClientRect();
+          const pct = ((e.clientX - rect.left) / rect.width) * 100;
+          let cum = 0;
+          const segments = progressBar.querySelectorAll('.progress-segment');
+          for (let i = 0; i < segments.length; i++) {
+            cum += parseFloat(segments[i].style.width);
+            if (pct <= cum) {
+              const seg = segments[i];
+              const breakdown = seg.dataset.breakdown;
+              if (breakdown) {
+                tooltip.innerHTML = JSON.parse(breakdown).map(b => `${b.label}: ${b.percentage}%`).join('<br>');
+              } else {
+                tooltip.innerHTML = `${seg.dataset.label}: ${seg.dataset.percentage}%`;
+              }
+              tooltip.style.display = 'block';
+              const segRect = seg.getBoundingClientRect();
+              const metaCard = progressBar.closest('.meta-card');
+              const metaRect = metaCard ? metaCard.getBoundingClientRect() : null;
+              let left = segRect.left + segRect.width / 2 - tooltip.offsetWidth / 2;
+              if (metaRect) {
+                left = Math.max(metaRect.left + 10, Math.min(left, metaRect.right - tooltip.offsetWidth - 10));
+              }
+              tooltip.style.left = left + 'px';
+              tooltip.style.top = (rect.top - tooltip.offsetHeight - 10) + 'px';
+              return;
+            }
+          }
+          tooltip.style.display = 'none';
+        });
+        progressBar.addEventListener('mouseleave', function() {
+          tooltip.style.display = 'none';
+        });
+      }
+    });
+
     function openAddMilestone() {
       document.getElementById('add-milestone-modal').classList.add('open');
     }
