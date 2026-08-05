@@ -452,6 +452,42 @@ const SHARED_CSS = `
   }
   .settings-footer a:hover { text-decoration: underline; }
 
+  /* Divider between settings sections */
+  .settings-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 6px 0 14px;
+  }
+
+  /* Org switcher in settings */
+  .settings-org-section {
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+    margin-bottom: 14px;
+  }
+  .settings-org-row { cursor: pointer; user-select: none; }
+  .settings-org-row:hover { background: rgba(0,0,0,0.03); border-radius: var(--radius); }
+  .settings-org-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary);
+  }
+  .settings-org-chevron {
+    flex-shrink: 0;
+    color: var(--foreground);
+    transition: transform 0.2s;
+  }
+  .settings-org-chevron.open { transform: rotate(180deg); }
+  .settings-org-dropdown {
+    display: none;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-top: 6px;
+    overflow: hidden;
+  }
+  .settings-org-dropdown.open { display: block; }
+
   /* ── Edit Profile dialog ── */
   .ep-dialog {
     background: #e8ecf3;
@@ -1078,6 +1114,9 @@ const SETTINGS_HTML = `
       <span class="settings-row-label" id="theme-label">Dark Mode</span>
     </div>
 
+    <!-- Divider before AI section -->
+    <hr class="settings-divider">
+
     <!-- AI Translation Suggestions -->
     <div class="settings-row">
       <label class="toggle">
@@ -1098,6 +1137,16 @@ const SETTINGS_HTML = `
         <br><br>
         Keep in mind that this feature is still in development. It is advised to double check the suggestions and make adjustments as needed. Since data is sent to an external AI model, be sure to read the privacy policy before using this feature.
       </div>
+    </div>
+
+    <!-- Org Switcher -->
+    <div class="settings-org-section">
+      <div class="settings-row settings-org-row" id="settings-org-row" onclick="toggleSettingsOrgDropdown(event)">
+        <span class="settings-row-label">Organization</span>
+        <span class="settings-org-name" id="settings-org-name"></span>
+        <svg class="settings-org-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="settings-org-dropdown" id="settings-org-dropdown"></div>
     </div>
 
     <!-- Footer -->
@@ -1202,7 +1251,6 @@ const HEADER_HTML = `
     <a class="logo" id="logo-link" href="manager-dashboard.html"><img src="Fluent-White Logo Only.svg" alt="fluent"></a>
   </div>
   <div class="header-right">
-    <div class="org-switcher" id="org-switcher"></div>
     <div class="user-btn" id="user-menu-btn" onclick="toggleUserMenu(event)">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="3" y="3" width="18" height="18" rx="3"/>
@@ -1260,12 +1308,9 @@ function toggleUserMenu(event) {
 document.addEventListener('click', () => {
   const mainMenu   = document.getElementById('main-menu');
   const userMenu   = document.getElementById('user-menu');
-  const orgDropdown = document.getElementById('org-dropdown');
-  const orgBtn     = document.getElementById('org-btn');
-  if (mainMenu)    mainMenu.classList.remove('open');
-  if (userMenu)    userMenu.classList.remove('open');
-  if (orgDropdown) orgDropdown.classList.remove('open');
-  if (orgBtn)      orgBtn.classList.remove('open');
+  if (mainMenu) mainMenu.classList.remove('open');
+  if (userMenu) userMenu.classList.remove('open');
+  closeSettingsOrgDropdown();
 });
 
 // ── Theme (dark mode) ─────────────────────────────────────────────────────────
@@ -1929,6 +1974,7 @@ function epValidate() {
 // ── Settings dialog logic ─────────────────────────────────────────────────────
 function openSettings() {
   document.getElementById('user-menu').classList.remove('open');
+  renderSettingsOrgSwitcher();
   document.getElementById('settings-overlay').classList.add('open');
 }
 
@@ -2035,6 +2081,54 @@ function toggleOrgDropdown(event) {
   dropdown.classList.toggle('open', !isOpen);
 }
 
+function renderSettingsOrgSwitcher() {
+  const nameEl     = document.getElementById('settings-org-name');
+  const dropdownEl = document.getElementById('settings-org-dropdown');
+  if (!nameEl || !dropdownEl) return;
+
+  const state     = getOrgState();
+  const activeOrg = state.orgs.find(o => o.id === state.activeOrgId) || state.orgs[0];
+  nameEl.textContent = activeOrg.name;
+
+  if (state.orgs.length <= 1) {
+    const row = document.getElementById('settings-org-row');
+    if (row) { row.style.cursor = 'default'; row.onclick = null; }
+    return;
+  }
+
+  const items = state.orgs.map(org => {
+    const isActiveOrg = org.id === activeOrg.id;
+    const roles = org.roles || ['manager'];
+    const chips = roles.map(role => `
+      <button class="org-role-chip ${isActiveOrg && role === currentRole ? 'active' : ''}"
+              onclick="selectOrgRole('${org.id}', '${role}'); closeSettingsOrgDropdown();">${ORG_ROLE_LABELS[role] || role}</button>
+    `).join('');
+    return `
+      <div class="org-dropdown-group ${isActiveOrg ? 'active' : ''}">
+        <div class="org-dropdown-org-name"><span>${org.name}</span></div>
+        <div class="org-role-chips">${chips}</div>
+      </div>
+    `;
+  }).join('');
+
+  dropdownEl.innerHTML = `<div class="org-dropdown-header">Switch Organization</div>${items}`;
+}
+
+function toggleSettingsOrgDropdown(event) {
+  event.stopPropagation();
+  const dropdown = document.getElementById('settings-org-dropdown');
+  const chevron  = document.querySelector('#settings-org-row .settings-org-chevron');
+  if (!dropdown) return;
+  const isOpen = dropdown.classList.contains('open');
+  dropdown.classList.toggle('open', !isOpen);
+  chevron?.classList.toggle('open', !isOpen);
+}
+
+function closeSettingsOrgDropdown() {
+  document.getElementById('settings-org-dropdown')?.classList.remove('open');
+  document.querySelector('#settings-org-row .settings-org-chevron')?.classList.remove('open');
+}
+
 // After discussion: org and role are chosen together in one click from the
 // dropdown (org name + role chips), so switching straight to the
 // role-appropriate dashboard for the selected org happens in a single step.
@@ -2062,13 +2156,10 @@ function renderHeader() {
   const placeholder = document.getElementById('fluent-header');
   if (placeholder) placeholder.outerHTML = HEADER_HTML;
 
-  // Read the page's role before rendering the org switcher, so the active
-  // role chip reflects the dashboard actually being viewed.
+  // Read the page's role before rendering the settings org switcher, so the
+  // active role chip reflects the dashboard actually being viewed.
   const pageRole = document.body.dataset.role;
   if (pageRole) currentRole = pageRole;
-
-  // Render org switcher (must come after HEADER_HTML is injected and currentRole is known)
-  renderOrgSwitcher();
 
   // Apply saved/preferred theme before painting
   initTheme();
