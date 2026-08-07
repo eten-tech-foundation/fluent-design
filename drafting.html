@@ -2136,11 +2136,10 @@
           block.verses.forEach(function(n) {
             var numSpan = document.createElement('span');
             numSpan.className = 'vnum';
-            numSpan.contentEditable = 'false';
             numSpan.textContent = n;
             tgtEl.appendChild(numSpan);
             var txt = translations[n] || '';
-            tgtEl.appendChild(document.createTextNode(txt ? txt + ' ' : ' '));
+            tgtEl.appendChild(document.createTextNode(txt ? txt + ' ' : ''));
           });
         }
 
