@@ -1979,6 +1979,7 @@ function closeSettings() {
 function setScripture(mode, btn) {
   document.querySelectorAll('#scripture-seg button').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  localStorage.setItem('fluent-display-mode', mode);
   if (typeof setViewMode === 'function') setViewMode(mode);
 }
 

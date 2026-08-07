@@ -2049,9 +2049,23 @@
     window.addEventListener('load', function() {
       updateChipScrollArrows();
       document.getElementById('chip-row-scroll').addEventListener('scroll', updateChipScrollArrows);
-      renderVerses();
-      renderNotes();
-      renderQuestions();
+
+      var savedMode = localStorage.getItem('fluent-display-mode');
+      if (savedMode && savedMode !== 'verse') {
+        // Sync the settings dialog button before rendering
+        var seg = document.getElementById('scripture-seg');
+        if (seg) {
+          seg.querySelectorAll('button').forEach(function(b) {
+            b.classList.toggle('active', b.textContent.toLowerCase() === savedMode);
+          });
+        }
+        viewMode = 'verse'; // ensure setViewMode sees a mode change
+        setViewMode(savedMode);
+      } else {
+        renderVerses();
+        renderNotes();
+        renderQuestions();
+      }
     });
 
     window.addEventListener('resize', function() {
@@ -2077,7 +2091,7 @@
       { id: 'cb13', type: 'p',  verses: [16, 17] },
       { id: 'cb14', type: 'q1', verses: [18] },
       { id: 'cb15', type: 'q2', verses: [19] },
-      { id: 'cb16', type: 's1', srcHeading: 'The Expulsion',   heading: '[...]',           verses: [] },
+      { id: 'cb16', type: 's1', srcHeading: 'The Expulsion',   heading: 'હકાલપટ્ટી',           verses: [] },
       { id: 'cb17', type: 'p',  verses: [20, 21, 22] },
       { id: 'cb18', type: 'p',  verses: [23, 24] },
     ];
