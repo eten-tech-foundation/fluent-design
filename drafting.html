@@ -681,6 +681,120 @@
       transition: background 0.15s;
     }
     .next-pericope-btn:hover { background: var(--primary-hover); }
+
+    /* ── Format bar ── */
+    .format-bar { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+    .fmt-seg {
+      display: inline-flex;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+    .fmt-seg button {
+      padding: 4px 10px;
+      font-size: 12px; font-weight: 600; font-family: var(--font);
+      border: none; background: var(--muted); cursor: pointer;
+      color: var(--muted-foreground);
+      border-right: 1px solid var(--border);
+      transition: background 0.1s, color 0.1s; line-height: 1.5;
+    }
+    .fmt-seg button:last-child { border-right: none; }
+    .fmt-seg button.active { background: var(--background); color: var(--foreground); }
+    .fmt-seg button:hover:not(.active) { background: var(--background); color: var(--foreground); opacity: 0.75; }
+    .fmt-level { display: none; align-items: center; gap: 3px; }
+    .fmt-level.visible { display: flex; }
+    .fmt-level-label { font-size: 11px; color: var(--muted-foreground); font-weight: 600; white-space: nowrap; }
+    .fmt-level button {
+      width: 23px; height: 23px;
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--muted); color: var(--muted-foreground);
+      font-size: 11px; font-weight: 700; font-family: var(--font);
+      cursor: pointer; padding: 0; line-height: 1;
+      transition: background 0.1s, color 0.1s;
+    }
+    .fmt-level button.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .fmt-divider { width: 1px; height: 16px; background: var(--border); margin: 0 2px; }
+    .fmt-indent-wrap { display: flex; gap: 2px; }
+    .fmt-indent-wrap button {
+      width: 27px; height: 27px;
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--muted); color: var(--muted-foreground);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0; transition: background 0.1s, color 0.1s;
+    }
+    .fmt-indent-wrap button:hover:not(:disabled) { background: var(--background); color: var(--foreground); }
+    .fmt-indent-wrap button:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* ── Chapter section ── */
+    .chapter-section {
+      flex: 1; display: flex; flex-direction: column;
+      min-height: 0; overflow: hidden;
+      padding-right: 16px; padding-bottom: 16px;
+    }
+    .chapter-headers {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+      flex-shrink: 0; align-items: center;
+    }
+    .chapter-tgt-header {
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 8px;
+      padding-left: 24px;
+    }
+    .chapter-doc-area {
+      flex: 1; overflow-y: auto;
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      display: grid;
+      grid-template-columns: minmax(0,1fr) 1px minmax(0,1fr);
+      min-height: 0; align-content: start;
+    }
+    .chapter-src-col {
+      padding: 20px 16px 60px 24px;
+      font-size: 1rem; line-height: 1.75;
+      color: var(--foreground); overflow-wrap: break-word;
+    }
+    .chapter-col-div { background: var(--border); align-self: stretch; }
+    .chapter-tgt-col { padding: 20px 24px 60px 16px; overflow-wrap: break-word; }
+    .vnum {
+      font-size: 0.65rem; font-weight: 700; color: var(--primary);
+      vertical-align: super; line-height: 0;
+      user-select: none; -webkit-user-select: none;
+      margin-right: 1px; margin-left: 2px;
+    }
+    .ch-src-heading {
+      font-size: 1.0625rem; font-weight: 700; color: var(--foreground);
+      border-bottom: 2px solid var(--primary);
+      padding: 14px 0 5px; margin-bottom: 10px; display: block;
+    }
+    .ch-src-heading.level-s2 { font-size: 0.9375rem; border-bottom-style: dashed; }
+    .ch-src-block { margin-bottom: 6px; }
+    .ch-src-block.q1 { padding-left: 2.25em; font-style: italic; }
+    .ch-src-block.q2 { padding-left: 4.25em; font-style: italic; }
+    .chapter-block {
+      outline: none;
+      padding: 2px 4px; border-radius: 4px;
+      font-size: 1rem; line-height: 1.75;
+      color: var(--foreground); min-height: 1.75em;
+      word-break: break-word; margin-bottom: 2px;
+      border: 1.5px solid transparent;
+      transition: border-color 0.1s, background 0.1s;
+    }
+    .chapter-block:hover { border-color: var(--border); }
+    .chapter-block:focus { border-color: var(--primary); background: rgba(37,99,235,0.03); }
+    .chapter-block[data-type="s1"],
+    .chapter-block[data-type="s2"],
+    .chapter-block[data-type="s3"],
+    .chapter-block[data-type="s4"] {
+      font-weight: 700; font-style: normal;
+      border-radius: 0; padding-top: 14px; padding-bottom: 5px; margin-bottom: 10px;
+    }
+    .chapter-block[data-type="s1"] { font-size: 1.0625rem; border-bottom: 2px solid var(--primary); }
+    .chapter-block[data-type="s2"] { font-size: 0.9375rem; border-bottom: 2px dashed var(--primary); }
+    .chapter-block[data-type="s3"] { font-size: 0.875rem; }
+    .chapter-block[data-type="s4"] { font-size: 0.875rem; color: var(--muted-foreground); }
+    .chapter-block[data-type="q1"] { padding-left: 2.25em; font-style: italic; }
+    .chapter-block[data-type="q2"] { padding-left: 4.25em; font-style: italic; }
   </style>
 </head>
 <body data-role="translator">
@@ -898,6 +1012,46 @@
       </div>
       <div class="verse-area" id="verse-area">
         <div id="verse-scroll"></div>
+      </div>
+    </div>
+
+    <!-- Chapter view surface (shown when Display = Chapter) -->
+    <div class="chapter-section" id="chapter-section" style="display:none">
+      <div class="chapter-headers">
+        <div class="verse-col-header source-tabs">
+          <button class="source-tab active">IRV Gujarati</button>
+        </div>
+        <div class="chapter-tgt-header">
+          <span class="verse-col-header" style="padding-left:0">Kachi Koli</span>
+          <div class="format-bar" id="format-bar">
+            <div class="fmt-seg" id="fmt-type-seg">
+              <button data-cat="p" onclick="fmtSetType('p')" class="active">Paragraph</button>
+              <button data-cat="s" onclick="fmtSetType('s')">Section Heading</button>
+              <button data-cat="q" onclick="fmtSetType('q')">Poetry Line</button>
+            </div>
+            <div class="fmt-level" id="fmt-level">
+              <span class="fmt-level-label">Level</span>
+              <button data-level="1" onclick="fmtSetLevel(1)" class="active">1</button>
+              <button data-level="2" onclick="fmtSetLevel(2)">2</button>
+              <button data-level="3" onclick="fmtSetLevel(3)">3</button>
+              <button data-level="4" onclick="fmtSetLevel(4)">4</button>
+            </div>
+            <div class="fmt-divider"></div>
+            <div class="fmt-indent-wrap">
+              <button id="fmt-indent-btn" onclick="fmtIndent(1)" disabled title="Increase indent (Poetry only)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 8 7 12 3 16"/><line x1="21" y1="12" x2="7" y2="12"/><line x1="21" y1="6" x2="21" y2="18"/></svg>
+              </button>
+              <button id="fmt-outdent-btn" onclick="fmtIndent(-1)" disabled title="Decrease indent (Poetry only)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 8 3 12 7 16"/><line x1="21" y1="12" x2="3" y2="12"/><line x1="3" y1="6" x2="3" y2="18"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="chapter-doc-area" id="chapter-doc-area">
+        <div class="chapter-src-col" id="chapter-src-col"></div>
+        <div class="chapter-col-div"></div>
+        <div class="chapter-tgt-col" id="chapter-tgt-col"></div>
       </div>
     </div>
 
@@ -1466,28 +1620,43 @@
 
     function setViewMode(mode) {
       if (mode === viewMode) return;
+      var prevMode = viewMode;
       viewMode = mode;
 
-      if (mode === 'pericope') {
-        // Find which pericope contains the current active verse
-        activePericope = 0;
-        for (var pi = 0; pi < PERICOPES.length; pi++) {
-          if (PERICOPES[pi].verses.indexOf(activeVerse) !== -1) {
-            activePericope = pi;
-            break;
-          }
-        }
-        renderPericopes();
+      var verseSection   = document.querySelector('.verse-section');
+      var chapterSection = document.getElementById('chapter-section');
+
+      if (mode === 'chapter') {
+        if (verseSection)   verseSection.style.display   = 'none';
+        if (chapterSection) chapterSection.style.display = 'flex';
+        renderChapter();
         renderNotesForMode();
         renderQuestionsForMode();
       } else {
-        // Returning to verse mode: land on first verse of the active pericope
-        var lastVerse = PERICOPES[activePericope].verses[PERICOPES[activePericope].verses.length - 1];
-        activeVerse = PERICOPES[activePericope].verses[0];
-        maxVerse = Math.max(maxVerse, lastVerse);
-        renderVerses();
-        renderNotes();
-        renderQuestions();
+        if (chapterSection) chapterSection.style.display = 'none';
+        if (verseSection)   verseSection.style.display   = '';
+
+        if (mode === 'pericope') {
+          activePericope = 0;
+          for (var pi = 0; pi < PERICOPES.length; pi++) {
+            if (PERICOPES[pi].verses.indexOf(activeVerse) !== -1) {
+              activePericope = pi;
+              break;
+            }
+          }
+          renderPericopes();
+          renderNotesForMode();
+          renderQuestionsForMode();
+        } else {
+          if (prevMode === 'pericope') {
+            var lastVerse = PERICOPES[activePericope].verses[PERICOPES[activePericope].verses.length - 1];
+            activeVerse = PERICOPES[activePericope].verses[0];
+            maxVerse = Math.max(maxVerse, lastVerse);
+          }
+          renderVerses();
+          renderNotes();
+          renderQuestions();
+        }
       }
     }
 
@@ -1495,9 +1664,15 @@
       if (viewMode === 'verse') { renderNotes(); return; }
       var container = document.getElementById('notes-list');
       var notes = [];
-      PERICOPES[activePericope].verses.forEach(function(n) {
-        (TN_NOTES[n] || []).forEach(function(note) { notes.push(note); });
-      });
+      if (viewMode === 'chapter') {
+        for (var n = 1; n <= TOTAL_VERSES; n++) {
+          (TN_NOTES[n] || []).forEach(function(note) { notes.push(note); });
+        }
+      } else {
+        PERICOPES[activePericope].verses.forEach(function(n) {
+          (TN_NOTES[n] || []).forEach(function(note) { notes.push(note); });
+        });
+      }
       if (!notes.length) {
         container.innerHTML = '<div class="no-resources">No resources available for this pericope.</div>';
         return;
@@ -1517,9 +1692,15 @@
       if (viewMode === 'verse') { renderQuestions(); return; }
       var container = document.getElementById('questions-list');
       var questions = [];
-      PERICOPES[activePericope].verses.forEach(function(n) {
-        (TQ_DATA[n] || []).forEach(function(q) { questions.push(q); });
-      });
+      if (viewMode === 'chapter') {
+        for (var n = 1; n <= TOTAL_VERSES; n++) {
+          (TQ_DATA[n] || []).forEach(function(q) { questions.push(q); });
+        }
+      } else {
+        PERICOPES[activePericope].verses.forEach(function(n) {
+          (TQ_DATA[n] || []).forEach(function(q) { questions.push(q); });
+        });
+      }
       if (!questions.length) {
         container.innerHTML = '<div class="no-resources">No resources available.</div>';
         return;
@@ -1876,6 +2057,180 @@
     window.addEventListener('resize', function() {
       document.querySelectorAll('.translation-input').forEach(autoResize);
     });
+
+    // ── Chapter view ──────────────────────────────────────────────────────────
+
+    const CHAPTER_BLOCKS = [
+      { id: 'cb0',  type: 's1', heading: 'The Temptation', verses: [] },
+      { id: 'cb1',  type: 'p',  verses: [1] },
+      { id: 'cb2',  type: 'p',  verses: [2, 3] },
+      { id: 'cb3',  type: 'p',  verses: [4, 5] },
+      { id: 'cb4',  type: 's1', heading: 'The Fall',       verses: [] },
+      { id: 'cb5',  type: 'p',  verses: [6] },
+      { id: 'cb6',  type: 'p',  verses: [7, 8] },
+      { id: 'cb7',  type: 's1', heading: "God's Inquiry",  verses: [] },
+      { id: 'cb8',  type: 'p',  verses: [9, 10] },
+      { id: 'cb9',  type: 'p',  verses: [11, 12, 13] },
+      { id: 'cb10', type: 's1', heading: 'The Curse',      verses: [] },
+      { id: 'cb11', type: 'p',  verses: [14] },
+      { id: 'cb12', type: 'q1', verses: [15] },
+      { id: 'cb13', type: 'p',  verses: [16, 17] },
+      { id: 'cb14', type: 'q1', verses: [18] },
+      { id: 'cb15', type: 'q2', verses: [19] },
+      { id: 'cb16', type: 's1', heading: 'The Expulsion',  verses: [] },
+      { id: 'cb17', type: 'p',  verses: [20, 21, 22] },
+      { id: 'cb18', type: 'p',  verses: [23, 24] },
+    ];
+
+    var focusedBlock = null;
+
+    function renderChapter() {
+      var srcCol = document.getElementById('chapter-src-col');
+      var tgtCol = document.getElementById('chapter-tgt-col');
+      if (!srcCol || !tgtCol) return;
+      srcCol.innerHTML = '';
+      tgtCol.innerHTML = '';
+
+      CHAPTER_BLOCKS.forEach(function(block) {
+        // Source side
+        var srcEl = document.createElement('div');
+        if (block.type.charAt(0) === 's') {
+          srcEl.className = 'ch-src-heading' + (block.type === 's2' ? ' level-s2' : '');
+          srcEl.textContent = block.heading || '';
+        } else {
+          srcEl.className = 'ch-src-block' + (block.type !== 'p' ? ' ' + block.type : '');
+          block.verses.forEach(function(n) {
+            var sup = document.createElement('sup');
+            sup.className = 'vnum';
+            sup.textContent = n;
+            srcEl.appendChild(sup);
+            srcEl.appendChild(document.createTextNode((sourceText[n] || '') + ' '));
+          });
+        }
+        srcCol.appendChild(srcEl);
+
+        // Translation side
+        var tgtEl = document.createElement('div');
+        tgtEl.id = 'chblock-' + block.id;
+        tgtEl.className = 'chapter-block';
+        tgtEl.dataset.type = block.type;
+        tgtEl.contentEditable = 'true';
+
+        if (block.type.charAt(0) === 's') {
+          tgtEl.textContent = block.heading || '';
+        } else {
+          block.verses.forEach(function(n) {
+            var numSpan = document.createElement('span');
+            numSpan.className = 'vnum';
+            numSpan.contentEditable = 'false';
+            numSpan.textContent = n;
+            tgtEl.appendChild(numSpan);
+            var txt = translations[n] || '';
+            tgtEl.appendChild(document.createTextNode(txt ? txt + ' ' : ' '));
+          });
+        }
+
+        tgtEl.addEventListener('focus', function() {
+          focusedBlock = tgtEl;
+          updateFormatBar();
+        });
+        tgtEl.addEventListener('keydown', function(e) { handleChapterKeydown(e, tgtEl); });
+        tgtEl.addEventListener('input', function() { updateProgress(); triggerAutoSave(); });
+        tgtCol.appendChild(tgtEl);
+      });
+
+      // Focus first content block
+      var firstContent = tgtCol.querySelector('.chapter-block[data-type="p"],.chapter-block[data-type="q1"],.chapter-block[data-type="q2"]');
+      if (firstContent) {
+        requestAnimationFrame(function() { firstContent.focus(); });
+      }
+    }
+
+    function handleChapterKeydown(e, blockEl) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        var type = blockEl.dataset.type || 'p';
+        // Heading → new paragraph; poetry → same level; paragraph → paragraph
+        var newType = type.charAt(0) === 's' ? 'p' : type;
+        insertChapterBlockAfter(blockEl, newType);
+      }
+    }
+
+    function insertChapterBlockAfter(refEl, type) {
+      var newBlock = document.createElement('div');
+      newBlock.className = 'chapter-block';
+      newBlock.dataset.type = type;
+      newBlock.contentEditable = 'true';
+      refEl.parentNode.insertBefore(newBlock, refEl.nextSibling);
+      newBlock.addEventListener('focus', function() { focusedBlock = newBlock; updateFormatBar(); });
+      newBlock.addEventListener('keydown', function(e) { handleChapterKeydown(e, newBlock); });
+      newBlock.addEventListener('input', function() { updateProgress(); triggerAutoSave(); });
+      focusedBlock = newBlock;
+      requestAnimationFrame(function() {
+        newBlock.focus();
+        var range = document.createRange();
+        range.setStart(newBlock, 0);
+        range.collapse(true);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      });
+      updateFormatBar();
+    }
+
+    // ── Format bar ────────────────────────────────────────────────────────────
+
+    function updateFormatBar() {
+      var block = focusedBlock;
+      if (!block) return;
+      var type = block.dataset.type || 'p';
+      var cat  = type.charAt(0) === 's' ? 's' : type.charAt(0) === 'q' ? 'q' : 'p';
+
+      document.querySelectorAll('#fmt-type-seg button').forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.cat === cat);
+      });
+
+      var levelEl = document.getElementById('fmt-level');
+      if (cat === 's') {
+        levelEl.classList.add('visible');
+        var level = parseInt(type.slice(1)) || 1;
+        document.querySelectorAll('#fmt-level button').forEach(function(btn) {
+          btn.classList.toggle('active', parseInt(btn.dataset.level) === level);
+        });
+      } else {
+        levelEl.classList.remove('visible');
+      }
+
+      var isQ  = cat === 'q';
+      var isQ2 = type === 'q2';
+      document.getElementById('fmt-indent-btn').disabled  = !isQ || isQ2;
+      document.getElementById('fmt-outdent-btn').disabled = !isQ;
+    }
+
+    function fmtSetType(cat) {
+      if (!focusedBlock) return;
+      var newType = cat === 's' ? 's1' : cat === 'q' ? 'q1' : 'p';
+      focusedBlock.dataset.type = newType;
+      updateFormatBar();
+      focusedBlock.focus();
+    }
+
+    function fmtSetLevel(level) {
+      if (!focusedBlock) return;
+      focusedBlock.dataset.type = 's' + level;
+      updateFormatBar();
+      focusedBlock.focus();
+    }
+
+    function fmtIndent(dir) {
+      if (!focusedBlock) return;
+      var type = focusedBlock.dataset.type;
+      if (dir > 0 && type === 'q1')       focusedBlock.dataset.type = 'q2';
+      else if (dir < 0 && type === 'q2')  focusedBlock.dataset.type = 'q1';
+      else if (dir < 0 && type === 'q1')  focusedBlock.dataset.type = 'p';
+      updateFormatBar();
+      focusedBlock.focus();
+    }
 
     function openImage(src) {
       var overlay = document.getElementById('img-overlay');

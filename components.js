@@ -216,7 +216,7 @@ const SHARED_CSS = `
     border: 1px solid var(--border);
     border-radius: var(--radius);
     box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-    min-width: 230px;
+    width: 230px;
     z-index: 200;
     overflow: hidden;
     padding: 4px 0;
@@ -459,34 +459,36 @@ const SHARED_CSS = `
     margin: 6px 0 14px;
   }
 
-  /* Org switcher in settings */
-  .settings-org-section {
-    border-top: 1px solid var(--border);
-    padding-top: 14px;
-    margin-bottom: 14px;
-  }
-  .settings-org-row { cursor: pointer; user-select: none; }
-  .settings-org-row:hover { background: rgba(0,0,0,0.03); border-radius: var(--radius); }
-  .settings-org-name {
+  /* Org switcher in user menu */
+  .um-org-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 16px;
     font-size: 14px;
-    font-weight: 600;
-    color: var(--primary);
-  }
-  .settings-org-chevron {
-    flex-shrink: 0;
+    font-weight: 500;
     color: var(--foreground);
-    transition: transform 0.2s;
+    cursor: pointer;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    font-family: var(--font);
   }
-  .settings-org-chevron.open { transform: rotate(180deg); }
-  .settings-org-dropdown {
+  .um-org-trigger:hover { background: var(--muted); }
+  .um-org-trigger-left { display: flex; align-items: center; gap: 12px; min-width: 0; overflow: hidden; }
+  .um-org-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .um-org-chevron { flex-shrink: 0; transition: transform 0.2s; }
+  .um-org-chevron.open { transform: rotate(180deg); }
+  .um-org-dropdown-body {
     display: none;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    margin-top: 6px;
-    overflow: hidden;
+    background: var(--background);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 4px 0;
   }
-  .settings-org-dropdown.open { display: block; }
+  .um-org-dropdown-body.open { display: block; }
 
   /* ── Edit Profile dialog ── */
   .ep-dialog {
@@ -1099,12 +1101,13 @@ const SETTINGS_HTML = `
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
 
-    <!-- Scripture Display -->
+    <!-- Display -->
     <div class="settings-row">
-      <span class="settings-row-label">Scripture Display</span>
+      <span class="settings-row-label">Display</span>
       <div class="seg-control" id="scripture-seg">
         <button class="active" onclick="setScripture('verse', this)">Verse</button>
         <button onclick="setScripture('pericope', this)">Pericope</button>
+        <button onclick="setScripture('chapter', this)">Chapter</button>
       </div>
     </div>
 
@@ -1137,16 +1140,6 @@ const SETTINGS_HTML = `
         <br><br>
         Keep in mind that this feature is still in development. It is advised to double check the suggestions and make adjustments as needed. Since data is sent to an external AI model, be sure to read the privacy policy before using this feature.
       </div>
-    </div>
-
-    <!-- Org Switcher -->
-    <div class="settings-org-section">
-      <div class="settings-row settings-org-row" id="settings-org-row" onclick="toggleSettingsOrgDropdown(event)">
-        <span class="settings-row-label">Organization</span>
-        <span class="settings-org-name" id="settings-org-name"></span>
-        <svg class="settings-org-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
-      <div class="settings-org-dropdown" id="settings-org-dropdown"></div>
     </div>
 
     <!-- Footer -->
@@ -1268,6 +1261,8 @@ const HEADER_HTML = `
         </button>
         <hr class="user-menu-divider">
         <div class="user-menu-label" id="user-menu-label">Chad M</div>
+        <div id="um-org-section"></div>
+        <hr class="user-menu-divider">
         <button class="user-menu-item">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           Logout
@@ -1301,8 +1296,9 @@ function toggleMainMenu(event) {
 
 function toggleUserMenu(event) {
   event.stopPropagation();
-  document.getElementById('user-menu').classList.toggle('open');
+  const isOpen = document.getElementById('user-menu').classList.toggle('open');
   document.getElementById('main-menu').classList.remove('open');
+  if (isOpen) renderUserMenuOrgSwitcher();
 }
 
 document.addEventListener('click', () => {
@@ -1310,7 +1306,6 @@ document.addEventListener('click', () => {
   const userMenu   = document.getElementById('user-menu');
   if (mainMenu) mainMenu.classList.remove('open');
   if (userMenu) userMenu.classList.remove('open');
-  closeSettingsOrgDropdown();
 });
 
 // ── Theme (dark mode) ─────────────────────────────────────────────────────────
@@ -1974,7 +1969,6 @@ function epValidate() {
 // ── Settings dialog logic ─────────────────────────────────────────────────────
 function openSettings() {
   document.getElementById('user-menu').classList.remove('open');
-  renderSettingsOrgSwitcher();
   document.getElementById('settings-overlay').classList.add('open');
 }
 
@@ -2002,7 +1996,7 @@ function toggleAiExpand() {
 const DEFAULT_ORG_CONFIG = {
   orgs: [
     { id: 'bcs-india', name: 'BCS', roles: ['manager', 'translator'] },
-    { id: 'wycliffe', name: 'Wycliffe', roles: ['translator', 'observer'] },
+    { id: 'wycliffe', name: 'Wycliffe Global Partners', roles: ['translator', 'observer'] },
   ],
   activeOrgId: 'bcs-india',
 };
@@ -2081,18 +2075,20 @@ function toggleOrgDropdown(event) {
   dropdown.classList.toggle('open', !isOpen);
 }
 
-function renderSettingsOrgSwitcher() {
-  const nameEl     = document.getElementById('settings-org-name');
-  const dropdownEl = document.getElementById('settings-org-dropdown');
-  if (!nameEl || !dropdownEl) return;
+function renderUserMenuOrgSwitcher() {
+  const section = document.getElementById('um-org-section');
+  if (!section) return;
 
   const state     = getOrgState();
   const activeOrg = state.orgs.find(o => o.id === state.activeOrgId) || state.orgs[0];
-  nameEl.textContent = activeOrg.name;
+  const orgIcon   = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
+  const chevronSvg = `<svg class="um-org-chevron" id="um-org-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>`;
 
   if (state.orgs.length <= 1) {
-    const row = document.getElementById('settings-org-row');
-    if (row) { row.style.cursor = 'default'; row.onclick = null; }
+    section.innerHTML = `
+      <div class="um-org-trigger" style="cursor:default;" title="${activeOrg.name}">
+        <div class="um-org-trigger-left">${orgIcon} <span class="um-org-name">${activeOrg.name}</span></div>
+      </div>`;
     return;
   }
 
@@ -2101,7 +2097,7 @@ function renderSettingsOrgSwitcher() {
     const roles = org.roles || ['manager'];
     const chips = roles.map(role => `
       <button class="org-role-chip ${isActiveOrg && role === currentRole ? 'active' : ''}"
-              onclick="selectOrgRole('${org.id}', '${role}'); closeSettingsOrgDropdown();">${ORG_ROLE_LABELS[role] || role}</button>
+              onclick="selectOrgRole('${org.id}', '${role}')">${ORG_ROLE_LABELS[role] || role}</button>
     `).join('');
     return `
       <div class="org-dropdown-group ${isActiveOrg ? 'active' : ''}">
@@ -2111,22 +2107,26 @@ function renderSettingsOrgSwitcher() {
     `;
   }).join('');
 
-  dropdownEl.innerHTML = `<div class="org-dropdown-header">Switch Organization</div>${items}`;
+  section.innerHTML = `
+    <button class="um-org-trigger" onclick="toggleUserMenuOrgDropdown(event)" title="${activeOrg.name}">
+      <div class="um-org-trigger-left">${orgIcon} <span class="um-org-name">${activeOrg.name}</span></div>
+      ${chevronSvg}
+    </button>
+    <div class="um-org-dropdown-body" id="um-org-dropdown-body">
+      <div class="org-dropdown-header" style="padding:6px 16px 4px;">Switch Organization</div>
+      ${items}
+    </div>
+  `;
 }
 
-function toggleSettingsOrgDropdown(event) {
+function toggleUserMenuOrgDropdown(event) {
   event.stopPropagation();
-  const dropdown = document.getElementById('settings-org-dropdown');
-  const chevron  = document.querySelector('#settings-org-row .settings-org-chevron');
-  if (!dropdown) return;
-  const isOpen = dropdown.classList.contains('open');
-  dropdown.classList.toggle('open', !isOpen);
+  const body    = document.getElementById('um-org-dropdown-body');
+  const chevron = document.getElementById('um-org-chevron');
+  if (!body) return;
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
   chevron?.classList.toggle('open', !isOpen);
-}
-
-function closeSettingsOrgDropdown() {
-  document.getElementById('settings-org-dropdown')?.classList.remove('open');
-  document.querySelector('#settings-org-row .settings-org-chevron')?.classList.remove('open');
 }
 
 // After discussion: org and role are chosen together in one click from the
@@ -2134,10 +2134,9 @@ function closeSettingsOrgDropdown() {
 // role-appropriate dashboard for the selected org happens in a single step.
 function selectOrgRole(orgId, role) {
   localStorage.setItem('fluent_active_org', orgId);
-  // Close the dropdown
   document.getElementById('org-dropdown')?.classList.remove('open');
   document.getElementById('org-btn')?.classList.remove('open');
-  // Dispatch event so pages can react (e.g., reload project data)
+  document.getElementById('user-menu')?.classList.remove('open');
   document.dispatchEvent(new CustomEvent('orgchange', { detail: { orgId, role } }));
   navigateToRoleDashboard(role);
 }
