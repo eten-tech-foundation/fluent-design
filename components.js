@@ -929,6 +929,35 @@ const SHARED_CSS = `
     background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;
   }
   .dark .cp-imp-duplicate-banner { background: #3a2f10; border-color: #6b5522; color: #fbd97a; }
+
+  /* ── Audio availability (source Bible search + chip) ── */
+  .cp-search-badges { display: flex; gap: 4px; flex-shrink: 0; align-items: center; }
+
+  .cp-search-audio {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 7px;
+    border-radius: 9999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    background: #dff5e3;
+    color: #0f7a35;
+  }
+  .dark .cp-search-audio { background: #1a3325; color: #7fd39d; }
+
+  .cp-chip-audio {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    margin-top: 3px;
+  }
+  .cp-chip-audio.available { color: #0f7a35; }
+  .dark .cp-chip-audio.available { color: #7fd39d; }
+  .cp-chip-audio.unavailable { color: var(--muted-foreground); }
 `;
 
 // ── Create Project dialog HTML ────────────────────────────────────────────────
@@ -1347,8 +1376,8 @@ const CP_BIBLE_DATA = [
   { langCode: 'eng', bibleId: 'esv',     abbr: 'ESV',     name: 'English Standard Version',        provider: 'dbl',        books: 'full' },
   { langCode: 'fra', bibleId: 'lsg',     abbr: 'LSG',     name: 'Louis Segond 1910',                provider: 'dbl',        books: 'full' },
   { langCode: 'fra', bibleId: 'bds',     abbr: 'BDS',     name: 'Bible du Semeur',                  provider: 'aquifer',    books: 'full' },
-  { langCode: 'spa', bibleId: 'rvr60',   abbr: 'RVR60',   name: 'Reina Valera 1960',                provider: 'dbl',        books: 'full' },
-  { langCode: 'guj', bibleId: 'irv-guj', abbr: 'IRV-GUJ', name: 'Indian Revised Version Gujarati',  provider: 'dbl',        books: 'full' },
+  { langCode: 'spa', bibleId: 'rvr60',   abbr: 'RVR60',   name: 'Reina Valera 1960',                provider: 'dbl',        books: 'full', hasAudio: true },
+  { langCode: 'guj', bibleId: 'irv-guj', abbr: 'IRV-GUJ', name: 'Indian Revised Version Gujarati',  provider: 'dbl',        books: 'full', hasAudio: true },
   { langCode: 'guj', bibleId: 'guj-irv', abbr: 'GUJ-IRV', name: 'Gujarati Indian Revised Version',  provider: 'dbl',        books: 'full' },
   { langCode: 'hin', bibleId: 'glt-hin', abbr: 'glt-hin', name: 'Gateway Literal Text Hindi',       provider: 'aquifer',    books: 'nt' },
   { langCode: 'hin', bibleId: 'irv-hin', abbr: 'IRV-HIN', name: 'Indian Revised Version Hindi',     provider: 'dbl',        books: 'full' },
@@ -1449,7 +1478,10 @@ function cpSourceSearch() {
           <span class="cp-search-item-main">${b.name} (${b.abbr})</span>
           <span class="cp-search-item-sub">${lang ? lang.name : b.langCode}</span>
         </div>
-        <span class="cp-search-provider ${b.provider}">${CP_PROVIDER_LABEL[b.provider]}</span>
+        <div class="cp-search-badges">
+          ${b.hasAudio ? `<span class="cp-search-audio"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>Audio</span>` : ''}
+          <span class="cp-search-provider ${b.provider}">${CP_PROVIDER_LABEL[b.provider]}</span>
+        </div>
       </div>`;
     }).join('');
   }
@@ -1479,7 +1511,10 @@ function cpRenderSourceDrill(resultsEl, query) {
       <div class="cp-search-item-text">
         <span class="cp-search-item-main">${b.name} (${b.abbr})</span>
       </div>
-      <span class="cp-search-provider ${b.provider}">${CP_PROVIDER_LABEL[b.provider]}</span>
+      <div class="cp-search-badges">
+        ${b.hasAudio ? `<span class="cp-search-audio"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>Audio</span>` : ''}
+        <span class="cp-search-provider ${b.provider}">${CP_PROVIDER_LABEL[b.provider]}</span>
+      </div>
     </div>`).join('');
   resultsEl.innerHTML = html;
 }
@@ -1490,6 +1525,7 @@ function cpSelectSource(langCode, bibleId) {
   cpSelectedSource = {
     langCode, langName: lang ? lang.name : langCode,
     bibleId, bibleAbbr: bible.abbr, bibleName: bible.name, provider: bible.provider, books: bible.books,
+    hasAudio: bible.hasAudio || false,
   };
   cpSourceDrillLang = null;
   document.getElementById('cp-source-search').value = '';
@@ -1519,10 +1555,14 @@ function cpClearSource() {
 function cpRenderSourceChip() {
   const chip = document.getElementById('cp-source-chip');
   const s = cpSelectedSource;
+  const audioLine = s.hasAudio
+    ? `<div class="cp-chip-audio available"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>Audio available — included as offline source</div>`
+    : `<div class="cp-chip-audio unavailable"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>No audio version available for this Bible</div>`;
   chip.innerHTML = `
     <div class="cp-selected-chip-text">
       <div><strong>${s.langName}</strong> (${s.langCode})</div>
       <div class="cp-selected-chip-sub">${s.bibleName} (${s.bibleAbbr}) · ${CP_PROVIDER_LABEL[s.provider]}${s.books === 'nt' ? ' · New Testament only' : ''}</div>
+      ${audioLine}
     </div>
     <button type="button" class="cp-selected-chip-clear" onclick="cpClearSource()" aria-label="Clear source Bible">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -1761,7 +1801,10 @@ function cpImpSourceSearch() {
           <span class="cp-search-item-main">${b.name} (${b.abbr})</span>
           <span class="cp-search-item-sub">${lang ? lang.name : b.langCode}</span>
         </div>
-        <span class="cp-search-provider ${b.provider}">${CP_PROVIDER_LABEL[b.provider]}</span>
+        <div class="cp-search-badges">
+          ${b.hasAudio ? `<span class="cp-search-audio"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>Audio</span>` : ''}
+          <span class="cp-search-provider ${b.provider}">${CP_PROVIDER_LABEL[b.provider]}</span>
+        </div>
       </div>`;
     }).join('');
   }
@@ -1791,7 +1834,10 @@ function cpImpRenderSourceDrill(resultsEl, query) {
       <div class="cp-search-item-text">
         <span class="cp-search-item-main">${b.name} (${b.abbr})</span>
       </div>
-      <span class="cp-search-provider ${b.provider}">${CP_PROVIDER_LABEL[b.provider]}</span>
+      <div class="cp-search-badges">
+        ${b.hasAudio ? `<span class="cp-search-audio"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>Audio</span>` : ''}
+        <span class="cp-search-provider ${b.provider}">${CP_PROVIDER_LABEL[b.provider]}</span>
+      </div>
     </div>`).join('');
   resultsEl.innerHTML = html;
 }
@@ -1802,6 +1848,7 @@ function cpImpSelectSource(langCode, bibleId) {
   cpImpSelectedSource = {
     langCode, langName: lang ? lang.name : langCode,
     bibleId, bibleAbbr: bible.abbr, bibleName: bible.name, provider: bible.provider, books: bible.books,
+    hasAudio: bible.hasAudio || false,
   };
   cpImpSourceDrillLang = null;
   document.getElementById('cp-imp-source-search').value = '';
@@ -1810,10 +1857,14 @@ function cpImpSelectSource(langCode, bibleId) {
 
   const chip = document.getElementById('cp-imp-source-chip');
   const s = cpImpSelectedSource;
+  const audioLine = s.hasAudio
+    ? `<div class="cp-chip-audio available"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>Audio available — included as offline source</div>`
+    : `<div class="cp-chip-audio unavailable"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>No audio version available for this Bible</div>`;
   chip.innerHTML = `
     <div class="cp-selected-chip-text">
       <div><strong>${s.langName}</strong> (${s.langCode})</div>
       <div class="cp-selected-chip-sub">${s.bibleName} (${s.bibleAbbr}) · ${CP_PROVIDER_LABEL[s.provider]}${s.books === 'nt' ? ' · New Testament only' : ''}</div>
+      ${audioLine}
     </div>
     <button type="button" class="cp-selected-chip-clear" onclick="cpImpClearSource()" aria-label="Clear source Bible">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>

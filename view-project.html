@@ -59,6 +59,7 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
+      overflow-y: auto;
     }
 
     .meta-card {
@@ -251,6 +252,86 @@
       align-items: center;
       gap: 4px;
     }
+
+    /* ── Book Details accordion ── */
+    .book-details-section {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .book-details-header {
+      padding: 12px 14px;
+      font-size: 15px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .book-accordion-item {
+      border-top: 1px solid var(--border);
+    }
+
+    .book-accordion-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 10px 14px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--foreground);
+      text-align: left;
+    }
+    .book-accordion-trigger:hover { background: var(--muted); }
+
+    .book-accordion-chevron {
+      width: 14px;
+      height: 14px;
+      display: inline-block;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat center;
+      transition: transform 0.18s;
+      flex-shrink: 0;
+    }
+    .book-accordion-trigger[aria-expanded="true"] .book-accordion-chevron {
+      transform: rotate(180deg);
+    }
+
+    .book-accordion-body {
+      display: none;
+      padding: 4px 14px 14px;
+      background: var(--card);
+    }
+    .book-accordion-body.open { display: block; }
+
+    .book-field { margin-top: 10px; }
+
+    .book-field-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .book-field-input {
+      width: 100%;
+      height: 34px;
+      padding: 0 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-family: var(--font);
+      color: var(--foreground);
+      background: white;
+      box-sizing: border-box;
+      transition: border-color 0.15s;
+    }
+    .book-field-input:focus { outline: none; border-color: var(--primary); }
+    .book-field-input.saved { border-color: #16A34A; }
     
     .role-caret {
       width: 12px;
@@ -648,6 +729,79 @@
               <div class="legend-item"><div class="legend-dot" style="background:#EA580C"></div>Peer Check</div>
               <div class="legend-item"><div class="legend-dot" style="background:#FDE047"></div>Drafting</div>
               <div class="legend-item"><div class="legend-dot" style="background:#C4CAD6"></div>Not Started</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Book Details -->
+        <div class="book-details-section">
+          <div class="book-details-header">Book Details</div>
+
+          <div class="book-accordion-item">
+            <button class="book-accordion-trigger" aria-expanded="false" onclick="toggleBookAccordion(this)">
+              1 John
+              <span class="book-accordion-chevron"></span>
+            </button>
+            <div class="book-accordion-body">
+              <div class="book-field">
+                <label class="book-field-label">Book Title (\mt1)</label>
+                <input class="book-field-input" type="text" placeholder="Full book title" value="" data-book="1JN" data-field="mt1" onblur="saveBookField(this)">
+              </div>
+              <div class="book-field">
+                <label class="book-field-label">Running Header (\h)</label>
+                <input class="book-field-input" type="text" placeholder="Short book name for page headers" value="1 Yohaan" data-book="1JN" data-field="h" onblur="saveBookField(this)">
+              </div>
+            </div>
+          </div>
+
+          <div class="book-accordion-item">
+            <button class="book-accordion-trigger" aria-expanded="false" onclick="toggleBookAccordion(this)">
+              1 Peter
+              <span class="book-accordion-chevron"></span>
+            </button>
+            <div class="book-accordion-body">
+              <div class="book-field">
+                <label class="book-field-label">Book Title (\mt1)</label>
+                <input class="book-field-input" type="text" placeholder="Full book title" value="Petrus nu Pahelu Patr" data-book="1PE" data-field="mt1" onblur="saveBookField(this)">
+              </div>
+              <div class="book-field">
+                <label class="book-field-label">Running Header (\h)</label>
+                <input class="book-field-input" type="text" placeholder="Short book name for page headers" value="1 Petrus" data-book="1PE" data-field="h" onblur="saveBookField(this)">
+              </div>
+            </div>
+          </div>
+
+          <div class="book-accordion-item">
+            <button class="book-accordion-trigger" aria-expanded="false" onclick="toggleBookAccordion(this)">
+              2 John
+              <span class="book-accordion-chevron"></span>
+            </button>
+            <div class="book-accordion-body">
+              <div class="book-field">
+                <label class="book-field-label">Book Title (\mt1)</label>
+                <input class="book-field-input" type="text" placeholder="Full book title" value="" data-book="2JN" data-field="mt1" onblur="saveBookField(this)">
+              </div>
+              <div class="book-field">
+                <label class="book-field-label">Running Header (\h)</label>
+                <input class="book-field-input" type="text" placeholder="Short book name for page headers" value="" data-book="2JN" data-field="h" onblur="saveBookField(this)">
+              </div>
+            </div>
+          </div>
+
+          <div class="book-accordion-item">
+            <button class="book-accordion-trigger" aria-expanded="false" onclick="toggleBookAccordion(this)">
+              3 John
+              <span class="book-accordion-chevron"></span>
+            </button>
+            <div class="book-accordion-body">
+              <div class="book-field">
+                <label class="book-field-label">Book Title (\mt1)</label>
+                <input class="book-field-input" type="text" placeholder="Full book title" value="" data-book="3JN" data-field="mt1" onblur="saveBookField(this)">
+              </div>
+              <div class="book-field">
+                <label class="book-field-label">Running Header (\h)</label>
+                <input class="book-field-input" type="text" placeholder="Short book name for page headers" value="" data-book="3JN" data-field="h" onblur="saveBookField(this)">
+              </div>
             </div>
           </div>
         </div>
@@ -1327,6 +1481,20 @@
     document.addEventListener('DOMContentLoaded', function() {
       initRoleEditing();
     });
+
+    // ── Book Details accordion ──
+    function toggleBookAccordion(trigger) {
+      const expanded = trigger.getAttribute('aria-expanded') === 'true';
+      trigger.setAttribute('aria-expanded', !expanded);
+      trigger.nextElementSibling.classList.toggle('open', !expanded);
+    }
+
+    function saveBookField(input) {
+      // On blur, flash the border green to signal save
+      input.classList.add('saved');
+      setTimeout(() => input.classList.remove('saved'), 1200);
+      console.log(`Saved \\${input.dataset.field} for ${input.dataset.book}: "${input.value}"`);
+    }
   </script>
 
 </body>
