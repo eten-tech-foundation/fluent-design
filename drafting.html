@@ -442,6 +442,165 @@
     .tw-article li { margin: 3px 0; }
     .tw-article p { margin: 5px 0; }
 
+    /* ── AI Assistant pane ── */
+    .ai-pane {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .ai-pane.active { display: flex; }
+
+    .ai-pane-inner {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin: 0 4px 16px 16px;
+      overflow: hidden;
+    }
+
+    .ai-pane-header {
+      padding: 12px 20px 10px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .ai-pane-ref {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--foreground);
+    }
+
+    .ai-pane-body {
+      flex: 1;
+      overflow-y: auto;
+      display: block;
+    }
+
+    /* ── AI summary ── */
+    .ai-summary {
+      padding: 14px 20px 16px;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--foreground);
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── Suggested questions ── */
+    .ai-questions {
+      padding: 12px 16px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ai-questions-label {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted-foreground);
+      margin-bottom: 2px;
+    }
+    .ai-question-btn {
+      width: 100%;
+      text-align: left;
+      padding: 8px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      background: none;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: var(--font);
+      color: var(--primary);
+      cursor: pointer;
+      line-height: 1.4;
+      transition: background 0.1s, border-color 0.1s;
+    }
+    .ai-question-btn:hover { background: var(--muted); border-color: var(--primary); }
+    .ai-question-btn:disabled { opacity: 0.45; cursor: default; }
+
+    /* ── Conversation thread ── */
+    .ai-thread {
+      padding: 14px 20px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .ai-thread-turn { display: flex; flex-direction: column; gap: 4px; }
+    .ai-turn-label {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .ai-turn-label.user { color: var(--muted-foreground); }
+    .ai-turn-label.asst { color: var(--primary); }
+    .ai-turn-text { font-size: 13px; line-height: 1.65; color: var(--foreground); }
+    .ai-turn-user .ai-turn-text { color: var(--muted-foreground); font-style: italic; }
+
+    /* ── Loading ── */
+    .ai-loading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 20px;
+      font-size: 13px;
+      color: var(--muted-foreground);
+    }
+    .ai-loading-spinner {
+      width: 15px; height: 15px;
+      border: 2px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    /* ── Input bar ── */
+    .ai-input-bar {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      padding: 10px 12px;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .ai-input {
+      flex: 1;
+      resize: none;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 7px 10px;
+      font-size: 13px;
+      font-family: var(--font);
+      line-height: 1.5;
+      color: var(--foreground);
+      background: var(--background);
+      outline: none;
+      overflow: hidden;
+      min-height: 34px;
+      max-height: 120px;
+      box-sizing: border-box;
+      transition: border-color 0.15s;
+    }
+    .ai-input:focus { border-color: var(--primary); }
+    .ai-send-btn {
+      width: 34px; height: 34px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: var(--primary);
+      color: white;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .ai-send-btn:hover { background: var(--primary-hover); }
+
     /* ── Resize handle ── */
     .resize-handle {
       width: 16px; flex-shrink: 0;
@@ -849,6 +1008,7 @@
         <div class="chip-fade chip-fade-left hidden" id="chip-fade-left"></div>
         <div class="chip-row-scroll" id="chip-row-scroll">
           <button class="chip selected" data-value="notes" onclick="selectChip(this)">TN</button>
+          <button class="chip" data-value="ai-assistant" onclick="selectChip(this)">AI Assistant</button>
           <button class="chip" data-value="images" onclick="selectChip(this)">Images &amp; Maps</button>
           <button class="chip" data-value="bibles" onclick="selectChip(this)">Bibles</button>
           <button class="chip" data-value="questions" onclick="selectChip(this)">TQ</button>
@@ -918,6 +1078,24 @@
 
       <!-- TQ -->
       <div id="questions-list" class="notes-list" style="display:none"></div>
+
+      <!-- AI Assistant -->
+      <div id="ai-assistant-pane" class="ai-pane">
+        <div class="ai-pane-inner">
+          <div class="ai-pane-header">
+            <div class="ai-pane-ref" id="ai-pane-ref">Genesis 3:1-5</div>
+          </div>
+          <div class="ai-pane-body" id="ai-pane-body"></div>
+          <div class="ai-input-bar">
+            <textarea id="ai-input" class="ai-input" placeholder="Ask a question about this passage…" rows="1"
+              oninput="autoResizeAIInput(this)"
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitAIQuestion();}"></textarea>
+            <button class="ai-send-btn" onclick="submitAIQuestion()" title="Send">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
 
       <!-- TW -->
       <div id="words-list" class="notes-list" style="display:none">
@@ -1111,11 +1289,11 @@
 
     // Pre-filled translations for verses already "done" (verses 1–5)
     const translations = {
-      1: 'હવે યહોવાહ ઈશ્વરે ઉત્પન્ન કરેલાં સર્વ પ્રાણીઓમાં સાપ સૌથી વધારે ધૂર્ત હતો. તેણે સ્ત્રીને કહ્યું કે, "શું ઈશ્વરે ખરેખર તમને એવું કહ્યું છે કે, \'વાડીના કોઈપણ વૃક્ષનું ફળ તમારે ન ખાવું?"',
-      2: 'સ્ત્રીએ સાપને કહ્યું કે, "વાડીના વૃક્ષોનાં ફળ અમે ખાઈ શકીએ છીએ,',
-      3: 'પણ ઈશ્વરે કહેલું છે કે, જે વૃક્ષ વાડીની મધ્યમાં છે તેનું ફળ \'તમારે ખાવું નહિ કે અડકવું નહિ. જો ખાશો તો તમે મૃત્યુ પામશો."',
-      4: 'સાપે સ્ત્રીને કહ્યું કે, "તમે મૃત્યુ નહિ પામો.',
-      5: 'કેમ કે ઈશ્વર જાણે છે કે જે દિવસે તમે તેને ખાશો તે જ દિવસે તમારી આંખો ઊઘડી જશે અને તમે ઈશ્વરો સમાન સારું શું અને નરસું શું છે તે સમજનારાં થશો.',
+      1:  'હવે યહોવાહ ઈશ્વરે ઉત્પન્ન કરેલાં સર્વ પ્રાણીઓમાં સાપ સૌથી વધારે ધૂર્ત હતો. તેણે સ્ત્રીને કહ્યું કે, "શું ઈશ્વરે ખરેખર તમને એવું કહ્યું છે કે, \'વાડીના કોઈપણ વૃક્ષનું ફળ તમારે ન ખાવું?"',
+      2:  'સ્ત્રીએ સાપને કહ્યું કે, "વાડીના વૃક્ષોનાં ફળ અમે ખાઈ શકીએ છીએ,',
+      3:  'પણ ઈશ્વરે કહેલું છે કે, જે વૃક્ષ વાડીની મધ્યમાં છે તેનું ફળ \'તમારે ખાવું નહિ કે અડકવું નહિ. જો ખાશો તો તમે મૃત્યુ પામશો."',
+      4:  'સાપે સ્ત્રીને કહ્યું કે, "તમે મૃત્યુ નહિ પામો.',
+      5:  'કેમ કે ઈશ્વર જાણે છે કે જે દિવસે તમે તેને ખાશો તે જ દિવસે તમારી આંખો ઊઘડી જશે અને તમે ઈશ્વરો સમાન સારું શું અને નરસું શું છે તે સમજનારાં થશો.',
       6:  'તે વૃક્ષનું ફળ ખાવામાં સ્વાદિષ્ટ, જોવામાં સુંદર અને તે જ્ઞાન આપવાને ઇચ્છવાજોગ છે, એવું જાણીને સ્ત્રીએ તે ફળ તોડીને ખાધું અને તેની સાથે તેનો પતિ હતો તેને પણ આપ્યું. તેણે પણ ફળ ખાધું.',
       7:  'ત્યારે તેઓ બઘ્ધેની આંખો ઊઘડી ગઈ અને તેઓ સમજ્યા કે અમે વસ્ત્રહીન છીએ. તેથી તેઓએ અઞ્જીરનાં પાંદડાં જોડીને પોતાને માટે આવરણ બનાવ્યાં.',
       8:  'દિવસના ઠંડા પહોરે વાડીમાં પ્રભુ ઈશ્વરનો ચાલવાનો અવાજ તેઓના સાંભળવામાં આવ્યો, તેથી તે માણસ તથા તેની પત્ની પોતાને પ્રભુ ઈશ્વરના સાનિઘ્યથી દૂર રાખવા માટે વાડીના વૃક્ષોની વચ્ચે સંતાયાં.',
@@ -1253,6 +1431,7 @@
       if (activeVerse > maxVerse) maxVerse = activeVerse;
 
       renderVerses();
+      maybeUpdateAIPane();
       requestAnimationFrame(scrollToActive);
     }
 
@@ -1407,6 +1586,7 @@
       renderPericopes();
       renderNotesForMode();
       renderQuestionsForMode();
+      maybeUpdateAIPane();
       requestAnimationFrame(scrollToActivePericope);
     }
 
@@ -1417,6 +1597,7 @@
       renderPericopes();
       renderNotesForMode();
       renderQuestionsForMode();
+      maybeUpdateAIPane();
       requestAnimationFrame(scrollToActivePericope);
     }
 
@@ -1507,6 +1688,8 @@
 
     const TQ_CHEV_SVG = '<svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>';
 
+    const SPARKLES_SVG = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .962L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>';
+
     function renderQuestions() {
       const container = document.getElementById('questions-list');
       const questions = TQ_DATA[activeVerse] || [];
@@ -1553,6 +1736,7 @@
       renderVerses();
       renderNotes();
       renderQuestions();
+      maybeUpdateAIPane();
       requestAnimationFrame(scrollToActive);
     }
 
@@ -1735,6 +1919,218 @@
       }).join('');
     }
 
+    // ── AI Assistant pane ─────────────────────────────────────────────────────
+
+    var lastAIPericopeIndex = -99;
+    var aiThreads = {};
+    var aiLoadTimer = null;
+    var aiResponseTimer = null;
+    var aiCurrentQuestions = [];
+
+    const AI_CONTENT = [
+      {
+        summary: 'A crafty serpent, later identified as Satan, approaches the woman and twists God\'s words to make her doubt His goodness (1). He begins with a misleading question implying God had forbidden all the fruit. The woman corrects him, but she also adds that they must not even touch the fruit — something God had not said. The serpent then directly denies that they will die, claiming instead that God knows eating the fruit will make them like Him, knowing good and evil (2–5).',
+        questions: [
+          'Why does the serpent start by misrepresenting what God said?',
+          'Why does the woman add "or touch it" to God\'s command?',
+          'What does "knowing good and evil like God" mean here?',
+        ],
+      },
+      {
+        summary: 'The woman sees that the fruit looks good to eat, is beautiful, and could make her wise. She eats it and gives some to her husband, Adam, who is with her, and he eats as well (6). Immediately, they both realize they are naked and feel ashamed; they sew fig leaves together to cover themselves (7). When they hear the sound of the LORD God walking in the garden in the cool of the evening, they hide among the trees out of fear (8).',
+        questions: [
+          'Was Adam standing with Eve the whole time, or did he come later?',
+          'Why do they feel shame about nakedness only after eating the fruit?',
+          'What does God walking in the garden tell us about His relationship with them?',
+        ],
+      },
+      {
+        summary: 'The LORD God calls out to Adam, asking where he is (9). Adam admits he hid because he was afraid and knew he was naked (10). God asks how he knew that, and whether he had eaten the forbidden fruit (11). The man blames the woman God gave him; the woman blames the serpent for deceiving her (12–13). No one confesses directly or accepts responsibility for their own choice.',
+        questions: [
+          'Why does God ask "Where are you?" if He already knows?',
+          'Is the man blaming God as well as the woman when he says "the woman you gave me"?',
+          'What does it mean that the serpent "deceived" the woman?',
+        ],
+      },
+      {
+        summary: 'God pronounces three judgments in sequence. The serpent is cursed above all animals and will crawl on its belly eating dust; there will be ongoing hostility between its offspring and the woman\'s — her descendant will crush the serpent\'s head, and the serpent will strike his heel (14–15). The woman will experience great pain in childbirth, and her relationship with her husband will be marked by conflict (16). Adam is told the ground is cursed because of him; he will struggle to grow food all his life and will eventually die and return to dust (17–19).',
+        questions: [
+          'What does "her offspring will crush your head" mean — who is this referring to?',
+          'Why is the ground cursed because of Adam\'s sin?',
+          'Does the judgment on the woman cover only childbirth, or also her marriage relationship?',
+        ],
+      },
+      {
+        summary: 'Adam names his wife Eve, meaning "life-giver," because she will be the mother of all people (20). Despite their sin, the LORD God mercifully provides them with clothing made from animal skins (21). Then, to prevent them from eating from the tree of life and living forever in their sinful condition, God banishes them from the Garden of Eden (22–23). He places powerful winged creatures and a flaming, spinning sword at the entrance to guard the way to the tree of life (24).',
+        questions: [
+          'Why does Adam name his wife after God announces the curse, not before?',
+          'What are the winged creatures guarding the garden, and how should I describe them?',
+          'What is the tree of life, and why does God block access to it now?',
+        ],
+      },
+    ];
+
+    const AI_RESPONSES = {
+      'Why does the serpent start by misrepresenting what God said?':
+        'The serpent\'s opening question — "Did God really say you must not eat from any tree?" — overstates God\'s command. God had only restricted one tree. By misquoting God, the serpent invites the woman to correct him, drawing her into a conversation on his terms. Once she engages, he can move from distortion to outright denial in verse 4. This pattern — first planting doubt, then contradicting God directly — is the core of his strategy.',
+      'Why does the woman add "or touch it" to God\'s command?':
+        'God\'s original command in 2:17 said only not to eat. The woman adds "or touch it." This may reflect a misremembering, an attempt to build a stricter boundary around the forbidden tree, or simply an exaggeration. Whatever the reason, the addition shows the command has already shifted slightly in her understanding — and the serpent does not correct her.',
+      'What does "knowing good and evil like God" mean here?':
+        'The phrase refers to the capacity to make moral judgments independently of God — to decide for oneself what is right and wrong rather than receiving that from Him. It does not mean that knowing good and evil is wrong in itself, but that taking that knowledge by disobedience is the problem. The serpent presents it as a benefit; God presents the same reality as a consequence of sin.',
+      'Was Adam standing with Eve the whole time, or did he come later?':
+        'Verse 6 says "she gave some to her husband, who was with her." The Hebrew implies he was present during at least part of the exchange. He is not portrayed as arriving afterward. Many translators note that Adam\'s silence during the conversation is significant — he does not intervene or object, and he eats without any recorded hesitation or protest.',
+      'Why do they feel shame about nakedness only after eating the fruit?':
+        'In 2:25, they were naked and felt no shame — this was a sign of innocence and full trust between them and with God. After eating the fruit, their eyes are "opened" to their condition, and shame enters. The nakedness itself has not changed; their relationship with each other and with God has. Shame is the first symptom of the broken relationship, not a reaction to the physical state alone.',
+      'What does God walking in the garden tell us about His relationship with them?':
+        'The image of the LORD God walking in the garden suggests a regular, familiar presence — He came to be with them. This was not an unusual visit; it implies a pattern of relationship and closeness. Their hiding marks a rupture in that pattern. For translators, it is worth finding language that conveys God\'s nearness and approachability before the fall, which makes the hiding all the more significant.',
+      'Why does God ask "Where are you?" if He already knows?':
+        'The question is not a request for information. God already knows where Adam is and what he has done. The question is an invitation — giving Adam the opportunity to come forward, confess, and restore the relationship. It is the same kind of question a parent might ask a child who is hiding: not because the parent doesn\'t know, but to give the child a chance to respond. This is an important nuance for translators to preserve.',
+      'Is the man blaming God as well as the woman when he says "the woman you gave me"?':
+        'Yes, there is an implicit accusation in that phrase. Adam says "the woman you gave me" before saying "she gave me the fruit." By emphasizing that God gave him the woman, he is deflecting responsibility toward both the woman and God. This layered blame is part of what the text is showing about the human response to guilt. Some languages will need to make this subtext explicit in the translation.',
+      'What does it mean that the serpent "deceived" the woman?':
+        'The word for deceive here suggests being misled or tricked — not just making a mistake, but being actively led to a false conclusion by another party. The woman was not simply wrong; she was manipulated. This distinction matters for translation because it affects how much moral responsibility is attributed to her versus the serpent. Paul references this event in 1 Timothy 2:14 using the same idea of deception.',
+      'What does "her offspring will crush your head" mean — who is this referring to?':
+        'This verse (15) is often called the protoevangelium — the first hint of good news in the Bible. "Her offspring" or "her seed" refers most immediately to humanity in conflict with evil, but it is also understood to point forward to a specific descendant who will decisively defeat the serpent. The crushing of the head is fatal; the strike on the heel is painful but not fatal. Many translations add a footnote here about the messianic reading.',
+      'Why is the ground cursed because of Adam\'s sin?':
+        'Adam was made from the ground (2:7) and given the task of working and caring for it (2:15). The curse on the ground is tied directly to him — his relationship with the earth is broken just as his relationship with God is. Working the ground, which was meant to be meaningful and fruitful, will now involve painful toil and resistance. The ground will yield thorns and thistles rather than cooperating with human effort.',
+      'Does the judgment on the woman cover only childbirth, or also her marriage relationship?':
+        'Both. Verse 16 has two parts: increased pain in childbirth, and a changed dynamic with her husband — her desire will be toward him, but he will rule over her. The exact meaning of this second part is debated, but it describes a relational tension that was not present before the fall. Translators should be careful not to reduce this verse to only the physical pain of childbirth; the relational dimension is significant.',
+      'Why does Adam name his wife after God announces the curse, not before?':
+        'In 2:23, Adam described the woman in terms of her origin ("bone of my bone"). Now, after the curse and the promise of 3:15, he names her Eve — meaning "living" or "life-giver" — because she will be the mother of all the living. This is an act of faith: even in the moment of judgment, Adam believes the promise that life will continue and that his wife will be central to it.',
+      'What are the winged creatures guarding the garden, and how should I describe them?':
+        'The Hebrew word is cherubim (plural of cherub). In the Old Testament, cherubim are powerful divine beings — not the small, childlike figures of later art. They appear elsewhere in the Bible guarding sacred spaces, including on the ark of the covenant. They represent God\'s holiness and the boundary between the holy and the common. For languages without a word for these beings, a descriptive phrase like "powerful heavenly guardians" or "God\'s angelic gatekeepers" may be appropriate.',
+      'What is the tree of life, and why does God block access to it now?':
+        'The tree of life appeared first in 2:9, growing in the middle of the garden. Eating from it presumably sustained or granted immortality. After the fall, God says the humans have "become like one of us, knowing good and evil" — and if they also eat from the tree of life, they will live forever in their sinful state. Blocking access is therefore both a judgment and, from another angle, a mercy: living forever without restoration would be a worse outcome than death.',
+    };
+
+    function getAIResponse(question) {
+      return AI_RESPONSES[question] ||
+        'That is a good question for this passage. The Translation Notes and Translation Manual will have specific guidance on how to handle this concept in your target language. You may also want to check whether your language has a natural way to express this idea that readers will immediately understand.';
+    }
+
+    function getPericopeForVerse(n) {
+      for (var i = 0; i < PERICOPES.length; i++) {
+        if (PERICOPES[i].verses.indexOf(n) !== -1) return i;
+      }
+      return 0;
+    }
+
+    function getActivePericopeIndex() {
+      if (viewMode === 'pericope') return activePericope;
+      return getPericopeForVerse(activeVerse);
+    }
+
+    function getPericopeLabel(pi) {
+      return pi >= 0 ? 'Genesis ' + PERICOPES[pi].label : 'Genesis 3';
+    }
+
+    function renderAIPane() {
+      clearTimeout(aiLoadTimer);
+      clearTimeout(aiResponseTimer);
+
+      var pi = getActivePericopeIndex();
+      lastAIPericopeIndex = pi;
+
+      var refEl = document.getElementById('ai-pane-ref');
+      if (refEl) refEl.textContent = getPericopeLabel(pi);
+
+      var body = document.getElementById('ai-pane-body');
+      if (!body) return;
+
+      body.innerHTML = '<div class="ai-loading"><div class="ai-loading-spinner"></div>Loading passage context…</div>';
+
+      aiLoadTimer = setTimeout(function() { renderAIBody(pi); }, 1100);
+    }
+
+    function renderAIBody(pi) {
+      var body = document.getElementById('ai-pane-body');
+      if (!body) return;
+
+      var content = (pi >= 0 && pi < AI_CONTENT.length) ? AI_CONTENT[pi] : null;
+      if (!content) {
+        body.innerHTML = '<div class="ai-loading">No context available for this view.</div>';
+        return;
+      }
+
+      var thread = aiThreads[pi] || [];
+      var html = '';
+
+      aiCurrentQuestions = content.questions;
+
+      html += '<div class="ai-summary">' + content.summary + '</div>';
+
+      html += '<div class="ai-questions"><div class="ai-questions-label">Suggested questions</div>';
+      content.questions.forEach(function(q, i) {
+        html += '<button class="ai-question-btn" onclick="submitAIQuestion(aiCurrentQuestions[' + i + '])">' + esc(q) + '</button>';
+      });
+      html += '</div>';
+
+      html += '<div class="ai-thread" id="ai-thread">';
+      thread.forEach(function(turn) {
+        html += '<div class="ai-thread-turn ai-turn-' + turn.role + '">'
+          + '<div class="ai-turn-label ' + turn.role + '">' + (turn.role === 'user' ? 'You' : 'BT Servant') + '</div>'
+          + '<div class="ai-turn-text">' + turn.text + '</div>'
+          + '</div>';
+      });
+      html += '</div>';
+
+      body.innerHTML = html;
+      body.scrollTop = body.scrollHeight;
+    }
+
+    function submitAIQuestion(prefill) {
+      var pi = getActivePericopeIndex();
+      if (pi < 0) return;
+
+      var inputEl = document.getElementById('ai-input');
+      var q = prefill || (inputEl ? inputEl.value.trim() : '');
+      if (!q) return;
+
+      if (inputEl) { inputEl.value = ''; autoResizeAIInput(inputEl); }
+
+      if (!aiThreads[pi]) aiThreads[pi] = [];
+      aiThreads[pi].push({ role: 'user', text: q });
+      renderAIBody(pi);
+
+      // Append loading indicator for assistant turn
+      var thread = document.getElementById('ai-thread');
+      if (thread) {
+        var loadTurn = document.createElement('div');
+        loadTurn.className = 'ai-thread-turn';
+        loadTurn.id = 'ai-asst-loading';
+        loadTurn.innerHTML = '<div class="ai-turn-label asst">BT Servant</div>'
+          + '<div class="ai-loading" style="padding:4px 0 0;"><div class="ai-loading-spinner"></div></div>';
+        thread.appendChild(loadTurn);
+        var body = document.getElementById('ai-pane-body');
+        if (body) body.scrollTop = body.scrollHeight;
+      }
+
+      // Disable question buttons while responding
+      document.querySelectorAll('.ai-question-btn').forEach(function(b) { b.disabled = true; });
+
+      clearTimeout(aiResponseTimer);
+      aiResponseTimer = setTimeout(function() {
+        aiThreads[pi].push({ role: 'asst', text: getAIResponse(q) });
+        renderAIBody(pi);
+      }, 1800);
+    }
+
+    function autoResizeAIInput(el) {
+      if (!el) return;
+      el.style.height = 'auto';
+      el.style.height = Math.min(120, el.scrollHeight) + 'px';
+    }
+
+    function maybeUpdateAIPane() {
+      var aiPane = document.getElementById('ai-assistant-pane');
+      if (!aiPane || !aiPane.classList.contains('active')) return;
+      var pi = getActivePericopeIndex();
+      if (pi !== lastAIPericopeIndex) {
+        aiThreads = {};
+        renderAIPane();
+      }
+    }
+
     // ── Resources panel ───────────────────────────────────────────────────────
 
     function toggleResources() {
@@ -1755,19 +2151,21 @@
         document.getElementById(id).style.display = 'none';
       });
       document.getElementById('bibles-list').classList.remove('active');
+      document.getElementById('ai-assistant-pane').classList.remove('active');
 
       document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('selected'); });
       el.classList.add('selected');
 
-      const showLang = ['notes', 'questions', 'words', 'aosn'].includes(el.dataset.value);
+      const showLang = ['notes', 'questions', 'words', 'aosn', 'ai-assistant'].includes(el.dataset.value);
       document.getElementById('res-lang-bar').style.display = showLang ? '' : 'none';
 
       switch (el.dataset.value) {
-        case 'notes':     document.getElementById('notes-list').style.display = 'block'; break;
-        case 'images':    document.getElementById('images-list').style.display = 'grid'; break;
-        case 'bibles':    document.getElementById('bibles-list').classList.add('active'); initBiblesPanel(); break;
-        case 'questions': document.getElementById('questions-list').style.display = 'block'; break;
-        case 'words':     document.getElementById('words-list').style.display = 'block'; break;
+        case 'notes':        document.getElementById('notes-list').style.display = 'block'; break;
+        case 'images':       document.getElementById('images-list').style.display = 'grid'; break;
+        case 'bibles':       document.getElementById('bibles-list').classList.add('active'); initBiblesPanel(); break;
+        case 'questions':    document.getElementById('questions-list').style.display = 'block'; break;
+        case 'words':        document.getElementById('words-list').style.display = 'block'; break;
+        case 'ai-assistant': document.getElementById('ai-assistant-pane').classList.add('active'); renderAIPane(); break;
       }
     }
 

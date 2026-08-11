@@ -1168,6 +1168,8 @@ const SETTINGS_HTML = `
         A minimum of 500 verses is needed to show translation suggestions. Once that threshold is met, AI translation suggestions will automatically appear for each new verse.
         <br><br>
         Keep in mind that this feature is still in development. It is advised to double check the suggestions and make adjustments as needed. Since data is sent to an external AI model, be sure to read the privacy policy before using this feature.
+        <br><br>
+        Turning off AI Suggestions does not affect the AI Assistant, which uses only passage references and never reads your draft text.
       </div>
     </div>
 
