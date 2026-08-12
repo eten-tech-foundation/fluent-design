@@ -480,6 +480,34 @@
       display: block;
     }
 
+    /* ── First-time notice ── */
+    .ai-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 11px 14px 11px 12px;
+      background: #eff6ff;
+      border-bottom: 1px solid #bfdbfe;
+      border-left: 3px solid #3b82f6;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #1e3a5f;
+    }
+    .ai-notice-icon { flex-shrink: 0; color: #3b82f6; margin-top: 1px; }
+    .ai-notice-text { flex: 1; }
+    .ai-notice-text strong { font-weight: 600; }
+    .ai-notice-dismiss {
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      color: #60a5fa;
+      line-height: 1;
+      margin-top: 1px;
+    }
+    .ai-notice-dismiss:hover { color: #1e3a5f; }
+
     /* ── AI summary ── */
     .ai-summary {
       padding: 14px 20px 16px;
@@ -541,6 +569,33 @@
     .ai-turn-label.asst { color: var(--primary); }
     .ai-turn-text { font-size: 13px; line-height: 1.65; color: var(--foreground); }
     .ai-turn-user .ai-turn-text { color: var(--muted-foreground); font-style: italic; }
+
+    /* ── Error state ── */
+    .ai-turn-error {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #dc2626;
+      padding: 2px 0;
+    }
+    .ai-retry-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border: 1.5px solid #dc2626;
+      border-radius: var(--radius);
+      background: none;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--font);
+      color: #dc2626;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.1s;
+    }
+    .ai-retry-btn:hover { background: #fef2f2; }
 
     /* ── Loading ── */
     .ai-loading {
@@ -962,6 +1017,43 @@
     .chapter-block[data-type="s4"] { font-size: 0.875rem; color: var(--muted-foreground); }
     .chapter-block[data-type="q1"] { padding-left: 2.25em; font-style: italic; }
     .chapter-block[data-type="q2"] { padding-left: 4.25em; font-style: italic; }
+
+    /* ── Pericope title row ── */
+    .pericope-title-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      margin-bottom: 6px;
+      align-items: center;
+    }
+    .pericope-src-title {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--foreground);
+      padding-right: 12px;
+      padding-bottom: 4px;
+    }
+    .pericope-title-input {
+      width: 100%;
+      padding: 5px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      font-family: var(--font);
+      color: var(--foreground);
+      background: var(--background);
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
+    }
+    .pericope-title-input:focus { border-color: var(--primary); }
+    .pericope-done-title {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--foreground);
+      padding-bottom: 4px;
+    }
+
   </style>
 </head>
 <body data-role="translator">
@@ -983,7 +1075,7 @@
         <svg id="save-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>
         <span id="save-label"></span>
       </div>
-<button id="resources-toggle-btn" class="view-btn" title="Toggle resources" onclick="toggleResources()">
+      <button id="resources-toggle-btn" class="view-btn" title="Toggle resources" onclick="toggleResources()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M8 7h6"/><path d="M8 11h8"/></svg>
       </button>
       <div class="chapter-progress" title="Chapter progress">
@@ -1287,7 +1379,7 @@
       24: 'તેમણે આ માણસને હાંકી કાઢ્યો. ઇદન ની વાડીને પૂર્વ તરફ કરૂબીઓને ગોઠવ્યા, તથા ચારે બાજુ ફરતી અગ્નિની તલવાર, જ્ઞાન વૃક્ષ ના માર્ગ ના રક્ષણ માટે મૂકી.',
     };
 
-    // Pre-filled translations for verses already "done" (verses 1–5)
+    // Pre-filled translations for verses already "done" (verses 1–8)
     const translations = {
       1:  'હવે યહોવાહ ઈશ્વરે ઉત્પન્ન કરેલાં સર્વ પ્રાણીઓમાં સાપ સૌથી વધારે ધૂર્ત હતો. તેણે સ્ત્રીને કહ્યું કે, "શું ઈશ્વરે ખરેખર તમને એવું કહ્યું છે કે, \'વાડીના કોઈપણ વૃક્ષનું ફળ તમારે ન ખાવું?"',
       2:  'સ્ત્રીએ સાપને કહ્યું કે, "વાડીના વૃક્ષોનાં ફળ અમે ખાઈ શકીએ છીએ,',
@@ -1297,15 +1389,13 @@
       6:  'તે વૃક્ષનું ફળ ખાવામાં સ્વાદિષ્ટ, જોવામાં સુંદર અને તે જ્ઞાન આપવાને ઇચ્છવાજોગ છે, એવું જાણીને સ્ત્રીએ તે ફળ તોડીને ખાધું અને તેની સાથે તેનો પતિ હતો તેને પણ આપ્યું. તેણે પણ ફળ ખાધું.',
       7:  'ત્યારે તેઓ બઘ્ધેની આંખો ઊઘડી ગઈ અને તેઓ સમજ્યા કે અમે વસ્ત્રહીન છીએ. તેથી તેઓએ અઞ્જીરનાં પાંદડાં જોડીને પોતાને માટે આવરણ બનાવ્યાં.',
       8:  'દિવસના ઠંડા પહોરે વાડીમાં પ્રભુ ઈશ્વરનો ચાલવાનો અવાજ તેઓના સાંભળવામાં આવ્યો, તેથી તે માણસ તથા તેની પત્ની પોતાને પ્રભુ ઈશ્વરના સાનિઘ્યથી દૂર રાખવા માટે વાડીના વૃક્ષોની વચ્ચે સંતાયાં.',
-      9:  'યહોવાહ ઈશ્વરે આદમને હાંક મારી કે, "તું ક્યાં છો?"',
-      10: 'આદમે કહ્યું કે, "મેં વાડીમાં તમારો અવાજ સાંભળ્યો અને હું ગભરાયો. કેમ કે હું વસ્ત્રહીન છું. તેથી હું સંતાઈ ગયો."',
     };
 
     // ── State ─────────────────────────────────────────────────────────────────
 
     const TOTAL_VERSES = 24;
-    let activeVerse = 6;
-    let maxVerse = 6;
+    let activeVerse = 9;
+    let maxVerse = 8;
     let autoSaveTimer = null;
     let saveRetryTimer = null;
 
@@ -1314,12 +1404,15 @@
     let activePericope = 0;
 
     const PERICOPES = [
-      { label: '3:1–5',   verses: [1, 2, 3, 4, 5] },
-      { label: '3:6–8',   verses: [6, 7, 8] },
-      { label: '3:9–13',  verses: [9, 10, 11, 12, 13] },
-      { label: '3:14–19', verses: [14, 15, 16, 17, 18, 19] },
-      { label: '3:20–24', verses: [20, 21, 22, 23, 24] },
+      { label: '3:1–5',   verses: [1, 2, 3, 4, 5],         srcTitle: 'The Temptation', aiTitle: 'લાલચ' },
+      { label: '3:6–8',   verses: [6, 7, 8],                srcTitle: 'The Fall',        aiTitle: 'પાનખર' },
+      { label: '3:9–13',  verses: [9, 10, 11, 12, 13],      srcTitle: "God's Inquiry",   aiTitle: 'ભગવાનની પૂછપરછ' },
+      { label: '3:14–19', verses: [14, 15, 16, 17, 18, 19], srcTitle: 'The Curse',       aiTitle: 'શાપ' },
+      { label: '3:20–24', verses: [20, 21, 22, 23, 24],     srcTitle: 'The Expulsion',   aiTitle: 'હકાલપટ્ટી' },
     ];
+
+    var pericopeTitles = {};
+    var aiSuggestionsEnabled = true;
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
@@ -1438,12 +1531,18 @@
     // ── Pericope rendering ────────────────────────────────────────────────────
 
     function renderPericopes() {
-      const container = document.getElementById('verse-scroll');
+      var container = document.getElementById('verse-scroll');
 
-      // Persist any live values from DOM before destroying it
+      // Persist title inputs before DOM teardown
+      PERICOPES.forEach(function(p, pi) {
+        var titleInp = document.getElementById('pericope-title-input-' + pi);
+        if (titleInp) pericopeTitles[pi] = titleInp.value;
+      });
+
+      // Persist verse live values
       PERICOPES.forEach(function(p) {
         p.verses.forEach(function(n) {
-          const inp = document.getElementById('input-' + n);
+          var inp = document.getElementById('input-' + n);
           if (inp) translations[n + '__live'] = inp.value;
         });
       });
@@ -1451,35 +1550,80 @@
       container.innerHTML = '';
 
       PERICOPES.forEach(function(p, pi) {
-        const isActive  = (pi === activePericope);
-        const isDone    = (pi < activePericope);
-        const isPending = (pi > activePericope);
+        var isActive  = (pi === activePericope);
+        var isDone    = (pi < activePericope);
+        var isPending = (pi > activePericope);
 
-        const block = document.createElement('div');
+        var block = document.createElement('div');
         block.className = 'pericope-block';
         block.id = 'pericope-' + pi;
 
-        // Verse range labels (above each card column)
-        const rangeRow = document.createElement('div');
+        // ── Verse range row ──
+        var rangeRow = document.createElement('div');
         rangeRow.className = 'pericope-range-row';
         rangeRow.innerHTML =
           '<div class="pericope-range-label">' + p.label + '</div>' +
           '<div class="pericope-range-label">' + p.label + '</div>';
+        block.appendChild(rangeRow);
 
-        // Two-column content row
-        const contentRow = document.createElement('div');
+        // ── Title row (when pericope has a title) ──
+        if (p.srcTitle) {
+          var titleRow = document.createElement('div');
+          titleRow.className = 'pericope-title-row';
+
+          var srcTitleEl = document.createElement('div');
+          srcTitleEl.className = 'pericope-src-title';
+          srcTitleEl.textContent = p.srcTitle;
+          titleRow.appendChild(srcTitleEl);
+
+          var draftTitleEl = document.createElement('div');
+          if (!isPending) {
+            if (isDone) {
+              var savedTitle = pericopeTitles[pi] || '';
+              if (savedTitle) {
+                var doneTitleEl = document.createElement('div');
+                doneTitleEl.className = 'pericope-done-title';
+                doneTitleEl.textContent = savedTitle;
+                draftTitleEl.appendChild(doneTitleEl);
+              }
+            } else {
+              var aiTitle = getAITitleSuggestion(pi);
+              var currentTitle = pericopeTitles[pi] || '';
+              var displayTitle = currentTitle || aiTitle;
+
+              var titleInput = document.createElement('input');
+              titleInput.type = 'text';
+              titleInput.className = 'pericope-title-input';
+              titleInput.id = 'pericope-title-input-' + pi;
+              titleInput.value = displayTitle;
+              titleInput.placeholder = 'Section title…';
+              (function(inp, idx) {
+                inp.addEventListener('input', function() {
+                  pericopeTitles[idx] = inp.value;
+                  triggerAutoSave();
+                });
+              }(titleInput, pi));
+              draftTitleEl.appendChild(titleInput);
+            }
+          }
+          titleRow.appendChild(draftTitleEl);
+          block.appendChild(titleRow);
+        }
+
+        // ── Two-column content row ──
+        var contentRow = document.createElement('div');
         contentRow.className = 'pericope-content-row';
 
-        // ── Source column ──
-        const srcCol = document.createElement('div');
+        // Source column
+        var srcCol = document.createElement('div');
         srcCol.className = 'pericope-source-col';
 
-        const srcCard = document.createElement('div');
+        var srcCard = document.createElement('div');
         srcCard.className = 'source-card pericope-src-card' + (isActive ? ' active-source' : '');
-        const srcPara = document.createElement('div');
+        var srcPara = document.createElement('div');
         srcPara.className = 'pericope-para';
         p.verses.forEach(function(n) {
-          const numEl = document.createElement('span');
+          var numEl = document.createElement('span');
           numEl.className = 'verse-num';
           numEl.textContent = n;
           srcPara.appendChild(numEl);
@@ -1488,20 +1632,20 @@
         srcCard.appendChild(srcPara);
         srcCol.appendChild(srcCard);
 
-        // ── Draft column ──
-        const draftCol = document.createElement('div');
+        // Draft column
+        var draftCol = document.createElement('div');
         draftCol.className = 'pericope-draft-col';
 
         if (!isPending) {
-          const cardState = isActive ? 'active' : 'done';
-          const draftCard = document.createElement('div');
+          var cardState = isActive ? 'active' : 'done';
+          var draftCard = document.createElement('div');
           draftCard.className = 'pericope-draft-card ' + cardState;
 
           if (isDone) {
-            const para = document.createElement('div');
+            var para = document.createElement('div');
             para.className = 'pericope-para';
             p.verses.forEach(function(n) {
-              const numEl = document.createElement('span');
+              var numEl = document.createElement('span');
               numEl.className = 'verse-num';
               numEl.textContent = n;
               para.appendChild(numEl);
@@ -1509,20 +1653,23 @@
             });
             draftCard.appendChild(para);
             draftCard.addEventListener('click', function() { activatePericope(pi); });
+
           } else {
-            const rte = document.createElement('div');
+            var rte = document.createElement('div');
             rte.className = 'pericope-rte';
             rte.id = 'pericope-rte';
             rte.contentEditable = 'true';
             p.verses.forEach(function(n) {
-              const numEl = document.createElement('span');
+              var numEl = document.createElement('span');
               numEl.className = 'verse-num';
               numEl.contentEditable = 'false';
               numEl.textContent = n;
               rte.appendChild(numEl);
-              const liveVal = translations[n + '__live'];
-              const savedVal = translations[n] || '';
-              rte.appendChild(document.createTextNode((liveVal !== undefined ? liveVal : savedVal) + ' '));
+              var liveVal = translations[n + '__live'];
+              var savedVal = translations[n] || '';
+              var existing = liveVal !== undefined ? liveVal : savedVal;
+              var text = existing || (aiSuggestionsEnabled ? (sourceText[n] || '') : '');
+              rte.appendChild(document.createTextNode(text + ' '));
             });
             draftCard.appendChild(rte);
             rte.addEventListener('input', function() {
@@ -1531,11 +1678,10 @@
             });
           }
 
-          // Next Pericope button on active pericope (not the last one)
           if (isActive && pi < PERICOPES.length - 1) {
-            const nextWrap = document.createElement('div');
+            var nextWrap = document.createElement('div');
             nextWrap.className = 'next-pericope-wrap';
-            const nextBtn = document.createElement('button');
+            var nextBtn = document.createElement('button');
             nextBtn.className = 'next-pericope-btn';
             nextBtn.textContent = 'Next Pericope';
             nextBtn.onclick = nextPericope;
@@ -1548,7 +1694,6 @@
 
         contentRow.appendChild(srcCol);
         contentRow.appendChild(draftCol);
-        block.appendChild(rangeRow);
         block.appendChild(contentRow);
         container.appendChild(block);
       });
@@ -1556,7 +1701,7 @@
       updateProgress();
 
       requestAnimationFrame(function() {
-        const rte = document.getElementById('pericope-rte');
+        var rte = document.getElementById('pericope-rte');
         if (rte) rte.focus();
       });
     }
@@ -1575,6 +1720,8 @@
         }
       });
       if (currentVerse !== null) { translations[currentVerse] = currentText.trim(); delete translations[currentVerse + '__live']; }
+      var titleInp = document.getElementById('pericope-title-input-' + activePericope);
+      if (titleInp) pericopeTitles[activePericope] = titleInp.value;
     }
 
     function nextPericope() {
@@ -1689,6 +1836,20 @@
     const TQ_CHEV_SVG = '<svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>';
 
     const SPARKLES_SVG = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .962L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>';
+    function getAIVerseSuggestion(n) {
+      if (!aiSuggestionsEnabled) return '';
+      var live = translations[n + '__live'];
+      var saved = translations[n];
+      if ((live !== undefined && live !== '') || (saved && saved !== '')) return '';
+      return sourceText[n] || '';
+    }
+
+    function getAITitleSuggestion(pi) {
+      if (!aiSuggestionsEnabled) return '';
+      if (pericopeTitles[pi]) return '';
+      return PERICOPES[pi] ? (PERICOPES[pi].aiTitle || '') : '';
+    }
+
 
     function renderQuestions() {
       const container = document.getElementById('questions-list');
@@ -1937,7 +2098,7 @@
         ],
       },
       {
-        summary: 'The woman sees that the fruit looks good to eat, is beautiful, and could make her wise. She eats it and gives some to her husband, Adam, who is with her, and he eats as well (6). Immediately, they both realize they are naked and feel ashamed; they sew fig leaves together to cover themselves (7). When they hear the sound of the LORD God walking in the garden in the cool of the evening, they hide among the trees out of fear (8).',
+        summary: 'The woman sees that the fruit looks good to eat, is beautiful, and could make her wise. She eats it and gives some to her husband, Adam, who is with her, and he eats as well (6). Immediately, they both realize they are naked and feel ashamed; they sew fig leaves together to cover themselves (7). When they hear the sound of the LORD God walking in the garden in the cool of the evening, they hide among the trees out of fear (8).<br/><br/>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
         questions: [
           'Was Adam standing with Eve the whole time, or did he come later?',
           'Why do they feel shame about nakedness only after eating the fruit?',
@@ -2057,6 +2218,15 @@
 
       aiCurrentQuestions = content.questions;
 
+      var INFO_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+      var X_SVG = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+      html += '<div class="ai-notice" id="ai-notice">'
+        + '<span class="ai-notice-icon">' + INFO_SVG + '</span>'
+        + '<div class="ai-notice-text"><strong>AI Assistant uses biblical resources and passage references — not your draft translation.</strong>'
+        + ' Conversations clear when you navigate or reload.</div>'
+        + '<button class="ai-notice-dismiss" onclick="document.getElementById(\'ai-notice\').remove()" aria-label="Dismiss">' + X_SVG + '</button>'
+        + '</div>';
+
       html += '<div class="ai-summary">' + content.summary + '</div>';
 
       html += '<div class="ai-questions"><div class="ai-questions-label">Suggested questions</div>';
@@ -2068,17 +2238,19 @@
       html += '<div class="ai-thread" id="ai-thread">';
       thread.forEach(function(turn) {
         html += '<div class="ai-thread-turn ai-turn-' + turn.role + '">'
-          + '<div class="ai-turn-label ' + turn.role + '">' + (turn.role === 'user' ? 'You' : 'BT Servant') + '</div>'
+          + '<div class="ai-turn-label ' + turn.role + '">' + (turn.role === 'user' ? 'You' : 'AI Assistant') + '</div>'
           + '<div class="ai-turn-text">' + turn.text + '</div>'
           + '</div>';
       });
       html += '</div>';
 
       body.innerHTML = html;
-      body.scrollTop = body.scrollHeight;
+      if (thread.length > 0) body.scrollTop = body.scrollHeight;
     }
 
-    function submitAIQuestion(prefill) {
+    var RETRY_SVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>';
+
+    function submitAIQuestion(prefill, forceSuccess) {
       var pi = getActivePericopeIndex();
       if (pi < 0) return;
 
@@ -2098,7 +2270,7 @@
         var loadTurn = document.createElement('div');
         loadTurn.className = 'ai-thread-turn';
         loadTurn.id = 'ai-asst-loading';
-        loadTurn.innerHTML = '<div class="ai-turn-label asst">BT Servant</div>'
+        loadTurn.innerHTML = '<div class="ai-turn-label asst">AI Assistant</div>'
           + '<div class="ai-loading" style="padding:4px 0 0;"><div class="ai-loading-spinner"></div></div>';
         thread.appendChild(loadTurn);
         var body = document.getElementById('ai-pane-body');
@@ -2108,11 +2280,39 @@
       // Disable question buttons while responding
       document.querySelectorAll('.ai-question-btn').forEach(function(b) { b.disabled = true; });
 
+      // Show error state if this is the last suggested question (unless retrying)
+      var isLastQuestion = !forceSuccess && aiCurrentQuestions.length > 0
+        && q === aiCurrentQuestions[aiCurrentQuestions.length - 1];
+
       clearTimeout(aiResponseTimer);
       aiResponseTimer = setTimeout(function() {
-        aiThreads[pi].push({ role: 'asst', text: getAIResponse(q) });
-        renderAIBody(pi);
+        var loadEl = document.getElementById('ai-asst-loading');
+        if (isLastQuestion) {
+          if (loadEl) {
+            loadEl.innerHTML = '<div class="ai-turn-label asst">AI Assistant</div>'
+              + '<div class="ai-turn-error">'
+              + '<span>Something went wrong.</span>'
+              + '<button class="ai-retry-btn" onclick="retryAIQuestion(' + JSON.stringify(q) + ')">'
+              + RETRY_SVG + 'Retry</button>'
+              + '</div>';
+          }
+          document.querySelectorAll('.ai-question-btn').forEach(function(b) { b.disabled = false; });
+        } else {
+          aiThreads[pi].push({ role: 'asst', text: getAIResponse(q) });
+          renderAIBody(pi);
+        }
       }, 1800);
+    }
+
+    function retryAIQuestion(q) {
+      var pi = getActivePericopeIndex();
+      if (pi < 0) return;
+      // Remove the failed user turn so submitAIQuestion can re-add it
+      if (aiThreads[pi] && aiThreads[pi].length > 0) {
+        var last = aiThreads[pi][aiThreads[pi].length - 1];
+        if (last.role === 'user' && last.text === q) aiThreads[pi].pop();
+      }
+      submitAIQuestion(q, true);
     }
 
     function autoResizeAIInput(el) {
