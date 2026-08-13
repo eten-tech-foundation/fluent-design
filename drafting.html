@@ -157,17 +157,36 @@
 
     /* ── Chip row ── */
     .chip-row-wrapper {
-      position: relative;
-      overflow: hidden;
+      display: flex;
+      align-items: center;
       margin-bottom: 8px;
       flex-shrink: 0;
+      padding: 0 16px;
+      gap: 8px;
+    }
+    .chip-ai-pin {
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .chip-ai-divider {
+      width: 1px;
+      height: 24px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+    .chip-row-scroll-wrap {
+      position: relative;
+      flex: 1;
+      overflow: hidden;
     }
     .chip-row-scroll {
       display: flex;
       gap: 8px;
       overflow-x: auto;
       scrollbar-width: none;
-      padding: 6px 16px;
+      padding: 6px 0;
       scroll-behavior: smooth;
     }
     .chip-row-scroll::-webkit-scrollbar { display: none; }
@@ -1094,23 +1113,30 @@
 
       <!-- Chip row -->
       <div class="chip-row-wrapper">
-        <button class="chip-arrow chip-arrow-left hidden" id="chip-arrow-left" onclick="scrollChips(-1)" aria-label="Scroll left">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        <!-- Pinned AI chip (does not scroll) -->
+        <button class="chip chip-ai-pin" data-value="ai-assistant" onclick="selectChip(this)" title="AI Assistant">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c0 0 1 5.5 3.5 8S24 12 24 12s-5.5 1-8 3.5S12 24 12 24s-1-5.5-3.5-8S0 12 0 12s5.5-1 8-3.5S12 2 12 2z"/></svg>
         </button>
-        <div class="chip-fade chip-fade-left hidden" id="chip-fade-left"></div>
-        <div class="chip-row-scroll" id="chip-row-scroll">
-          <button class="chip selected" data-value="notes" onclick="selectChip(this)">TN</button>
-          <button class="chip" data-value="ai-assistant" onclick="selectChip(this)">AI Assistant</button>
-          <button class="chip" data-value="images" onclick="selectChip(this)">Images &amp; Maps</button>
-          <button class="chip" data-value="bibles" onclick="selectChip(this)">Bibles</button>
-          <button class="chip" data-value="questions" onclick="selectChip(this)">TQ</button>
-          <button class="chip" data-value="words" onclick="selectChip(this)">TW</button>
-          <button class="chip" data-value="aosn" onclick="selectChip(this)">AOSN</button>
+        <div class="chip-ai-divider"></div>
+        <!-- Scrollable chips -->
+        <div class="chip-row-scroll-wrap">
+          <button class="chip-arrow chip-arrow-left hidden" id="chip-arrow-left" onclick="scrollChips(-1)" aria-label="Scroll left">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div class="chip-fade chip-fade-left hidden" id="chip-fade-left"></div>
+          <div class="chip-row-scroll" id="chip-row-scroll">
+            <button class="chip selected" data-value="notes" onclick="selectChip(this)">TN</button>
+            <button class="chip" data-value="images" onclick="selectChip(this)">Images &amp; Maps</button>
+            <button class="chip" data-value="bibles" onclick="selectChip(this)">Bibles</button>
+            <button class="chip" data-value="questions" onclick="selectChip(this)">TQ</button>
+            <button class="chip" data-value="words" onclick="selectChip(this)">TW</button>
+            <button class="chip" data-value="aosn" onclick="selectChip(this)">AOSN</button>
+          </div>
+          <div class="chip-fade chip-fade-right" id="chip-fade-right"></div>
+          <button class="chip-arrow chip-arrow-right hidden" id="chip-arrow-right" onclick="scrollChips(1)" aria-label="Scroll right">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
         </div>
-        <div class="chip-fade chip-fade-right" id="chip-fade-right"></div>
-        <button class="chip-arrow chip-arrow-right hidden" id="chip-arrow-right" onclick="scrollChips(1)" aria-label="Scroll right">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
       </div>
 
       <!-- Language selector (TN / TQ / TW / AOSN) -->
