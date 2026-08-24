@@ -253,20 +253,39 @@
       gap: 4px;
     }
 
-    /* ── Book Details accordion ── */
-    .book-details-section {
+    /* ── Metadata modal width override ── */
+    .modal--metadata { width: 520px; }
+
+    /* ── TOC field tooltip ── */
+    .field-tooltip {
+      position: relative;
+      font-size: 11px;
+      color: var(--muted-foreground);
+      cursor: default;
+      margin-left: 3px;
+    }
+    .field-tooltip::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: calc(100% + 5px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--popover);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      overflow: hidden;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-family: monospace;
+      white-space: nowrap;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s;
+      z-index: 200;
     }
+    .field-tooltip:hover::after { opacity: 1; }
 
-    .book-details-header {
-      padding: 12px 14px;
-      font-size: 15px;
-      font-weight: 600;
-      flex-shrink: 0;
-    }
-
+    /* ── Book accordion (shared: left panel + metadata modal) ── */
     .book-accordion-item {
       border-top: 1px solid var(--border);
     }
@@ -682,7 +701,10 @@
         <a class="back-btn" href="manager-dashboard.html">&#8249;</a>
         <h1 class="page-title">Gujarati - Test Project</h1>
       </div>
-      <button class="btn-outline" onclick="openExportModal()">Export Project</button>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-outline" onclick="openMetadataModal()">Edit Project Metadata</button>
+        <button class="btn-outline" onclick="openExportModal()">Export Project</button>
+      </div>
     </div>
 
     <div class="body-columns">
@@ -729,79 +751,6 @@
               <div class="legend-item"><div class="legend-dot" style="background:#EA580C"></div>Peer Check</div>
               <div class="legend-item"><div class="legend-dot" style="background:#FDE047"></div>Drafting</div>
               <div class="legend-item"><div class="legend-dot" style="background:#C4CAD6"></div>Not Started</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Book Details -->
-        <div class="book-details-section">
-          <div class="book-details-header">Book Details</div>
-
-          <div class="book-accordion-item">
-            <button class="book-accordion-trigger" aria-expanded="false" onclick="toggleBookAccordion(this)">
-              1 John
-              <span class="book-accordion-chevron"></span>
-            </button>
-            <div class="book-accordion-body">
-              <div class="book-field">
-                <label class="book-field-label">Book Title (\mt1)</label>
-                <input class="book-field-input" type="text" placeholder="Full book title" value="" data-book="1JN" data-field="mt1" onblur="saveBookField(this)">
-              </div>
-              <div class="book-field">
-                <label class="book-field-label">Running Header (\h)</label>
-                <input class="book-field-input" type="text" placeholder="Short book name for page headers" value="1 Yohaan" data-book="1JN" data-field="h" onblur="saveBookField(this)">
-              </div>
-            </div>
-          </div>
-
-          <div class="book-accordion-item">
-            <button class="book-accordion-trigger" aria-expanded="false" onclick="toggleBookAccordion(this)">
-              1 Peter
-              <span class="book-accordion-chevron"></span>
-            </button>
-            <div class="book-accordion-body">
-              <div class="book-field">
-                <label class="book-field-label">Book Title (\mt1)</label>
-                <input class="book-field-input" type="text" placeholder="Full book title" value="Petrus nu Pahelu Patr" data-book="1PE" data-field="mt1" onblur="saveBookField(this)">
-              </div>
-              <div class="book-field">
-                <label class="book-field-label">Running Header (\h)</label>
-                <input class="book-field-input" type="text" placeholder="Short book name for page headers" value="1 Petrus" data-book="1PE" data-field="h" onblur="saveBookField(this)">
-              </div>
-            </div>
-          </div>
-
-          <div class="book-accordion-item">
-            <button class="book-accordion-trigger" aria-expanded="false" onclick="toggleBookAccordion(this)">
-              2 John
-              <span class="book-accordion-chevron"></span>
-            </button>
-            <div class="book-accordion-body">
-              <div class="book-field">
-                <label class="book-field-label">Book Title (\mt1)</label>
-                <input class="book-field-input" type="text" placeholder="Full book title" value="" data-book="2JN" data-field="mt1" onblur="saveBookField(this)">
-              </div>
-              <div class="book-field">
-                <label class="book-field-label">Running Header (\h)</label>
-                <input class="book-field-input" type="text" placeholder="Short book name for page headers" value="" data-book="2JN" data-field="h" onblur="saveBookField(this)">
-              </div>
-            </div>
-          </div>
-
-          <div class="book-accordion-item">
-            <button class="book-accordion-trigger" aria-expanded="false" onclick="toggleBookAccordion(this)">
-              3 John
-              <span class="book-accordion-chevron"></span>
-            </button>
-            <div class="book-accordion-body">
-              <div class="book-field">
-                <label class="book-field-label">Book Title (\mt1)</label>
-                <input class="book-field-input" type="text" placeholder="Full book title" value="" data-book="3JN" data-field="mt1" onblur="saveBookField(this)">
-              </div>
-              <div class="book-field">
-                <label class="book-field-label">Running Header (\h)</label>
-                <input class="book-field-input" type="text" placeholder="Short book name for page headers" value="" data-book="3JN" data-field="h" onblur="saveBookField(this)">
-              </div>
             </div>
           </div>
         </div>
@@ -916,6 +865,110 @@
 
     </div><!-- /body-columns -->
   </div><!-- /content -->
+
+  <!-- Edit Project Metadata Modal -->
+  <div class="modal-backdrop" id="metadata-modal" onclick="closeMetadataModal(event)">
+    <div class="modal modal--metadata" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <span class="modal-title">Edit Project Metadata</span>
+        <button class="modal-close" onclick="closeMetadataModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+
+        <!-- 1 John -->
+        <div class="book-accordion-item" style="border-top:none;">
+          <button class="book-accordion-trigger" aria-expanded="false" onclick="toggleBookAccordion(this)">
+            1 John
+            <span class="book-accordion-chevron"></span>
+          </button>
+          <div class="book-accordion-body">
+            <div class="book-field">
+              <label class="book-field-label">Long Name <span class="field-tooltip" data-tip="Stored as \toc1">ⓘ</span></label>
+              <input class="book-field-input" type="text" placeholder="Full book name" value="" data-book="1JN" data-field="toc1" onblur="saveBookField(this)">
+            </div>
+            <div class="book-field">
+              <label class="book-field-label">Short Name <span class="field-tooltip" data-tip="Stored as \toc2">ⓘ</span></label>
+              <input class="book-field-input" type="text" placeholder="Short book name" value="" data-book="1JN" data-field="toc2" onblur="saveBookField(this)">
+            </div>
+            <div class="book-field">
+              <label class="book-field-label">Abbreviation <span class="field-tooltip" data-tip="Stored as \toc3">ⓘ</span></label>
+              <input class="book-field-input" type="text" placeholder="Book abbreviation" value="" data-book="1JN" data-field="toc3" onblur="saveBookField(this)">
+            </div>
+          </div>
+        </div>
+
+        <!-- 1 Peter (has imported MT markers from USFM) -->
+        <div class="book-accordion-item">
+          <button class="book-accordion-trigger" aria-expanded="false" onclick="toggleBookAccordion(this)">
+            1 Peter
+            <span class="book-accordion-chevron"></span>
+          </button>
+          <div class="book-accordion-body">
+            <div class="book-field">
+              <label class="book-field-label">Long Name <span class="field-tooltip" data-tip="Stored as \toc1">ⓘ</span></label>
+              <input class="book-field-input" type="text" placeholder="Full book name" value="" data-book="1PE" data-field="toc1" onblur="saveBookField(this)">
+            </div>
+            <div class="book-field">
+              <label class="book-field-label">Short Name <span class="field-tooltip" data-tip="Stored as \toc2">ⓘ</span></label>
+              <input class="book-field-input" type="text" placeholder="Short book name" value="Petrus nu Pahelu Patr" data-book="1PE" data-field="toc2" onblur="saveBookField(this)">
+            </div>
+            <div class="book-field">
+              <label class="book-field-label">Abbreviation <span class="field-tooltip" data-tip="Stored as \toc3">ⓘ</span></label>
+              <input class="book-field-input" type="text" placeholder="Book abbreviation" value="" data-book="1PE" data-field="toc3" onblur="saveBookField(this)">
+            </div>
+          </div>
+        </div>
+
+        <!-- 2 John -->
+        <div class="book-accordion-item">
+          <button class="book-accordion-trigger" aria-expanded="false" onclick="toggleBookAccordion(this)">
+            2 John
+            <span class="book-accordion-chevron"></span>
+          </button>
+          <div class="book-accordion-body">
+            <div class="book-field">
+              <label class="book-field-label">Long Name <span class="field-tooltip" data-tip="Stored as \toc1">ⓘ</span></label>
+              <input class="book-field-input" type="text" placeholder="Full book name" value="" data-book="2JN" data-field="toc1" onblur="saveBookField(this)">
+            </div>
+            <div class="book-field">
+              <label class="book-field-label">Short Name <span class="field-tooltip" data-tip="Stored as \toc2">ⓘ</span></label>
+              <input class="book-field-input" type="text" placeholder="Short book name" value="" data-book="2JN" data-field="toc2" onblur="saveBookField(this)">
+            </div>
+            <div class="book-field">
+              <label class="book-field-label">Abbreviation <span class="field-tooltip" data-tip="Stored as \toc3">ⓘ</span></label>
+              <input class="book-field-input" type="text" placeholder="Book abbreviation" value="" data-book="2JN" data-field="toc3" onblur="saveBookField(this)">
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 John -->
+        <div class="book-accordion-item">
+          <button class="book-accordion-trigger" aria-expanded="false" onclick="toggleBookAccordion(this)">
+            3 John
+            <span class="book-accordion-chevron"></span>
+          </button>
+          <div class="book-accordion-body">
+            <div class="book-field">
+              <label class="book-field-label">Long Name <span class="field-tooltip" data-tip="Stored as \toc1">ⓘ</span></label>
+              <input class="book-field-input" type="text" placeholder="Full book name" value="" data-book="3JN" data-field="toc1" onblur="saveBookField(this)">
+            </div>
+            <div class="book-field">
+              <label class="book-field-label">Short Name <span class="field-tooltip" data-tip="Stored as \toc2">ⓘ</span></label>
+              <input class="book-field-input" type="text" placeholder="Short book name" value="" data-book="3JN" data-field="toc2" onblur="saveBookField(this)">
+            </div>
+            <div class="book-field">
+              <label class="book-field-label">Abbreviation <span class="field-tooltip" data-tip="Stored as \toc3">ⓘ</span></label>
+              <input class="book-field-input" type="text" placeholder="Book abbreviation" value="" data-book="3JN" data-field="toc3" onblur="saveBookField(this)">
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary" onclick="closeMetadataModal()">Done</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Assign Users Modal -->
   <div class="modal-backdrop" id="assign-modal" onclick="closeAssignModal(event)">
@@ -1089,6 +1142,16 @@
   </div>
 
   <script>
+    // ── Edit Project Metadata modal ──
+    function openMetadataModal() {
+      document.getElementById('metadata-modal').classList.add('open');
+    }
+    function closeMetadataModal(e) {
+      if (!e || e.target === document.getElementById('metadata-modal')) {
+        document.getElementById('metadata-modal').classList.remove('open');
+      }
+    }
+
     // ── Export modal (WNPD-06: format selection + USFM data-loss warning) ──
     // This mockup's project was created via the import path, so it has
     // preserved Scripture Burrito data; a real project's origin would come
