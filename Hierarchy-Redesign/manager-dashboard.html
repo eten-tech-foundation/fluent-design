@@ -13,7 +13,31 @@
     /* ── Page Content ── */
     .content { padding: 18px 20px; }
 
-    .page-title { font-size: 26px; font-weight: 700; margin-bottom: 20px; }
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .page-title { font-size: 26px; font-weight: 700; }
+
+    .btn-add-project {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      border-radius: var(--radius);
+      padding: 0 16px;
+      height: 36px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-add-project:hover { background: #e8effc; }
 
     /* ── Table ── */
     .table-wrap {
@@ -79,7 +103,13 @@
   <div id="fluent-header"></div>
 
   <main class="content">
-    <h1 class="page-title">Projects</h1>
+    <div class="page-header">
+      <h1 class="page-title">Projects</h1>
+      <button class="btn-add-project" onclick="openProjectsCreateDialog()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Create Project
+      </button>
+    </div>
 
     <div class="table-wrap">
       <table>
@@ -152,6 +182,38 @@
       rows.sort((a, b) => a.dataset.title.localeCompare(b.dataset.title));
       rows.forEach(row => tbody.appendChild(row));
     });
+
+    // This page's Create Project flow (per WPH-Build-Projects-List-Page) only
+    // collects Project Name, Source Language/Bible, and Target Language, then
+    // creates the project with zero milestones — no book scope or Import tab.
+    // Reuse the shared cp-dialog markup/styles from components.js so it looks
+    // identical to every other dialog in the system, but trim it on open (not
+    // on DOMContentLoaded — components.js injects the dialog on that same
+    // event, and listener order isn't guaranteed) and override validation/
+    // submit for this simpler flow.
+    function openProjectsCreateDialog() {
+      const tabsBar = document.querySelector('.cp-tabs');
+      if (tabsBar) tabsBar.style.display = 'none';
+      const booksField = document.getElementById('cp-books-trigger').closest('.cp-field');
+      if (booksField) booksField.style.display = 'none';
+      const connectivityField = document.getElementById('cp-connectivity-profile').closest('.cp-field');
+      if (connectivityField) connectivityField.style.display = 'none';
+
+      window.cpValidate = function() {
+        const ok =
+          document.getElementById('cp-title').value.trim() &&
+          cpSelectedSource &&
+          cpSelectedTarget;
+        document.getElementById('cp-submit').disabled = !ok;
+      };
+
+      document.getElementById('cp-submit').onclick = function() {
+        closeCreateProject();
+        window.location = 'view-project.html';
+      };
+
+      openCreateProject();
+    }
   </script>
 
 </body>
