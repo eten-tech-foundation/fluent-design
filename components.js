@@ -1,6 +1,12 @@
 // Fluent Mockup — Shared Components
 // Edit header, nav, user menu, and design tokens here; all pages pick up changes automatically.
 
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
 // ── Design tokens + base reset + header CSS ──────────────────────────────────
 const SHARED_CSS = `
   :root {
@@ -824,6 +830,20 @@ const SHARED_CSS = `
     color: var(--muted-foreground);
     margin-bottom: -4px;
   }
+  .cp-imp-file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .cp-imp-file-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #0f7a35;
+    font-weight: 600;
+  }
+  .dark .cp-imp-file-item { color: #7fd39d; }
+  .cp-imp-file-item svg { flex-shrink: 0; }
   .cp-btn-create {
     padding: 8px 20px;
     border-radius: var(--radius-sm);
@@ -862,7 +882,7 @@ const SHARED_CSS = `
   .cp-tab:hover { color: var(--foreground); }
   .cp-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
 
-  /* ── Existing data tab: Scripture Burrito upload ── */
+  /* ── Existing data tab: USFM upload ── */
   .cp-sb-dropzone {
     border: 2px dashed var(--border);
     border-radius: var(--radius-sm);
@@ -1047,14 +1067,14 @@ const CREATE_PROJECT_HTML = `
           ondragover="event.preventDefault(); this.classList.add('drag')"
           ondragleave="this.classList.remove('drag')"
           ondrop="cpSbDrop(event)">
-          <input type="file" id="cp-sb-file" accept=".zip" style="display:none" onchange="cpSbFileSelected(this.files[0])">
+          <input type="file" id="cp-sb-file" accept=".zip" multiple style="display:none" onchange="cpSbFileSelected(this.files)">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           <div class="cp-sb-upload-text">
-            <strong>Upload Scripture Burrito package</strong><br>
-            Drag and drop a .zip file here
+            <strong>Upload USFM files</strong><br>
+            Drag and drop one or more USFM files here
           </div>
-          <button type="button" class="cp-sb-select-btn" onclick="event.stopPropagation(); document.getElementById('cp-sb-file').click()">Select File</button>
-          <div class="cp-sb-upload-sub">Scripture Burrito is the only supported format.</div>
+          <button type="button" class="cp-sb-select-btn" onclick="event.stopPropagation(); document.getElementById('cp-sb-file').click()">Select Files</button>
+          <div class="cp-sb-upload-sub">USFM is the only supported format.</div>
         </div>
         <div class="cp-sb-filename" id="cp-sb-filename" style="display:none;"></div>
         <div class="cp-sb-error" id="cp-sb-error" style="display:none;"></div>
@@ -1064,7 +1084,7 @@ const CREATE_PROJECT_HTML = `
 
       <div class="cp-fields" id="cp-imp-fields" style="display:none;">
         <div class="cp-imp-file-row" id="cp-imp-file-row">
-          <span id="cp-imp-filename"></span>
+          <div class="cp-imp-file-list" id="cp-imp-file-list"></div>
         </div>
         <div class="cp-field">
           <label class="ep-label" for="cp-imp-title"><span class="ep-required">*</span> Project Title</label>
@@ -1082,8 +1102,15 @@ const CREATE_PROJECT_HTML = `
           </div>
         </div>
         <div class="cp-field">
-          <label class="ep-label">Target Language</label>
-          <div class="cp-readonly-field" id="cp-imp-target-display"></div>
+          <label class="ep-label"><span class="ep-required">*</span> Target Language</label>
+          <div class="cp-search-wrap" id="cp-imp-target-wrap">
+            <input class="ep-input" id="cp-imp-target-search" type="text" autocomplete="off"
+              placeholder="Search by language name or code"
+              oninput="cpImpTargetSearch()" onfocus="cpImpTargetSearch()"
+              onblur="setTimeout(()=>document.getElementById('cp-imp-target-results').classList.remove('open'), 150)">
+            <div class="cp-search-results" id="cp-imp-target-results"></div>
+            <div class="cp-selected-chip" id="cp-imp-target-chip" style="display:none;"></div>
+          </div>
         </div>
         <div class="cp-field">
           <label class="ep-label">Books</label>
@@ -1144,6 +1171,12 @@ const SETTINGS_HTML = `
     <div class="settings-row" id="theme-toggle-row" onclick="toggleTheme()" style="cursor:pointer;user-select:none;">
       <svg id="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
       <span class="settings-row-label" id="theme-label">Dark Mode</span>
+    </div>
+
+    <!-- TTS toggle -->
+    <div class="settings-row" id="tts-toggle-row" onclick="toggleTTS()" style="cursor:pointer;user-select:none;">
+      <svg id="tts-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polygon points="11 5 6 9 3 9 3 15 6 15 11 19 11 5"/><line x1="17" y1="9" x2="23" y2="15"/><line x1="23" y1="9" x2="17" y2="15"/></svg>
+      <span class="settings-row-label" id="tts-label">Show Audio</span>
     </div>
 
     <!-- Divider before AI section -->
@@ -1342,6 +1375,30 @@ document.addEventListener('click', () => {
 // ── Theme (dark mode) ─────────────────────────────────────────────────────────
 const SUN_SVG = `<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>`;
 const MOON_SVG = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>`;
+
+// ── TTS (verse audio playback) ────────────────────────────────────────────────
+const SPEAKER_ON_SVG  = `<polygon points="11 5 6 9 3 9 3 15 6 15 11 19 11 5"/><line x1="17" y1="9" x2="23" y2="15"/><line x1="23" y1="9" x2="17" y2="15"/>`;
+const SPEAKER_OFF_SVG = `<polygon points="11 5 6 9 3 9 3 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M18.36 5.64a9 9 0 0 1 0 12.73"/>`;
+
+function applyTTS(isOn) {
+  document.documentElement.classList.toggle('audio-off', !isOn);
+  const icon  = document.getElementById('tts-icon');
+  const label = document.getElementById('tts-label');
+  if (icon)  icon.innerHTML     = isOn ? SPEAKER_ON_SVG : SPEAKER_OFF_SVG;
+  if (label) label.textContent  = isOn ? 'Hide Audio' : 'Show Audio';
+}
+
+function initTTS() {
+  const saved = localStorage.getItem('tts-v2');
+  const isOn = saved === null ? false : saved === 'on';
+  applyTTS(isOn);
+}
+
+function toggleTTS() {
+  const isOn = document.documentElement.classList.contains('audio-off');
+  localStorage.setItem('tts-v2', isOn ? 'on' : 'off');
+  applyTTS(isOn);
+}
 
 function applyTheme(isDark) {
   document.documentElement.classList.toggle('dark', isDark);
@@ -1629,6 +1686,65 @@ function cpClearTarget() {
   cpValidate();
 }
 
+// ── Import tab target search (WNPD-10: plain USFM carries no target
+// language metadata, so it is never pre-filled; the user always selects it) ──
+let cpImpSelectedTarget = null;
+
+function cpImpTargetSearch() {
+  const query = document.getElementById('cp-imp-target-search').value.trim().toLowerCase();
+  const resultsEl = document.getElementById('cp-imp-target-results');
+  const data = typeof LANGUAGE_DATA !== 'undefined' ? LANGUAGE_DATA : [];
+
+  if (!query) {
+    resultsEl.innerHTML = `<div class="cp-search-empty">Start typing to search ${data.length.toLocaleString()} languages by name or code.</div>`;
+    resultsEl.classList.add('open');
+    return;
+  }
+
+  const matches = data.filter(l => l.name.toLowerCase().includes(query) || l.code.includes(query)).slice(0, 8);
+  if (!matches.length) {
+    resultsEl.innerHTML = '<div class="cp-search-empty">No matching languages.</div>';
+    resultsEl.classList.add('open');
+    return;
+  }
+
+  resultsEl.innerHTML = matches.map(l => `
+    <div class="cp-search-item" onmousedown="event.preventDefault(); cpImpSelectTarget('${l.code}')">
+      <div class="cp-search-item-text">
+        <span class="cp-search-item-main">${l.name} (${l.code})</span>
+        <span class="cp-search-item-sub">${l.country}</span>
+      </div>
+    </div>`).join('');
+  resultsEl.classList.add('open');
+}
+
+function cpImpSelectTarget(code) {
+  const lang = cpLangByCode(code);
+  cpImpSelectedTarget = { code, name: lang ? lang.name : code };
+  document.getElementById('cp-imp-target-search').value = '';
+  document.getElementById('cp-imp-target-search').blur();
+  document.getElementById('cp-imp-target-results').classList.remove('open');
+
+  const chip = document.getElementById('cp-imp-target-chip');
+  chip.innerHTML = `
+    <div class="cp-selected-chip-text"><strong>${cpImpSelectedTarget.name}</strong> (${cpImpSelectedTarget.code})</div>
+    <button type="button" class="cp-selected-chip-clear" onclick="cpImpClearTarget()" aria-label="Clear target language">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>`;
+  chip.style.display = 'flex';
+  document.getElementById('cp-imp-target-search').style.display = 'none';
+  cpImpValidate();
+}
+
+function cpImpClearTarget() {
+  cpImpSelectedTarget = null;
+  document.getElementById('cp-imp-target-chip').style.display = 'none';
+  document.getElementById('cp-imp-target-search').style.display = '';
+  document.getElementById('cp-imp-target-search').value = '';
+  document.getElementById('cp-imp-target-search').focus();
+  cpImpValidate();
+}
+
 const CP_BOOKS = [
   'Genesis','Exodus','Leviticus','Numbers','Deuteronomy','Joshua','Judges','Ruth',
   '1 Samuel','2 Samuel','1 Kings','2 Kings','1 Chronicles','2 Chronicles','Ezra',
@@ -1652,7 +1768,7 @@ function cpSwitchTab(tab) {
   document.getElementById('cp-panel-existing').style.display = isNew ? 'none' : '';
 }
 
-// ── Existing data tab: Scripture Burrito upload (mock validation) ───────────
+// ── Existing data tab: USFM upload (mock validation) ───────────
 // No zip-parsing library is loaded in this prototype, so validation is
 // simulated from the filename: "nolang"/"nobooks" preview those specific
 // rejections, "invalid" previews the generic invalid-package rejection,
@@ -1660,36 +1776,33 @@ function cpSwitchTab(tab) {
 function cpSbDrop(e) {
   e.preventDefault();
   document.getElementById('cp-sb-dropzone').classList.remove('drag');
-  const file = e.dataTransfer.files[0];
-  if (file) cpSbFileSelected(file);
+  cpSbFileSelected(e.dataTransfer.files);
 }
 
-function cpSbFileSelected(file) {
-  if (!file) return;
-  const name = file.name.toLowerCase();
+function cpSbFileSelected(files) {
+  if (!files || !files.length) return;
+  const fileNames = Array.from(files).map(f => f.name);
 
   const filenameEl = document.getElementById('cp-sb-filename');
   const errorEl = document.getElementById('cp-sb-error');
-  filenameEl.textContent = file.name;
+  filenameEl.textContent = fileNames.length === 1 ? fileNames[0] : `${fileNames.length} files selected`;
   filenameEl.style.display = 'flex';
   errorEl.style.display = 'none';
 
-  if (name.includes('nolang')) {
-    errorEl.textContent = 'Missing target language.';
+  const errors = [];
+  fileNames.forEach(fileName => {
+    const name = fileName.toLowerCase();
+    if (name.includes('nolang')) errors.push(`${fileName}: Missing target language.`);
+    else if (name.includes('nobooks')) errors.push(`${fileName}: Missing book data.`);
+    else if (name.includes('invalid')) errors.push(`${fileName}: File is not a valid USFM file.`);
+  });
+
+  if (errors.length) {
+    errorEl.innerHTML = errors.join('<br>');
     errorEl.style.display = 'block';
     return;
   }
-  if (name.includes('nobooks')) {
-    errorEl.textContent = 'Missing book data.';
-    errorEl.style.display = 'block';
-    return;
-  }
-  if (name.includes('invalid')) {
-    errorEl.textContent = 'File is not a valid Scripture Burrito package.';
-    errorEl.style.display = 'block';
-    return;
-  }
-  cpImpShowFields(file.name);
+  cpImpShowFields(fileNames);
 }
 
 function cpResetExistingDataTab() {
@@ -1701,6 +1814,7 @@ function cpResetExistingDataTab() {
   document.getElementById('cp-imp-fields').style.display = 'none';
   document.getElementById('cp-imp-footer').style.display = 'none';
   document.getElementById('cp-imp-duplicate-banner').style.display = 'none';
+  document.getElementById('cp-imp-file-list').innerHTML = '';
 
   document.getElementById('cp-imp-title').value = '';
   cpImpSelectedSource = null;
@@ -1709,6 +1823,11 @@ function cpResetExistingDataTab() {
   document.getElementById('cp-imp-source-search').style.display = '';
   document.getElementById('cp-imp-source-results').classList.remove('open');
   document.getElementById('cp-imp-source-chip').style.display = 'none';
+  cpImpSelectedTarget = null;
+  document.getElementById('cp-imp-target-search').value = '';
+  document.getElementById('cp-imp-target-search').style.display = '';
+  document.getElementById('cp-imp-target-results').classList.remove('open');
+  document.getElementById('cp-imp-target-chip').style.display = 'none';
   document.getElementById('cp-imp-connectivity-profile').value = '';
 }
 
@@ -1718,7 +1837,7 @@ function cpResetExistingDataTab() {
 // text is out of scope for import. No real package parser is wired up in
 // this prototype, so the parsed values below are a fixed mock package.
 const MOCK_PARSED_PACKAGE = {
-  title: 'Kachi Koli NT Draft',
+  title: 'Kachi Koli Gospels',
   targetCode: 'gjk',
   targetName: 'Kachi Koli',
   books: ['Matthew', 'Mark', 'Luke', 'John'],
@@ -1737,18 +1856,21 @@ const MOCK_EXISTING_PROJECTS = [
 let cpImpSelectedSource = null;
 let cpImpSourceDrillLang = null;
 
-function cpImpShowFields(filename) {
+function cpImpShowFields(filenames) {
+  const fileNames = Array.isArray(filenames) ? filenames : [filenames];
   document.getElementById('cp-imp-upload-section').style.display = 'none';
   document.getElementById('cp-imp-fields').style.display = 'grid';
   document.getElementById('cp-imp-footer').style.display = 'flex';
-  document.getElementById('cp-imp-filename').textContent = filename;
+  document.getElementById('cp-imp-file-list').innerHTML = fileNames.map(name => `
+    <div class="cp-imp-file-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      <span>${escapeHtml(name)}</span>
+    </div>
+  `).join('');
 
-  document.getElementById('cp-imp-title').value = MOCK_PARSED_PACKAGE.title;
-  document.getElementById('cp-imp-target-display').textContent =
-    `${MOCK_PARSED_PACKAGE.targetName} (${MOCK_PARSED_PACKAGE.targetCode})`;
   document.getElementById('cp-imp-books-display').textContent = MOCK_PARSED_PACKAGE.books.join(', ');
 
-  document.getElementById('cp-imp-status').textContent = 'Package validated. Target language and book data detected.';
+  // document.getElementById('cp-imp-status').textContent = 'Package validated. Target language and book data detected.';
   cpImpValidate();
 }
 
@@ -1915,7 +2037,8 @@ function cpImpCheckDuplicate() {
 function cpImpValidate() {
   const ok =
     document.getElementById('cp-imp-title').value.trim() &&
-    cpImpSelectedSource;
+    cpImpSelectedSource &&
+    cpImpSelectedTarget;
   document.getElementById('cp-imp-submit').disabled = !ok;
 }
 
@@ -2216,6 +2339,7 @@ function renderHeader() {
 
   // Apply saved/preferred theme before painting
   initTheme();
+  initTTS();
 
   // Inject Settings dialog into body
   document.body.insertAdjacentHTML('beforeend', SETTINGS_HTML);

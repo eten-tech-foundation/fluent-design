@@ -155,6 +155,33 @@
       flex-shrink: 0;
     }
 
+    /* ── Resources / AI Assistant tab row ── */
+    .resources-tab-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 10px 16px 10px;
+      flex-shrink: 0;
+    }
+    .resources-tab {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 8px 10px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      font-family: var(--font);
+      color: var(--muted-foreground);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .resources-tab.selected { color: var(--foreground); border-bottom-color: var(--primary); }
+    .resources-tab[data-tab="ai-assistant"] { color: var(--primary); }
+
+    .resources-tab-panel.hidden { display: none; }
+
     /* ── Chip row ── */
     .chip-row-wrapper {
       display: flex;
@@ -163,18 +190,6 @@
       flex-shrink: 0;
       padding: 0 16px;
       gap: 8px;
-    }
-    .chip-ai-pin {
-      padding: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .chip-ai-divider {
-      width: 1px;
-      height: 24px;
-      background: var(--border);
-      flex-shrink: 0;
     }
     .chip-row-scroll-wrap {
       position: relative;
@@ -461,6 +476,194 @@
     .tw-article li { margin: 3px 0; }
     .tw-article p { margin: 5px 0; }
 
+    /* ── Article sticky player (TW & OSN) ── */
+    .art-player {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: var(--background);
+      border-bottom: 1px solid var(--border);
+      margin: -4px -32px 14px;
+      padding: 10px 32px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .art-player-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex-shrink: 1;
+      min-width: 0;
+      max-width: 130px;
+    }
+    .art-pb-btn-wrap { position: relative; flex-shrink: 0; }
+    .art-pb-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px;
+      border: 1.5px solid var(--primary); border-radius: 50%;
+      background: var(--primary); color: white;
+      cursor: pointer; padding: 0; flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .art-pb-btn.art-pb-outline {
+      background: var(--background); color: var(--primary);
+    }
+    .art-pb-btn.art-pb-outline:hover { background: var(--muted); }
+    .art-pb-restart:disabled {
+      border-color: var(--border); color: var(--text-disabled);
+      background: var(--background); cursor: default;
+    }
+    .art-pb-restart:disabled:hover { background: var(--background); }
+    .art-pb-sparkle-badge {
+      position: absolute; bottom: -3px; right: -3px;
+      width: 13px; height: 13px;
+      background: var(--primary); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid var(--background); pointer-events: none;
+    }
+    .art-pb-scrub-wrap {
+      flex: 1; display: flex; align-items: center;
+      height: 20px; cursor: pointer; min-width: 0;
+    }
+    .art-pb-track {
+      position: relative; width: 100%; height: 4px;
+      background: var(--border); border-radius: 2px;
+    }
+    .art-pb-fill {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      background: var(--primary); border-radius: 2px; width: 0%;
+    }
+    .art-pb-thumb {
+      position: absolute; top: 50%; left: 0%;
+      transform: translate(-50%, -50%);
+      width: 10px; height: 10px;
+      background: var(--primary); border-radius: 50%;
+    }
+    .art-pb-time {
+      font-size: 11px; color: var(--muted-foreground);
+      white-space: nowrap; min-width: 60px;
+      text-align: right; font-variant-numeric: tabular-nums; flex-shrink: 0;
+    }
+
+    /* ── TN play bar ── */
+    .note-play-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 0 2px;
+      margin-top: 14px;
+      /* border-top: 1px solid var(--border); */
+    }
+    .note-pb-btn-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
+    .note-pb-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 26px; height: 26px;
+      border: 1.5px solid var(--primary); border-radius: 50%;
+      background: var(--background); color: var(--primary);
+      cursor: pointer; padding: 0;
+      transition: background 0.15s;
+    }
+    .note-pb-btn:hover { background: var(--muted); }
+    .note-pb-restart:disabled {
+      border-color: var(--border);
+      color: var(--text-disabled);
+      cursor: default;
+    }
+    .note-pb-restart:disabled:hover { background: var(--background); }
+    .note-pb-sparkle-badge {
+      position: absolute;
+      bottom: -3px; right: -3px;
+      width: 13px; height: 13px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid var(--background);
+      pointer-events: none;
+    }
+    .note-pb-scrub-wrap {
+      flex: 1;
+      display: flex; align-items: center;
+      height: 20px;
+      cursor: pointer;
+    }
+    .note-pb-track {
+      position: relative;
+      width: 100%;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+    }
+    .note-pb-fill {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      background: var(--primary);
+      border-radius: 2px;
+      width: 0%;
+    }
+    .note-pb-thumb {
+      position: absolute;
+      top: 50%; left: 0%;
+      transform: translate(-50%, -50%);
+      width: 10px; height: 10px;
+      background: var(--primary);
+      border-radius: 50%;
+    }
+    .note-pb-time {
+      font-size: 11px;
+      color: var(--muted-foreground);
+      white-space: nowrap;
+      min-width: 30px;
+      font-variant-numeric: tabular-nums;
+      flex-shrink: 0;
+    }
+    @keyframes note-pb-spin { to { transform: rotate(360deg); } }
+    .note-pb-spinning { animation: note-pb-spin 0.8s linear infinite; }
+
+    /* ── TQ play controls ── */
+    .tq-q-outer { position: relative; }
+    .tq-a-outer { position: relative; }
+    .tq-play-group {
+      position: absolute;
+      left: 0; top: 2px;
+      display: flex; align-items: center;
+      gap: 4px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.15s;
+      z-index: 1;
+    }
+    .tq-toggle:hover .tq-q-outer .tq-play-group,
+    .tq-a-outer:hover .tq-play-group,
+    .tq-play-group.playing { opacity: 1; pointer-events: auto; }
+    .tq-pb-btn-wrap { position: relative; flex-shrink: 0; }
+    .tq-pb-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px;
+      border: 1.5px solid var(--primary); border-radius: 50%;
+      background: var(--background); color: var(--primary);
+      cursor: pointer; padding: 0;
+      transition: background 0.15s; flex-shrink: 0;
+    }
+    .tq-pb-btn:hover { background: var(--muted); }
+    .tq-pb-restart:disabled { border-color: var(--border); color: var(--text-disabled); cursor: default; }
+    .tq-pb-restart:disabled:hover { background: var(--background); }
+    .tq-pb-sparkle-badge {
+      position: absolute; bottom: -3px; right: -3px;
+      width: 12px; height: 12px;
+      background: var(--primary); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid var(--background);
+      pointer-events: none;
+    }
+
     /* ── AI Assistant pane ── */
     .ai-pane {
       display: none;
@@ -491,6 +694,10 @@
       font-size: 1rem;
       font-weight: 700;
       color: var(--foreground);
+    }
+    .ai-lang-bar {
+      padding: 12px 4px 10px 16px;
+      /* max-width: 160px; */
     }
 
     .ai-pane-body {
@@ -761,8 +968,80 @@
       min-width: 0;
     }
 
+    /* ── Play buttons (shared) ── */
+    .play-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      width: 24px; height: 24px;
+      border: 1.5px solid var(--primary); border-radius: 50%;
+      background: var(--background); color: var(--primary);
+      cursor: pointer; padding: 0;
+      transition: background 0.15s;
+    }
+    .play-btn:hover:not(:disabled):not(.disabled) { background: var(--muted); }
+    .play-btn:disabled, .play-btn.disabled {
+      border-color: var(--border);
+      color: var(--text-disabled);
+      cursor: default;
+    }
+    @keyframes src-play-spin { to { transform: rotate(360deg); } }
+    .play-btn.loading svg { animation: src-play-spin 0.8s linear infinite; }
+    .play-btn.play-btn-pericope {
+      margin: 0 0 0 8px;
+      vertical-align: middle;
+    }
+    .play-btn.play-btn-note {
+      margin-right: 10px;
+    }
+    .play-btn.play-btn-tq {
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    /* Wrapper for play buttons that carry a sparkle badge */
+    .src-play-wrap {
+      position: relative;
+      flex-shrink: 0;
+      display: inline-flex;
+    }
+    .src-play-sparkle {
+      position: absolute;
+      bottom: -3px; right: -3px;
+      width: 12px; height: 12px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid var(--background);
+      pointer-events: none;
+    }
+    /* ── Verse-level source audio group (hover-revealed, overlaps card) ── */
+    .src-audio-group {
+      position: absolute;
+      top: 50%; left: 8px;
+      transform: translateY(-50%);
+      display: flex; align-items: center; gap: 4px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.15s;
+      z-index: 2;
+      background: var(--background);
+      border-radius: 999px;
+      padding: 3px 6px 3px 3px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    }
+    .source-card:hover .src-audio-group,
+    .src-audio-group.playing { opacity: 1; pointer-events: auto; }
+
+    /* ── Respect the Settings > Show/Hide Audio toggle (html.audio-off) ── */
+    html.audio-off .src-audio-group,
+    html.audio-off .pericope-player,
+    html.audio-off .tq-play-group,
+    html.audio-off .note-play-bar,
+    html.audio-off .art-pb-btn-wrap,
+    html.audio-off .art-pb-restart,
+    html.audio-off .art-pb-scrub-wrap,
+    html.audio-off .art-pb-time { display: none !important; }
+
     .verse-num {
-      font-size: 1rem; font-weight: 500;
+      font-size: 1rem; font-weight: 700;
       color: var(--foreground);
       min-width: 1.75rem;
       padding-top: 9px;
@@ -773,6 +1052,7 @@
     .source-card {
       flex: 1; min-width: 0;
       overflow-wrap: break-word;
+      position: relative;
       background: var(--card);
       border: 2px solid var(--border);
       border-radius: var(--radius-lg);
@@ -834,6 +1114,53 @@
       transition: background 0.15s;
     }
     .next-verse-btn:hover { background: var(--primary-hover); }
+
+    /* ── Pericope persistent player ── */
+    .pericope-range-src {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-right: 12px;
+      min-width: 0;
+    }
+    .pericope-player {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      min-width: 0;
+    }
+    .pericope-pb-scrub-wrap {
+      flex: 1;
+      display: flex; align-items: center;
+      height: 20px;
+      cursor: pointer;
+      min-width: 0;
+    }
+    .pericope-pb-track {
+      position: relative;
+      width: 100%; height: 4px;
+      background: var(--border); border-radius: 2px;
+    }
+    .pericope-pb-fill {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      background: var(--primary); border-radius: 2px;
+      width: 0%;
+    }
+    .pericope-pb-thumb {
+      position: absolute; top: 50%; left: 0%;
+      transform: translate(-50%, -50%);
+      width: 10px; height: 10px;
+      background: var(--primary); border-radius: 50%;
+    }
+    .pericope-pb-time {
+      font-size: 11px;
+      color: var(--muted-foreground);
+      white-space: nowrap;
+      min-width: 30px;
+      font-variant-numeric: tabular-nums;
+      flex-shrink: 0;
+    }
 
     /* ── Pericope mode ── */
     .pericope-block {
@@ -1000,7 +1327,7 @@
     .chapter-col-div { background: var(--border); align-self: stretch; }
     .chapter-tgt-col { padding: 20px 24px 60px 16px; overflow-wrap: break-word; }
     .vnum {
-      font-size: 1rem; font-weight: 500; color: var(--foreground);
+      font-size: 1rem; font-weight: 700; color: var(--foreground);
       user-select: none; -webkit-user-select: none;
       margin-right: 4px;
     }
@@ -1109,15 +1436,20 @@
 
     <!-- Resources panel (closed by default) -->
     <div id="resources-panel" class="resources-panel">
-      <div class="resources-header">Resources</div>
+
+      <!-- Tab row -->
+      <div class="resources-tab-row">
+        <button class="resources-tab" data-tab="ai-assistant" onclick="selectResourceTab(this)" title="AI Assistant">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c0 0 1 5.5 3.5 8S24 12 24 12s-5.5 1-8 3.5S12 24 12 24s-1-5.5-3.5-8S0 12 0 12s5.5-1 8-3.5S12 2 12 2z"/></svg>
+        </button>
+        <button class="resources-tab selected" data-tab="resources" onclick="selectResourceTab(this)">Resources</button>
+      </div>
+
+      <div class="resources-tab-panel" id="resources-tab-panel-1">
+      <!--div class="resources-header">Resources</div-->
 
       <!-- Chip row -->
       <div class="chip-row-wrapper">
-        <!-- Pinned AI chip (does not scroll) -->
-        <button class="chip chip-ai-pin" data-value="ai-assistant" onclick="selectChip(this)" title="AI Assistant">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c0 0 1 5.5 3.5 8S24 12 24 12s-5.5 1-8 3.5S12 24 12 24s-1-5.5-3.5-8S0 12 0 12s5.5-1 8-3.5S12 2 12 2z"/></svg>
-        </button>
-        <div class="chip-ai-divider"></div>
         <!-- Scrollable chips -->
         <div class="chip-row-scroll-wrap">
           <button class="chip-arrow chip-arrow-left hidden" id="chip-arrow-left" onclick="scrollChips(-1)" aria-label="Scroll left">
@@ -1130,7 +1462,7 @@
             <button class="chip" data-value="bibles" onclick="selectChip(this)">Bibles</button>
             <button class="chip" data-value="questions" onclick="selectChip(this)">TQ</button>
             <button class="chip" data-value="words" onclick="selectChip(this)">TW</button>
-            <button class="chip" data-value="aosn" onclick="selectChip(this)">AOSN</button>
+            <button class="chip" data-value="osn" onclick="selectChip(this)">OSN</button>
           </div>
           <div class="chip-fade chip-fade-right" id="chip-fade-right"></div>
           <button class="chip-arrow chip-arrow-right hidden" id="chip-arrow-right" onclick="scrollChips(1)" aria-label="Scroll right">
@@ -1139,7 +1471,7 @@
         </div>
       </div>
 
-      <!-- Language selector (TN / TQ / TW / AOSN) -->
+      <!-- Language selector (TN / TQ / TW / OSN) -->
       <div id="res-lang-bar" class="res-lang-bar">
         <div class="res-select-wrap" id="res-language-select">
           <button class="res-select-btn" type="button" onclick="toggleResSelect(this.closest('.res-select-wrap'))">
@@ -1196,9 +1528,24 @@
 
       <!-- TQ -->
       <div id="questions-list" class="notes-list" style="display:none"></div>
+      </div>
 
       <!-- AI Assistant -->
       <div id="ai-assistant-pane" class="ai-pane">
+        <div class="res-lang-bar ai-lang-bar">
+          <div class="res-select-wrap" id="ai-lang-select">
+            <button class="res-select-btn" type="button" onclick="toggleResSelect(this.closest('.res-select-wrap'))">
+              <span class="res-select-label">English</span>
+              <svg class="res-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="res-select-dropdown">
+              <div class="res-select-opt selected" data-value="en" onclick="pickResSelectOpt(this)">English</div>
+              <div class="res-select-opt" data-value="es" onclick="pickResSelectOpt(this)">Spanish</div>
+              <div class="res-select-opt" data-value="fr" onclick="pickResSelectOpt(this)">French</div>
+              <div class="res-select-opt" data-value="hi" onclick="pickResSelectOpt(this)">Hindi</div>
+            </div>
+          </div>
+        </div>
         <div class="ai-pane-inner">
           <div class="ai-pane-header">
             <div class="ai-pane-ref" id="ai-pane-ref">Genesis 3:1-5</div>
@@ -1215,6 +1562,7 @@
         </div>
       </div>
 
+      <div class="resources-tab-panel" id="resources-tab-panel-2">
       <!-- TW -->
       <div id="words-list" class="notes-list" style="display:none">
         <div class="tw-item">
@@ -1222,13 +1570,14 @@
             Adam
             <svg class="tw-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
-          <div class="tw-body open">
+          <div class="tw-body open" data-art-title="Adam">
+            <div id="art-player-tw-0"></div>
             <div class="tw-verses-label">Used in These Verses</div>
             <div class="tw-verse-tags">
               <span class="tw-verse-tag">3:8</span><span class="tw-verse-tag">3:9</span><span class="tw-verse-tag">3:12</span><span class="tw-verse-tag">3:17</span><span class="tw-verse-tag">3:20</span><span class="tw-verse-tag">3:21</span><span class="tw-verse-tag">3:22</span><span class="tw-verse-tag">3:24</span>
             </div>
             <div class="tw-article">
-              <h1>Adam</h1>
+              <div style="font-size:14px; font-weight: 700;">Adam</div>
               <h2>Facts</h2>
               <p>Adam was the first person whom God created. He and his wife Eve were made in the image of God.</p>
               <ul>
@@ -1245,11 +1594,12 @@
             Deceive
             <svg class="tw-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
-          <div class="tw-body">
+          <div class="tw-body" data-art-title="Deceive, lie, deception">
+            <div id="art-player-tw-1"></div>
             <div class="tw-verses-label">Used in These Verses</div>
             <div class="tw-verse-tags"><span class="tw-verse-tag">3:13</span></div>
             <div class="tw-article">
-              <h1>Deceive, lie, deception</h1>
+              <div style="font-size:14px; font-weight: 700;">Deceive, lie, deception</div>
               <h2>Definition</h2>
               <p>To "deceive" means to cause someone to believe something that is not true, often by telling a "lie."</p>
               <p>See also: serpent, Satan, sin</p>
@@ -1261,7 +1611,8 @@
             Eve
             <svg class="tw-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
-          <div class="tw-body">
+          <div class="tw-body" data-art-title="Eve">
+            <div id="art-player-tw-2"></div>
             <div class="tw-verses-label">Used in These Verses</div>
             <div class="tw-verse-tags"><span class="tw-verse-tag">3:20</span></div>
             <div class="tw-article">
@@ -1277,7 +1628,8 @@
             Serpent
             <svg class="tw-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
-          <div class="tw-body">
+          <div class="tw-body" data-art-title="Serpent, snake, viper">
+            <div id="art-player-tw-3"></div>
             <div class="tw-verses-label">Used in These Verses</div>
             <div class="tw-verse-tags">
               <span class="tw-verse-tag">3:1</span><span class="tw-verse-tag">3:2</span><span class="tw-verse-tag">3:3</span><span class="tw-verse-tag">3:4</span><span class="tw-verse-tag">3:13</span><span class="tw-verse-tag">3:14</span>
@@ -1290,6 +1642,54 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- OSN -->
+      <div id="osn-list" class="notes-list" style="display:none">
+        <div class="tw-item">
+          <button class="tw-toggle open" onclick="toggleTW(this)">
+            Genesis 1:1–2:3
+            <svg class="tw-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="tw-body open" data-art-title="Genesis 1:1–2:3">
+            <div id="art-player-osn-0"></div>
+            <div class="tw-article">
+              <p>These verses introduce the Pentateuch (the first five books of the Bible). They teach Israel that one true God created, ordered, and populated the world, not the gods of nearby nations.</p>
+              <p>God blessed three specific things:</p>
+              <ul>
+                <li>animal life (1:22–25)</li>
+                <li>human life (1:27)</li>
+                <li>the Sabbath day (2:3)</li>
+              </ul>
+              <p>These three blessings emphasize the Creator's plan. God made humans in his image to rule in his place over earth's creatures and to join in God's Sabbath rest.</p>
+            </div>
+          </div>
+        </div>
+        <div class="tw-item">
+          <button class="tw-toggle" onclick="toggleTW(this)">
+            Genesis 1:3–13
+            <svg class="tw-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="tw-body" data-art-title="Genesis 1:3–13">
+            <div id="art-player-osn-1"></div>
+            <div class="tw-article">
+              <p>In the first three days, God shaped the formless world into a place where people and animals could live.</p>
+            </div>
+          </div>
+        </div>
+        <div class="tw-item">
+          <button class="tw-toggle" onclick="toggleTW(this)">
+            Genesis 1:9–10
+            <svg class="tw-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="tw-body" data-art-title="Genesis 1:9–10">
+            <div id="art-player-osn-2"></div>
+            <div class="tw-article">
+              <p><em>Let the waters … be gathered into one place:</em> Other ancient cultures considered the sea to be a hostile force. Genesis shows God further controlling chaos by setting specific boundaries for the sea (see study note on 1:2). The flood was an act of God's judgment (6:7). It removed these boundaries and returned the earth to chaos (7:1–24).</p>
+            </div>
+          </div>
+        </div>
+      </div>
       </div>
     </div>
 
@@ -1337,8 +1737,8 @@
                 <div class="fmt-popdown" id="fmt-heading-popdown">
                   <button class="fmt-popdown-btn" data-level="1" onclick="fmtSetLevel(1)"><span style="font-size:15px;font-weight:800;line-height:1">H1</span></button>
                   <button class="fmt-popdown-btn" data-level="2" onclick="fmtSetLevel(2)"><span style="font-size:13px;font-weight:700;line-height:1">H2</span></button>
-                  <button class="fmt-popdown-btn" data-level="3" onclick="fmtSetLevel(3)"><span style="font-size:12px;font-weight:600;line-height:1">H3</span></button>
-                  <button class="fmt-popdown-btn" data-level="4" onclick="fmtSetLevel(4)"><span style="font-size:11px;font-weight:600;line-height:1;color:var(--muted-foreground)">H4</span></button>
+                  <!--button class="fmt-popdown-btn" data-level="3" onclick="fmtSetLevel(3)"><span style="font-size:12px;font-weight:600;line-height:1">H3</span></button>
+                  <button class="fmt-popdown-btn" data-level="4" onclick="fmtSetLevel(4)"><span style="font-size:11px;font-weight:600;line-height:1;color:var(--muted-foreground)">H4</span></button-->
                 </div>
               </div>
               <div class="fmt-type-item">
@@ -1415,12 +1815,28 @@
       6:  'તે વૃક્ષનું ફળ ખાવામાં સ્વાદિષ્ટ, જોવામાં સુંદર અને તે જ્ઞાન આપવાને ઇચ્છવાજોગ છે, એવું જાણીને સ્ત્રીએ તે ફળ તોડીને ખાધું અને તેની સાથે તેનો પતિ હતો તેને પણ આપ્યું. તેણે પણ ફળ ખાધું.',
       7:  'ત્યારે તેઓ બઘ્ધેની આંખો ઊઘડી ગઈ અને તેઓ સમજ્યા કે અમે વસ્ત્રહીન છીએ. તેથી તેઓએ અઞ્જીરનાં પાંદડાં જોડીને પોતાને માટે આવરણ બનાવ્યાં.',
       8:  'દિવસના ઠંડા પહોરે વાડીમાં પ્રભુ ઈશ્વરનો ચાલવાનો અવાજ તેઓના સાંભળવામાં આવ્યો, તેથી તે માણસ તથા તેની પત્ની પોતાને પ્રભુ ઈશ્વરના સાનિઘ્યથી દૂર રાખવા માટે વાડીના વૃક્ષોની વચ્ચે સંતાયાં.',
+      9:  'યહોવાહ ઈશ્વરે આદમને હાંક મારી કે, "તું ક્યાં છો?"',
+      10: 'આદમે કહ્યું કે, "મેં વાડીમાં તમારો અવાજ સાંભળ્યો અને હું ગભરાયો. કેમ કે હું વસ્ત્રહીન છું. તેથી હું સંતાઈ ગયો."',
+      11: 'ઈશ્વરે કહ્યું, "તને કોણે કહ્યું કે, તું નિવસ્ત્ર છે? જે ફળ ન ખાવાની મેં તને આજ્ઞા આપી હતી, તે ફળ તેં ખાધું છે શું?"',
+      12: 'તે માણસે કહ્યું કે, "મારી સહાયકારી તરીકે જે સ્ત્રી તમે મને આપી હતી તેણે મને ફળ આપ્યું અને મેં ખાધું."',
+      13: 'યહોવાહ ઈશ્વરે તે સ્ત્રીને કહ્યું, "આ તેં શું કર્યું?" સ્ત્રીએ કહ્યું કે, "સાપે મને છેતરી. તેથી મેં ફળ ખાધું."',
+      14: 'યહોવાહ ઈશ્વરે સાપને કહ્યું કે, "તેં આ કૃત્ય કર્યું છે, તેથી તું સર્વ ગ્રામ્યપશુઓ તથા વનપશુઓની વચ્ચે હવે શાપિત છે. તું પેટે ચાલશે અને પોતાના જીવનના સર્વ દિવસો સુધી તારે ધૂળ ખાવી પડશે.',
+      15: 'તારી અને સ્ત્રીની વચ્ચે તથા તારા સંતાનની અને તેના સંતાનની વચ્ચે હું વૈર કરાવીશ. તે તારું માથું છૂંદશે અને તું તેની એડીએ ડંખ મારશે."',
+      16: 'વળી યહોવાહ ઈશ્વરે સ્ત્રીને કહ્યું કે, "હું તારી ગર્ભવસ્થાનું દુઃખ ઘણું જ વધારીશ અને તું દુઃખે બાળકને જન્મ આપીશ. તું તારા પતિને માટે ઝંખીશ, પણ તે તારા પર અધિકાર ચલાવશે."',
+      17: 'તેમણે આદમને કહ્યું, "કેમ કે તેં તારી પત્નીની વાત માની લીધી છે અને જે સંબંધી મેં તને આજ્ઞા આપી હતી, \'તારે તે ન ખાવું\' તે વૃક્ષનું ફળ તેં ખાધું. તેથી તારા એ કૃત્યથી ભૂમિ શાપિત થઈ છે. તેમાંથી તું તારા આયુષ્યનાં સર્વ દિવસોમાં પરિશ્રમ કરીને ખોરાક મેળવશે.',
+      18: 'ભૂમિ તારે માટે કાંટા તથા ઝાંખરાં ઉગાવશે અને તું ખેતરનું શાક ખાશે.',
+      19: 'તું ભૂમિમાં પાછો જશે ત્યાં સુધી તું તારા મોંના પરસેવાથી રોટલી ખાશે કેમ કે તું ધૂળ છે અને પાછો ધૂળમાં ભળી જશે."',
+      20: 'તે માણસે તેની પત્નીનું નામ હવા પાડ્યું કેમ કે તે સમગ્ર માનવોની માતા થવાની હતી.',
+      21: 'યહોવાહ ઈશ્વરે આદમ અને તેની પત્ની માટે ચામડાનાં વસ્ત્રો બનાવ્યાં અને તેઓને પહેરાવ્યાં.',
+      22: 'યહોવાહ ઈશ્વરે કહ્યું, "જુઓ, માણસ સારાનરસાની ઓળખ કરવામાં આપણામાંના એક જેવો થઈ ગયો છે.',
+      23: 'તેથી યહોવાહ ઈશ્વરે ઇદન ની વાડીમાંથી તેને કાઢ્યો, કે જ્યાંથી તે લેવામાં આવ્યો હતો, ત્યાં જ ખેતી કરે.',
+      24: 'તેમણે આ માણસને હાંકી કાઢ્યો. ઇદન ની વાડીને પૂર્વ તરફ કરૂબીઓને ગોઠવ્યા, તથા ચારે બાજુ ફરતી અગ્નિની તલવાર, જ્ઞાન વૃક્ષ ના માર્ગ ના રક્ષણ માટે મૂકી.',
     };
 
     // ── State ─────────────────────────────────────────────────────────────────
 
     const TOTAL_VERSES = 24;
-    let activeVerse = 9;
+    let activeVerse = 8;
     let maxVerse = 8;
     let autoSaveTimer = null;
     let saveRetryTimer = null;
@@ -1456,6 +1872,279 @@
       el.style.height = Math.max(44, el.scrollHeight) + 'px';
     }
 
+    var SRC_SPARKLE_SVG = '<svg width="7" height="7" viewBox="0 0 24 24" fill="white"><path d="M12 2c0 0 1 5.5 3.5 8S24 12 24 12s-5.5 1-8 3.5S12 24 12 24s-1-5.5-3.5-8S0 12 0 12s5.5-1 8-3.5S12 2 12 2z"/></svg>';
+    var SRC_RESTART_SVG = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>';
+
+    // ── Source Bible playback state ───────────────────────────────────────────
+    // State per verse: { state: 'idle'|'playing'|'loading'|'disabled', restartEnabled: bool }
+    var SRC_BIBLE_DEMO_STATES = {};
+    var srcBiblePlayStates = {};
+
+    function getSourcePlayState(n) {
+      return (srcBiblePlayStates[n] || {}).state || 'idle';
+    }
+    function getSourceRestartEnabled(n) {
+      return !!(srcBiblePlayStates[n] || {}).restartEnabled;
+    }
+
+    // Verse 1 has real DBL audio (no sparkle); all others are TTS
+    function isSourceTts(n) { return n !== 1; }
+
+    // Builds the hover-revealed audio group rendered inside the source card
+    function srcAudioGroupHTML(n, isTts) {
+      var state          = getSourcePlayState(n);
+      var restartEnabled = getSourceRestartEnabled(n);
+      var isPlaying  = (state === 'playing');
+      var isLoading  = (state === 'loading');
+      var isDisabled = (state === 'disabled');
+
+      var playBtnClass = 'play-btn' + (isLoading ? ' loading' : '') + (isDisabled ? ' disabled' : '');
+
+      var playIcon;
+      if (isLoading) {
+        playIcon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>';
+      } else if (isPlaying) {
+        playIcon = '<svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>';
+      } else if (isDisabled) {
+        playIcon = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
+      } else {
+        playIcon = '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+      }
+
+      var playTitle = isDisabled ? 'Audio unavailable offline' : isPlaying ? 'Stop' : 'Play verse ' + n;
+      var sparkle = (isTts && !isLoading)
+        ? '<span class="src-play-sparkle" title="AI-generated audio">' + SRC_SPARKLE_SVG + '</span>'
+        : '';
+
+      var restartBtnClass = 'play-btn' + (restartEnabled ? '' : ' disabled');
+
+      var groupClass = 'src-audio-group' + (isPlaying ? ' playing' : '');
+
+      return '<div class="' + groupClass + '" id="src-audio-' + n + '" onclick="event.stopPropagation()">'
+        + '<span class="src-play-wrap">'
+        + '<button class="' + playBtnClass + '" onclick="playVerse(' + n + ', event)"'
+        + (isDisabled ? ' disabled' : '')
+        + ' title="' + playTitle + '" aria-label="' + playTitle + '">'
+        + playIcon + '</button>'
+        + sparkle
+        + '</span>'
+        + '<button class="' + restartBtnClass + '"'
+        + (restartEnabled ? '' : ' disabled')
+        + ' onclick="restartVerse(' + n + ', event)" title="Restart">'
+        + SRC_RESTART_SVG + '</button>'
+        + '</div>';
+    }
+
+    function playVerse(n, event) {
+      if (event) event.stopPropagation();
+      var state = getSourcePlayState(n);
+      if (state === 'disabled' || state === 'loading') return;
+
+      // Stop any other playing verse
+      Object.keys(srcBiblePlayStates).forEach(function(k) {
+        if ((srcBiblePlayStates[k] || {}).state === 'playing') {
+          srcBiblePlayStates[k] = { state: 'idle', restartEnabled: (srcBiblePlayStates[k] || {}).restartEnabled };
+          if (parseInt(k) !== n) updateSrcPlayBtn(parseInt(k));
+        }
+      });
+
+      if (state === 'playing') {
+        srcBiblePlayStates[n] = { state: 'idle', restartEnabled: getSourceRestartEnabled(n) };
+      } else {
+        srcBiblePlayStates[n] = { state: 'playing', restartEnabled: false };
+        // Enable restart after 1s of simulated progress
+        setTimeout(function() {
+          if (getSourcePlayState(n) === 'playing') {
+            srcBiblePlayStates[n] = { state: 'playing', restartEnabled: true };
+            updateSrcPlayBtn(n);
+          }
+        }, 1000);
+        // Auto-stop after 4s
+        setTimeout(function() {
+          if (getSourcePlayState(n) === 'playing') {
+            srcBiblePlayStates[n] = { state: 'idle', restartEnabled: false };
+            updateSrcPlayBtn(n);
+          }
+        }, 4000);
+      }
+      updateSrcPlayBtn(n);
+    }
+
+    function restartVerse(n, event) {
+      if (event) event.stopPropagation();
+      srcBiblePlayStates[n] = { state: 'playing', restartEnabled: false };
+      updateSrcPlayBtn(n);
+      setTimeout(function() {
+        if (getSourcePlayState(n) === 'playing') {
+          srcBiblePlayStates[n] = { state: 'playing', restartEnabled: true };
+          updateSrcPlayBtn(n);
+        }
+      }, 1000);
+      setTimeout(function() {
+        if (getSourcePlayState(n) === 'playing') {
+          srcBiblePlayStates[n] = { state: 'idle', restartEnabled: false };
+          updateSrcPlayBtn(n);
+        }
+      }, 4000);
+    }
+
+    function updateSrcPlayBtn(n) {
+      var group = document.getElementById('src-audio-' + n);
+      if (!group) return;
+      group.outerHTML = srcAudioGroupHTML(n, isSourceTts(n));
+    }
+
+    // isTtsFn(n) → bool; defaults to isSourceTts when omitted
+    function updateAllSrcPlayBtns(isTtsFn) {
+      for (var n = 1; n <= TOTAL_VERSES; n++) {
+        var group = document.getElementById('src-audio-' + n);
+        if (!group) continue;
+        var tts = isTtsFn ? isTtsFn(n) : isSourceTts(n);
+        group.outerHTML = srcAudioGroupHTML(n, tts);
+      }
+    }
+
+    // ── Pericope persistent player (per-pericope, indexed by pi) ─────────────
+    var pericopePBStates = {};
+
+    function getPericopePBState(pi) {
+      if (!pericopePBStates[pi]) {
+        pericopePBStates[pi] = { playing: false, hasLoaded: false, restartEnabled: false, pos: 0, duration: 90, timer: null, isTts: true };
+      }
+      return pericopePBStates[pi];
+    }
+
+    function pericopePlayerShow(isTts) {
+      // States initialized lazily; sparkles shown after first render via updateUI
+      PERICOPES.forEach(function(p, pi) {
+        var s = getPericopePBState(pi);
+        s.isTts = (isTts !== false);
+        pericopePlayerUpdateUI(pi);
+      });
+    }
+
+    function pericopePlayerHide() {
+      Object.keys(pericopePBStates).forEach(function(k) {
+        var s = pericopePBStates[k];
+        if (s.timer) { clearInterval(s.timer); s.timer = null; }
+        s.playing = false;
+      });
+    }
+
+    function pericopePlayerPlay(pi) {
+      var s = getPericopePBState(pi);
+      // Stop any other playing pericope
+      Object.keys(pericopePBStates).forEach(function(k) {
+        var ki = parseInt(k);
+        if (ki !== pi && pericopePBStates[k].playing) {
+          var other = pericopePBStates[k];
+          if (other.timer) { clearInterval(other.timer); other.timer = null; }
+          other.playing = false;
+          pericopePlayerUpdateUI(ki);
+        }
+      });
+      if (s.playing) {
+        if (s.timer) { clearInterval(s.timer); s.timer = null; }
+        s.playing = false;
+        pericopePlayerUpdateUI(pi);
+        return;
+      }
+      if (!s.hasLoaded) {
+        s.playing = true;
+        pericopePlayerSetPlayIcon(pi, 'loading');
+        setTimeout(function() {
+          s.hasLoaded = true;
+          pericopePlayerBegin(pi);
+        }, 900);
+        return;
+      }
+      pericopePlayerBegin(pi);
+    }
+
+    function pericopePlayerBegin(pi) {
+      var s = getPericopePBState(pi);
+      s.playing = true;
+      pericopePlayerUpdateUI(pi);
+      s.timer = setInterval(function() {
+        s.pos = Math.min(s.pos + 0.5, s.duration);
+        if (!s.restartEnabled && s.pos > 0) {
+          s.restartEnabled = true;
+          pericopePlayerUpdateUI(pi);
+        }
+        pericopePlayerUpdateProgress(pi);
+        if (s.pos >= s.duration) {
+          if (s.timer) { clearInterval(s.timer); s.timer = null; }
+          s.playing = false;
+          pericopePlayerUpdateUI(pi);
+        }
+      }, 500);
+    }
+
+    function pericopePlayerRestart(pi) {
+      var s = getPericopePBState(pi);
+      s.pos = 0;
+      s.restartEnabled = false;
+      pericopePlayerUpdateProgress(pi);
+      pericopePlayerBegin(pi);
+    }
+
+    function pericopePlayerScrub(el, event, pi) {
+      var track = el.querySelector('.pericope-pb-track');
+      if (!track) return;
+      var rect = track.getBoundingClientRect();
+      var pct = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+      var s = getPericopePBState(pi);
+      s.pos = pct * s.duration;
+      s.restartEnabled = (s.pos > 0);
+      pericopePlayerUpdateProgress(pi);
+      pericopePlayerUpdateUI(pi);
+      if (!s.playing) pericopePlayerBegin(pi);
+    }
+
+    function pericopePlayerUpdateProgress(pi) {
+      var s = getPericopePBState(pi);
+      var pct = s.duration > 0 ? (s.pos / s.duration) * 100 : 0;
+      var fill = document.getElementById('pericope-pb-fill-' + pi);
+      var thumb = document.getElementById('pericope-pb-thumb-' + pi);
+      var time = document.getElementById('pericope-pb-time-' + pi);
+      if (fill) fill.style.width = pct + '%';
+      if (thumb) thumb.style.left = pct + '%';
+      if (time) {
+        var sec = Math.floor(s.pos);
+        time.textContent = Math.floor(sec / 60) + ':' + (sec % 60 < 10 ? '0' : '') + (sec % 60);
+      }
+    }
+
+    function pericopePlayerSetPlayIcon(pi, state) {
+      var btn = document.getElementById('pericope-pb-play-' + pi);
+      if (!btn) return;
+      var icon;
+      if (state === 'loading') {
+        btn.classList.add('loading');
+        icon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>';
+      } else if (state === 'playing') {
+        btn.classList.remove('loading');
+        icon = '<svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>';
+      } else {
+        btn.classList.remove('loading');
+        icon = '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+      }
+      btn.innerHTML = icon;
+    }
+
+    function pericopePlayerUpdateUI(pi) {
+      var s = getPericopePBState(pi);
+      pericopePlayerSetPlayIcon(pi, s.playing ? 'playing' : 'idle');
+      var restartBtn = document.getElementById('pericope-pb-restart-' + pi);
+      if (restartBtn) {
+        restartBtn.disabled = !s.restartEnabled;
+        restartBtn.classList.toggle('disabled', !s.restartEnabled);
+      }
+      var sparkle = document.getElementById('pericope-pb-sparkle-' + pi);
+      if (sparkle) sparkle.style.display = s.isTts ? '' : 'none';
+      pericopePlayerUpdateProgress(pi);
+    }
+
     // ── Verse rendering ───────────────────────────────────────────────────────
 
     function renderVerses() {
@@ -1487,7 +2176,10 @@
         row.innerHTML =
           '<div class="verse-source">' +
             '<span class="verse-num">' + n + '</span>' +
-            '<div class="' + srcClass + '" id="src-' + n + '">' + esc(srcText) + '</div>' +
+            '<div class="' + srcClass + '" id="src-' + n + '">' +
+              srcAudioGroupHTML(n, isSourceTts(n)) +
+              esc(srcText) +
+            '</div>' +
           '</div>' +
           '<div class="translation-wrap" id="wrap-' + n + '">' +
             '<textarea' +
@@ -1587,9 +2279,26 @@
         // ── Verse range row ──
         var rangeRow = document.createElement('div');
         rangeRow.className = 'pericope-range-row';
-        rangeRow.innerHTML =
-          '<div class="pericope-range-label">' + p.label + '</div>' +
-          '<div class="pericope-range-label">' + p.label + '</div>';
+        var srcRangeCell = '<div class="pericope-range-label pericope-range-src">'
+            + '<span style="flex-shrink:0">' + p.label + '</span>'
+            + '<div class="pericope-player" id="pericope-player-' + pi + '">'
+            + '<span class="src-play-wrap">'
+            + '<button class="play-btn" id="pericope-pb-play-' + pi + '" onclick="pericopePlayerPlay(' + pi + ')" title="Play">'
+            + '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'
+            + '</button>'
+            + '<span class="src-play-sparkle" id="pericope-pb-sparkle-' + pi + '" title="AI-generated audio">' + SRC_SPARKLE_SVG + '</span>'
+            + '</span>'
+            + '<button class="play-btn disabled" id="pericope-pb-restart-' + pi + '" disabled onclick="pericopePlayerRestart(' + pi + ')" title="Restart">' + SRC_RESTART_SVG + '</button>'
+            + '<div class="pericope-pb-scrub-wrap" onclick="pericopePlayerScrub(this,event,' + pi + ')">'
+            + '<div class="pericope-pb-track">'
+            + '<div class="pericope-pb-fill" id="pericope-pb-fill-' + pi + '"></div>'
+            + '<div class="pericope-pb-thumb" id="pericope-pb-thumb-' + pi + '" style="left:0%"></div>'
+            + '</div></div>'
+            + '<span class="pericope-pb-time" id="pericope-pb-time-' + pi + '">0:00</span>'
+            + '</div>'
+            + '</div>';
+        rangeRow.innerHTML = srcRangeCell
+          + '<div class="pericope-range-label">' + p.label + '</div>';
         block.appendChild(rangeRow);
 
         // ── Title row (when pericope has a title) ──
@@ -1730,6 +2439,8 @@
         var rte = document.getElementById('pericope-rte');
         if (rte) rte.focus();
       });
+
+      pericopePlayerShow(true);
     }
 
     function extractRteTranslations(verses) {
@@ -1894,28 +2605,295 @@
       return PERICOPES[pi] ? (PERICOPES[pi].aiTitle || '') : '';
     }
 
+    // ── TQ play controls ─────────────────────────────────────────────────────
+
+    var tqPBStates   = {};
+    var tqPBActiveId = null;
+
+    function tqStopAll() {
+      if (tqPBActiveId) { tqPBForceStop(tqPBActiveId); tqPBActiveId = null; }
+    }
+
+    function tqPBReset() {
+      tqStopAll();
+      tqPBStates = {};
+    }
+
+    function tqPBGroupHTML(id) {
+      var PLAY_SVG    = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+      var RESTART_SVG = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>';
+      var SPARKLE_SVG = '<svg width="7" height="7" viewBox="0 0 24 24" fill="white"><path d="M12 2c0 0 1 5.5 3.5 8S24 12 24 12s-5.5 1-8 3.5S12 24 12 24s-1-5.5-3.5-8S0 12 0 12s5.5-1 8-3.5S12 2 12 2z"/></svg>';
+      return '<div class="tq-play-group" data-tq-pb-id="' + id + '" onclick="event.stopPropagation()">'
+        + '<div class="tq-pb-btn-wrap">'
+        + '<button class="tq-pb-btn tq-pb-play" onclick="tqPBPlay(this, event)" title="Play">' + PLAY_SVG + '</button>'
+        + '<span class="tq-pb-sparkle-badge" title="AI-generated audio">' + SPARKLE_SVG + '</span>'
+        + '</div>'
+        + '<button class="tq-pb-btn tq-pb-restart" disabled onclick="tqPBRestart(this, event)" title="Restart">' + RESTART_SVG + '</button>'
+        + '</div>';
+    }
+
+    function tqPBPlay(btn, event) {
+      if (event) event.stopPropagation();
+      var group = btn.closest('.tq-play-group');
+      var id    = group.dataset.tqPbId;
+
+      // Stop any active TN player
+      if (notePBActiveId) { notePBStopId(notePBActiveId); notePBActiveId = null; }
+      // Stop any other active TQ player
+      if (tqPBActiveId && tqPBActiveId !== id) tqPBForceStop(tqPBActiveId);
+
+      if (!tqPBStates[id]) tqPBStates[id] = { playing: false, hasLoaded: false };
+      var st = tqPBStates[id];
+
+      if (st.playing) {
+        // Pause
+        clearTimeout(st.timer);
+        st.playing = false;
+        tqPBSetIcon(group, 'play');
+        // Keep .playing class so controls stay visible while paused
+      } else if (!st.hasLoaded) {
+        // First play: loading → start
+        tqPBSetIcon(group, 'loading');
+        group.classList.add('playing');
+        tqPBActiveId = id;
+        setTimeout(function() {
+          var g = document.querySelector('.tq-play-group[data-tq-pb-id="' + id + '"]');
+          if (!g || tqPBActiveId !== id) return;
+          st.hasLoaded = true;
+          st.playing = true;
+          tqPBSetIcon(g, 'pause');
+          tqPBEnableRestart(g, true);
+          var dur = (id.charAt(0) === 'q') ? 6000 : 9000;
+          st.timer = setTimeout(function() {
+            st.playing = false;
+            if (tqPBActiveId === id) tqPBActiveId = null;
+            var g2 = document.querySelector('.tq-play-group[data-tq-pb-id="' + id + '"]');
+            if (g2) { tqPBSetIcon(g2, 'play'); g2.classList.remove('playing'); }
+          }, dur);
+        }, 850);
+      } else {
+        // Resume from paused
+        st.playing = true;
+        tqPBActiveId = id;
+        group.classList.add('playing');
+        tqPBSetIcon(group, 'pause');
+        tqPBEnableRestart(group, true);
+        var dur2 = (id.charAt(0) === 'q') ? 6000 : 9000;
+        st.timer = setTimeout(function() {
+          st.playing = false;
+          if (tqPBActiveId === id) tqPBActiveId = null;
+          var g3 = document.querySelector('.tq-play-group[data-tq-pb-id="' + id + '"]');
+          if (g3) { tqPBSetIcon(g3, 'play'); g3.classList.remove('playing'); }
+        }, dur2);
+      }
+    }
+
+    function tqPBForceStop(id) {
+      var st = tqPBStates[id];
+      if (!st) return;
+      clearTimeout(st.timer);
+      st.playing = false;
+      if (tqPBActiveId === id) tqPBActiveId = null;
+      var group = document.querySelector('.tq-play-group[data-tq-pb-id="' + id + '"]');
+      if (group) { tqPBSetIcon(group, 'play'); group.classList.remove('playing'); }
+    }
+
+    function tqPBRestart(btn, event) {
+      if (event) event.stopPropagation();
+      var group = btn.closest('.tq-play-group');
+      var id    = group.dataset.tqPbId;
+      var st    = tqPBStates[id];
+      if (!st) return;
+      clearTimeout(st.timer);
+      st.playing   = false;
+      st.hasLoaded = false;
+      if (tqPBActiveId === id) tqPBActiveId = null;
+      tqPBSetIcon(group, 'play');
+      tqPBEnableRestart(group, false);
+      group.classList.remove('playing');
+    }
+
+    function tqPBSetIcon(group, mode) {
+      var playBtn = group.querySelector('.tq-pb-play');
+      if (!playBtn) return;
+      var PLAY_SVG   = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+      var PAUSE_SVG  = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+      var LOADER_SVG = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" class="note-pb-spinning"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>';
+      if (mode === 'play')    { playBtn.innerHTML = PLAY_SVG;   playBtn.title = 'Play'; }
+      if (mode === 'pause')   { playBtn.innerHTML = PAUSE_SVG;  playBtn.title = 'Pause'; }
+      if (mode === 'loading') { playBtn.innerHTML = LOADER_SVG; playBtn.title = 'Loading…'; }
+    }
+
+    function tqPBEnableRestart(group, enabled) {
+      var btn = group.querySelector('.tq-pb-restart');
+      if (btn) btn.disabled = !enabled;
+    }
 
     function renderQuestions() {
+      tqPBReset();
       const container = document.getElementById('questions-list');
       const questions = TQ_DATA[activeVerse] || [];
       if (!questions.length) {
         container.innerHTML = '<div class="no-resources">No resources available.</div>';
         return;
       }
-      container.innerHTML = questions.map(function(q) {
+      container.innerHTML = questions.map(function(q, i) {
         return '<div class="tq-item">'
-          + '<button class="tq-toggle" onclick="toggleTQ(this)">'
-          + '<span class="tq-inner"><span class="tq-ref">' + q.ref + '</span><span class="tq-question">' + q.question + '</span></span>'
+          + '<div class="tq-toggle" role="button" tabindex="0" onclick="toggleTQ(this)" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();toggleTQ(this);}">'
+          + '<span class="tq-inner"><span class="tq-ref">' + q.ref + '</span>'
+          + '<div class="tq-q-outer">' + tqPBGroupHTML('q' + i) + '<span class="tq-question">' + q.question + '</span></div>'
+          + '</span>'
           + TQ_CHEV_SVG
-          + '</button>'
-          + '<div class="tq-body">' + q.answer + '</div>'
+          + '</div>'
+          + '<div class="tq-body"><div class="tq-a-outer">' + tqPBGroupHTML('a' + i) + q.answer + '</div></div>'
           + '</div>';
       }).join('');
     }
 
     const CHEVRON_SVG = '<svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>';
 
+    // ── TN play bar ──────────────────────────────────────────────────────────
+
+    var NOTE_PB_PLAY_SVG    = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+    var NOTE_PB_PAUSE_SVG   = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+    var NOTE_PB_RESTART_SVG = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>';
+    var NOTE_PB_LOADER_SVG  = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" class="note-pb-spinning"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>';
+    var NOTE_PB_SPARKLE_SVG = '<svg width="7" height="7" viewBox="0 0 24 24" fill="white"><path d="M12 2c0 0 1 5.5 3.5 8S24 12 24 12s-5.5 1-8 3.5S12 24 12 24s-1-5.5-3.5-8S0 12 0 12s5.5-1 8-3.5S12 2 12 2z"/></svg>';
+
+    var notePBStates   = {};
+    var notePBActiveId = null;
+
+    function notePBReset() {
+      if (notePBActiveId) {
+        var st = notePBStates[notePBActiveId];
+        if (st) clearInterval(st.timer);
+        notePBActiveId = null;
+      }
+      notePBStates = {};
+    }
+
+    function notePBHTML(id) {
+      return '<div class="note-play-bar" data-note-pb-id="' + id + '">'
+        + '<div class="note-pb-btn-wrap">'
+        + '<button class="note-pb-btn note-pb-play" onclick="notePBPlay(this)" title="Play">' + NOTE_PB_PLAY_SVG + '</button>'
+        + '<span class="note-pb-sparkle-badge" title="AI-generated audio">' + NOTE_PB_SPARKLE_SVG + '</span>'
+        + '</div>'
+        + '<button class="note-pb-btn note-pb-restart" disabled onclick="notePBRestart(this)" title="Restart">' + NOTE_PB_RESTART_SVG + '</button>'
+        + '<div class="note-pb-scrub-wrap" onclick="notePBScrub(this, event)">'
+        + '<div class="note-pb-track"><div class="note-pb-fill"></div><div class="note-pb-thumb"></div></div>'
+        + '</div>'
+        + '<span class="note-pb-time">0:00</span>'
+        + '</div>';
+    }
+
+    function notePBPlay(btn) {
+      var bar = btn.closest('.note-play-bar');
+      var id  = bar.dataset.notePbId;
+
+      if (notePBActiveId && notePBActiveId !== id) notePBStopId(notePBActiveId);
+
+      if (!notePBStates[id]) notePBStates[id] = { playing: false, pos: 0, duration: 35, hasLoaded: false };
+      var st = notePBStates[id];
+
+      if (st.playing) {
+        clearInterval(st.timer);
+        st.playing = false;
+        notePBActiveId = null;
+        notePBSetIcon(bar, 'play');
+      } else if (!st.hasLoaded) {
+        notePBSetIcon(bar, 'loading');
+        notePBActiveId = id;
+        setTimeout(function() {
+          st.hasLoaded = true;
+          notePBBeginPlayback(bar, id, st);
+        }, 900);
+      } else {
+        notePBBeginPlayback(bar, id, st);
+      }
+    }
+
+    function notePBBeginPlayback(bar, id, st) {
+      tqStopAll();
+      st.playing = true;
+      notePBActiveId = id;
+      notePBSetIcon(bar, 'pause');
+      notePBEnableRestart(bar, true);
+      st.timer = setInterval(function() {
+        st.pos = Math.min(st.pos + 0.5, st.duration);
+        notePBUpdateProgress(bar, st.pos, st.duration);
+        if (st.pos >= st.duration) {
+          clearInterval(st.timer);
+          st.playing = false;
+          notePBActiveId = null;
+          notePBSetIcon(bar, 'play');
+        }
+      }, 500);
+    }
+
+    function notePBStopId(id) {
+      var st = notePBStates[id];
+      if (!st) return;
+      clearInterval(st.timer);
+      st.playing = false;
+      var bar = document.querySelector('.note-play-bar[data-note-pb-id="' + id + '"]');
+      if (bar) notePBSetIcon(bar, 'play');
+    }
+
+    function notePBRestart(btn) {
+      var bar = btn.closest('.note-play-bar');
+      var id  = bar.dataset.notePbId;
+      var st  = notePBStates[id];
+      if (!st) return;
+      clearInterval(st.timer);
+      st.playing = false;
+      st.pos = 0;
+      if (notePBActiveId === id) notePBActiveId = null;
+      notePBSetIcon(bar, 'play');
+      notePBUpdateProgress(bar, 0, st.duration);
+      notePBEnableRestart(bar, false);
+    }
+
+    function notePBScrub(scrubWrap, event) {
+      var bar   = scrubWrap.closest('.note-play-bar');
+      var id    = bar.dataset.notePbId;
+      if (!notePBStates[id]) notePBStates[id] = { playing: false, pos: 0, duration: 35, hasLoaded: false };
+      var st    = notePBStates[id];
+      var track = scrubWrap.querySelector('.note-pb-track');
+      var rect  = track.getBoundingClientRect();
+      var pct   = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+      st.pos    = pct * st.duration;
+      notePBUpdateProgress(bar, st.pos, st.duration);
+      if (st.pos > 0) notePBEnableRestart(bar, true);
+    }
+
+    function notePBSetIcon(bar, mode) {
+      var playBtn = bar.querySelector('.note-pb-play');
+      if (!playBtn) return;
+      if (mode === 'play')    { playBtn.innerHTML = NOTE_PB_PLAY_SVG;   playBtn.title = 'Play'; }
+      if (mode === 'pause')   { playBtn.innerHTML = NOTE_PB_PAUSE_SVG;  playBtn.title = 'Pause'; }
+      if (mode === 'loading') { playBtn.innerHTML = NOTE_PB_LOADER_SVG; playBtn.title = 'Loading…'; }
+    }
+
+    function notePBEnableRestart(bar, enabled) {
+      var btn = bar.querySelector('.note-pb-restart');
+      if (btn) btn.disabled = !enabled;
+    }
+
+    function notePBUpdateProgress(bar, pos, duration) {
+      var pct   = duration > 0 ? (pos / duration) * 100 : 0;
+      var fill  = bar.querySelector('.note-pb-fill');
+      var thumb = bar.querySelector('.note-pb-thumb');
+      var time  = bar.querySelector('.note-pb-time');
+      if (fill)  fill.style.width = pct + '%';
+      if (thumb) thumb.style.left = pct + '%';
+      if (time) {
+        var s = Math.floor(pos);
+        time.textContent = Math.floor(s / 60) + ':' + (s % 60 < 10 ? '0' : '') + (s % 60);
+      }
+    }
+
     function renderNotes() {
+      notePBReset();
       const container = document.getElementById('notes-list');
       const notes = TN_NOTES[activeVerse] || [];
       const ref = '3:' + activeVerse;
@@ -1926,6 +2904,7 @@
           + '</button>'
           + '<div class="note-body' + (open ? ' open' : '') + '">'
           + '<strong>"' + note.key + '"</strong>' + '<br/><br/> ' + note.body
+          + notePBHTML('n' + i)
           + '</div>';
       }).join('');
     }
@@ -1963,7 +2942,7 @@
 
     function updateProgress() {
       let filled = 0;
-      for (let n = 1; n <= TOTAL_VERSES; n++) {
+      for (let n = 1; n <= maxVerse; n++) {
         const input = document.getElementById('input-' + n);
         const text  = input ? input.value : (translations[n] || '');
         if (text.trim()) filled++;
@@ -2044,6 +3023,8 @@
         if (chapterSection) chapterSection.style.display = 'none';
         if (verseSection)   verseSection.style.display   = '';
 
+        if (mode !== 'pericope') pericopePlayerHide();
+
         if (mode === 'pericope') {
           activePericope = 0;
           for (var pi = 0; pi < PERICOPES.length; pi++) {
@@ -2085,6 +3066,7 @@
         container.innerHTML = '<div class="no-resources">No resources available for this pericope.</div>';
         return;
       }
+      notePBReset();
       container.innerHTML = notes.map(function(note, i) {
         var open = i === 0;
         return '<button class="note-toggle' + (open ? ' open' : '') + '" onclick="toggleNote(this)">'
@@ -2092,6 +3074,7 @@
           + '</button>'
           + '<div class="note-body' + (open ? ' open' : '') + '">'
           + '<strong>"' + note.key + '"</strong><br/><br/> ' + note.body
+          + notePBHTML('n' + i)
           + '</div>';
       }).join('');
     }
@@ -2113,13 +3096,16 @@
         container.innerHTML = '<div class="no-resources">No resources available.</div>';
         return;
       }
-      container.innerHTML = questions.map(function(q) {
+      tqPBReset();
+      container.innerHTML = questions.map(function(q, i) {
         return '<div class="tq-item">'
-          + '<button class="tq-toggle" onclick="toggleTQ(this)">'
-          + '<span class="tq-inner"><span class="tq-ref">' + q.ref + '</span><span class="tq-question">' + q.question + '</span></span>'
+          + '<div class="tq-toggle" role="button" tabindex="0" onclick="toggleTQ(this)" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();toggleTQ(this);}">'
+          + '<span class="tq-inner"><span class="tq-ref">' + q.ref + '</span>'
+          + '<div class="tq-q-outer">' + tqPBGroupHTML('q' + i) + '<span class="tq-question">' + q.question + '</span></div>'
+          + '</span>'
           + TQ_CHEV_SVG
-          + '</button>'
-          + '<div class="tq-body">' + q.answer + '</div>'
+          + '</div>'
+          + '<div class="tq-body"><div class="tq-a-outer">' + tqPBGroupHTML('a' + i) + q.answer + '</div></div>'
           + '</div>';
       }).join('');
     }
@@ -2388,19 +3374,33 @@
       handle.style.display = isOpen ? 'none' : '';
     }
 
+    // ── Resources / AI Assistant tab row ────────────────────────────────────────
+
+    function selectResourceTab(el) {
+      document.querySelectorAll('.resources-tab').forEach(function(t) { t.classList.remove('selected'); });
+      el.classList.add('selected');
+
+      const showAI = el.dataset.tab === 'ai-assistant';
+      document.querySelectorAll('.resources-tab-panel').forEach(function(p) {
+        p.classList.toggle('hidden', showAI);
+      });
+      document.getElementById('ai-assistant-pane').classList.toggle('active', showAI);
+      if (showAI) renderAIPane();
+    }
+
     // ── Chip row ──────────────────────────────────────────────────────────────
 
     function selectChip(el) {
-      ['notes-list', 'images-list', 'questions-list', 'words-list'].forEach(function(id) {
+      artPBReset();
+      ['notes-list', 'images-list', 'questions-list', 'words-list', 'osn-list'].forEach(function(id) {
         document.getElementById(id).style.display = 'none';
       });
       document.getElementById('bibles-list').classList.remove('active');
-      document.getElementById('ai-assistant-pane').classList.remove('active');
 
       document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('selected'); });
       el.classList.add('selected');
 
-      const showLang = ['notes', 'questions', 'words', 'aosn', 'ai-assistant'].includes(el.dataset.value);
+      const showLang = ['notes', 'questions', 'words', 'osn'].includes(el.dataset.value);
       document.getElementById('res-lang-bar').style.display = showLang ? '' : 'none';
 
       switch (el.dataset.value) {
@@ -2409,7 +3409,7 @@
         case 'bibles':       document.getElementById('bibles-list').classList.add('active'); initBiblesPanel(); break;
         case 'questions':    document.getElementById('questions-list').style.display = 'block'; break;
         case 'words':        document.getElementById('words-list').style.display = 'block'; break;
-        case 'ai-assistant': document.getElementById('ai-assistant-pane').classList.add('active'); renderAIPane(); break;
+        case 'osn':          document.getElementById('osn-list').style.display = 'block'; break;
       }
     }
 
@@ -2441,8 +3441,178 @@
     }
 
     function toggleTW(el) {
+      var body = el.nextElementSibling;
+      var wasOpen = el.classList.contains('open');
       el.classList.toggle('open');
-      el.nextElementSibling.classList.toggle('open');
+      body.classList.toggle('open');
+      // Stop this entry's player when collapsing
+      if (wasOpen) {
+        var player = body.querySelector('.art-player');
+        if (player) artPBStopId(player.dataset.artPbId);
+      }
+    }
+
+    // ── Article sticky player (TW & OSN) ─────────────────────────────────────
+
+    var ART_PB_PLAY_SVG    = '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+    var ART_PB_PAUSE_SVG   = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+    var ART_PB_RESTART_SVG = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>';
+    var ART_PB_LOADER_SVG  = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" class="note-pb-spinning"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>';
+    var ART_PB_SPARKLE_SVG = '<svg width="7" height="7" viewBox="0 0 24 24" fill="white"><path d="M12 2c0 0 1 5.5 3.5 8S24 12 24 12s-5.5 1-8 3.5S12 24 12 24s-1-5.5-3.5-8S0 12 0 12s5.5-1 8-3.5S12 2 12 2z"/></svg>';
+
+    var artPBStates   = {};
+    var artPBActiveId = null;
+
+    function artPBFmt(s) {
+      s = Math.round(s);
+      return Math.floor(s / 60) + ':' + (s % 60 < 10 ? '0' : '') + (s % 60);
+    }
+
+    function artPBHTML(id, title) {
+      return '<div class="art-player" data-art-pb-id="' + id + '">'
+        + '<div class="art-pb-btn-wrap">'
+        +   '<button class="art-pb-btn art-pb-play" onclick="artPBPlay(this)" title="Play">' + ART_PB_PLAY_SVG + '</button>'
+        +   '<span class="art-pb-sparkle-badge" title="AI-generated audio">' + ART_PB_SPARKLE_SVG + '</span>'
+        + '</div>'
+        + '<button class="art-pb-btn art-pb-outline art-pb-restart" disabled onclick="artPBRestart(this)" title="Restart">' + ART_PB_RESTART_SVG + '</button>'
+        + '<span class="art-player-title">' + title + '</span>'
+        + '<div class="art-pb-scrub-wrap" onclick="artPBScrub(this, event)">'
+        +   '<div class="art-pb-track"><div class="art-pb-fill"></div><div class="art-pb-thumb"></div></div>'
+        + '</div>'
+        + '<span class="art-pb-time">0:00&nbsp;/&nbsp;--:--</span>'
+        + '</div>';
+    }
+
+    function artPBInject() {
+      // Inject player HTML into each placeholder slot
+      [
+        { id: 'art-player-tw-0',  pbId: 'tw-0',  title: 'Adam' },
+        { id: 'art-player-tw-1',  pbId: 'tw-1',  title: 'Deceive, lie, deception' },
+        { id: 'art-player-tw-2',  pbId: 'tw-2',  title: 'Eve' },
+        { id: 'art-player-tw-3',  pbId: 'tw-3',  title: 'Serpent, snake, viper' },
+        { id: 'art-player-osn-0', pbId: 'osn-0', title: 'Genesis 1:1–2:3' },
+        { id: 'art-player-osn-1', pbId: 'osn-1', title: 'Genesis 1:3–13' },
+        { id: 'art-player-osn-2', pbId: 'osn-2', title: 'Genesis 1:9–10' },
+      ].forEach(function(entry) {
+        var el = document.getElementById(entry.id);
+        if (el) el.innerHTML = artPBHTML(entry.pbId, entry.title);
+      });
+    }
+
+    function artPBPlay(btn) {
+      var player = btn.closest('.art-player');
+      var id     = player.dataset.artPbId;
+
+      // Stop other article players
+      if (artPBActiveId && artPBActiveId !== id) artPBStopId(artPBActiveId);
+      // Stop TN and TQ players
+      if (notePBActiveId) { notePBStopId(notePBActiveId); notePBActiveId = null; }
+      tqStopAll();
+
+      if (!artPBStates[id]) artPBStates[id] = { playing: false, pos: 0, duration: 45, hasLoaded: false };
+      var st = artPBStates[id];
+
+      if (st.playing) {
+        clearInterval(st.timer);
+        st.playing = false;
+        artPBActiveId = null;
+        artPBSetPlayIcon(player, 'play');
+      } else if (!st.hasLoaded) {
+        artPBSetPlayIcon(player, 'loading');
+        artPBActiveId = id;
+        setTimeout(function() {
+          if (artPBActiveId !== id) return;
+          st.hasLoaded = true;
+          artPBBegin(player, id, st);
+        }, 900);
+      } else {
+        artPBBegin(player, id, st);
+      }
+    }
+
+    function artPBBegin(player, id, st) {
+      st.playing = true;
+      artPBActiveId = id;
+      artPBSetPlayIcon(player, 'pause');
+      artPBEnableRestart(player, true);
+      artPBUpdateProgress(player, st.pos, st.duration);
+      st.timer = setInterval(function() {
+        st.pos = Math.min(st.pos + 0.5, st.duration);
+        artPBUpdateProgress(player, st.pos, st.duration);
+        if (st.pos >= st.duration) {
+          clearInterval(st.timer);
+          st.playing = false;
+          if (artPBActiveId === id) artPBActiveId = null;
+          artPBSetPlayIcon(player, 'play');
+        }
+      }, 500);
+    }
+
+    function artPBStopId(id) {
+      var st = artPBStates[id];
+      if (!st) return;
+      clearInterval(st.timer);
+      st.playing = false;
+      if (artPBActiveId === id) artPBActiveId = null;
+      var player = document.querySelector('.art-player[data-art-pb-id="' + id + '"]');
+      if (player) artPBSetPlayIcon(player, 'play');
+    }
+
+    function artPBRestart(btn) {
+      var player = btn.closest('.art-player');
+      var id     = player.dataset.artPbId;
+      var st     = artPBStates[id];
+      if (!st) return;
+      clearInterval(st.timer);
+      st.pos     = 0;
+      st.playing = false;
+      if (artPBActiveId === id) artPBActiveId = null;
+      artPBSetPlayIcon(player, 'play');
+      artPBEnableRestart(player, false);
+      artPBUpdateProgress(player, 0, st.duration);
+    }
+
+    function artPBScrub(scrubWrap, event) {
+      var player = scrubWrap.closest('.art-player');
+      var id     = player.dataset.artPbId;
+      if (!artPBStates[id]) return;
+      var st    = artPBStates[id];
+      var track = scrubWrap.querySelector('.art-pb-track');
+      var rect  = track.getBoundingClientRect();
+      var pct   = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+      st.pos    = pct * st.duration;
+      artPBUpdateProgress(player, st.pos, st.duration);
+      if (st.pos > 0) artPBEnableRestart(player, true);
+    }
+
+    function artPBSetPlayIcon(player, mode) {
+      var btn = player.querySelector('.art-pb-play');
+      if (!btn) return;
+      if (mode === 'play')    btn.innerHTML = ART_PB_PLAY_SVG;
+      if (mode === 'pause')   btn.innerHTML = ART_PB_PAUSE_SVG;
+      if (mode === 'loading') btn.innerHTML = ART_PB_LOADER_SVG;
+      btn.title = mode === 'pause' ? 'Pause' : mode === 'loading' ? 'Loading…' : 'Play';
+    }
+
+    function artPBEnableRestart(player, enabled) {
+      var btn = player.querySelector('.art-pb-restart');
+      if (btn) btn.disabled = !enabled;
+    }
+
+    function artPBUpdateProgress(player, pos, dur) {
+      var fill  = player.querySelector('.art-pb-fill');
+      var thumb = player.querySelector('.art-pb-thumb');
+      var time  = player.querySelector('.art-pb-time');
+      var pct   = dur > 0 ? (pos / dur) * 100 : 0;
+      if (fill)  fill.style.width = pct + '%';
+      if (thumb) thumb.style.left = pct + '%';
+      if (time)  time.textContent = artPBFmt(pos) + ' / ' + artPBFmt(dur);
+    }
+
+    function artPBReset() {
+      if (artPBActiveId) artPBStopId(artPBActiveId);
+      artPBStates   = {};
+      artPBActiveId = null;
     }
 
     // ── Custom select helpers ─────────────────────────────────────────────────
@@ -2727,6 +3897,7 @@
         renderNotes();
         renderQuestions();
       }
+      artPBInject();
     });
 
     window.addEventListener('resize', function() {
