@@ -77,7 +77,7 @@
     }
 
     .meta-row { display: flex; align-items: baseline; gap: 12px; padding: 4px 0; }
-    .meta-label { font-weight: 700; font-size: 1rem; width: 150px; flex-shrink: 0; }
+    .meta-label { font-weight: 700; font-size: 1rem; width: 180px; flex-shrink: 0; }
     .meta-value { font-weight: 500; font-size: 1rem; color: var(--muted-foreground); }
 
     /* ── Progress bar ── */
@@ -179,6 +179,13 @@
     .users-table tbody tr:hover { background: var(--muted); }
     .users-table tbody td { padding: 11px 14px; font-size: 14px; }
     .users-table .td-action { text-align: right; width: 36px; }
+
+    .trash-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--muted-foreground); padding: 2px;
+      display: inline-flex; align-items: center;
+    }
+    .trash-btn:hover { color: #df0c07; }
 
     .role-badge {
       display: inline-flex;
@@ -333,6 +340,27 @@
       outline: none; transition: border-color 0.15s;
     }
     .field-input:focus { border-color: var(--primary); }
+
+    .dropdown-wrap { position: relative; }
+    .dropdown-trigger {
+      width: 100%; height: 38px; padding: 0 12px; border: 1px solid var(--border);
+      border-radius: var(--radius-sm); font-size: 14px; font-family: var(--font);
+      color: var(--foreground); background: var(--background);
+      text-align: left; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: border-color 0.15s;
+    }
+    .dropdown-trigger:hover { border-color: var(--primary); }
+    .dropdown-menu {
+      display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: var(--popover); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      max-height: 200px; overflow-y: auto; z-index: 20;
+    }
+    .dropdown-menu.open { display: block; }
+    .dropdown-item { padding: 8px 12px; font-size: 14px; cursor: pointer; color: var(--foreground); }
+    .dropdown-item:hover { background: var(--popover-hover); }
+
     .scope-header { display: flex; align-items: baseline; justify-content: space-between; }
     .size-estimate { font-size: 13px; color: var(--muted-foreground); font-weight: 500; }
     .size-estimate strong { color: var(--foreground); font-weight: 600; }
@@ -353,7 +381,13 @@
     .book-item.checked:hover { background: #dce6fa; }
     .book-checkbox { width: 16px; height: 16px; accent-color: var(--primary); flex-shrink: 0; cursor: pointer; }
     .book-name { font-size: 14px; flex: 1; }
-    .book-size { font-size: 12px; color: var(--muted-foreground); flex-shrink: 0; }
+    .book-audio-badge {
+      display: inline-flex; align-items: center; gap: 3px; flex-shrink: 0;
+      padding: 2px 7px; border-radius: 9999px; font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.03em;
+      background: #dff5e3; color: #0f7a35;
+    }
+    .dark .book-audio-badge { background: #1a3325; color: #7fd39d; }
     .scope-warning {
       display: flex; gap: 10px; padding: 11px 14px;
       background: #fef9ec; border: 1px solid #f5d87a;
@@ -429,6 +463,10 @@
             <span class="meta-value">Kachi Koli</span>
           </div>
           <div class="meta-row">
+            <span class="meta-label">Connectivity Profile</span>
+            <span class="meta-value">Sometimes Connected</span>
+          </div>
+          <div class="meta-row">
             <span class="meta-label">Milestones</span>
             <span class="meta-value">2</span>
           </div>
@@ -464,28 +502,33 @@
           <div class="users-table-wrap">
             <table class="users-table">
               <thead>
-                <tr><th>Name</th><th>Role</th></tr>
+                <tr><th>Name</th><th>Role</th><th></th></tr>
               </thead>
               <tbody>
                 <tr>
                   <td>qa.manager</td>
                   <td><span class="role-badge manager">Project Manager</span></td>
+                  <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
                 </tr>
                 <tr>
                   <td>Roslin T</td>
                   <td><span class="role-badge">Translator</span></td>
+                  <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
                 </tr>
                 <tr>
                   <td>Roslin P</td>
                   <td><span class="role-badge">Peer Checker</span></td>
+                  <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
                 </tr>
                 <tr>
                   <td>Seema T</td>
                   <td><span class="role-badge">Translator</span></td>
+                  <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
                 </tr>
                 <tr>
                   <td>Chad W</td>
                   <td><span class="role-badge">Observer</span></td>
+                  <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
                 </tr>
               </tbody>
             </table>
@@ -591,9 +634,24 @@
         <div class="field">
           <div class="scope-header">
             <label class="field-label">Book Scope</label>
-            <span class="size-estimate" id="size-estimate" style="display:none">~<strong id="size-value"></strong> MB for <strong id="book-count"></strong> books</span>
+            <span class="size-estimate" id="book-count-label" style="display:none"><strong id="book-count"></strong> books selected</span>
           </div>
           <div class="book-list-wrap" id="book-list"></div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Connectivity Profile</label>
+          <div class="dropdown-wrap" id="connectivity-profile-wrap">
+            <button class="dropdown-trigger" id="connectivity-profile-trigger" type="button" onclick="toggleConnectivityDropdown(event)">
+              <span id="connectivity-profile-label">Sometimes Connected</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="dropdown-menu" id="connectivity-profile-menu">
+              <div class="dropdown-item" onclick="chooseConnectivityProfile('usually-connected', 'Usually Connected')">Usually Connected</div>
+              <div class="dropdown-item" onclick="chooseConnectivityProfile('sometimes-connected', 'Sometimes Connected')">Sometimes Connected</div>
+              <div class="dropdown-item" onclick="chooseConnectivityProfile('rarely-connected', 'Rarely Connected')">Rarely Connected</div>
+            </div>
+          </div>
         </div>
 
         <div class="scope-warning" id="scope-warning" style="display:none">
@@ -653,37 +711,37 @@
 
     const BOOKS = [
       { group: 'Old Testament' },
-      { id: 'gen', name: 'Genesis',        mb: 110 }, { id: 'exo', name: 'Exodus',          mb: 85  },
-      { id: 'lev', name: 'Leviticus',      mb: 70  }, { id: 'num', name: 'Numbers',          mb: 78  },
-      { id: 'deu', name: 'Deuteronomy',    mb: 80  }, { id: 'jos', name: 'Joshua',           mb: 52  },
-      { id: 'jdg', name: 'Judges',         mb: 55  }, { id: 'rut', name: 'Ruth',             mb: 8   },
-      { id: '1sa', name: '1 Samuel',       mb: 68  }, { id: '2sa', name: '2 Samuel',         mb: 58  },
-      { id: '1ki', name: '1 Kings',        mb: 64  }, { id: '2ki', name: '2 Kings',          mb: 62  },
-      { id: 'ezr', name: 'Ezra',           mb: 22  }, { id: 'neh', name: 'Nehemiah',         mb: 26  },
-      { id: 'est', name: 'Esther',         mb: 14  }, { id: 'job', name: 'Job',              mb: 54  },
-      { id: 'psa', name: 'Psalms',         mb: 180 }, { id: 'pro', name: 'Proverbs',         mb: 40  },
-      { id: 'ecc', name: 'Ecclesiastes',   mb: 18  }, { id: 'sos', name: 'Song of Solomon',  mb: 10  },
-      { id: 'isa', name: 'Isaiah',         mb: 110 }, { id: 'jer', name: 'Jeremiah',         mb: 130 },
-      { id: 'lam', name: 'Lamentations',   mb: 12  }, { id: 'eze', name: 'Ezekiel',          mb: 120 },
-      { id: 'dan', name: 'Daniel',         mb: 34  }, { id: 'hos', name: 'Hosea',            mb: 20  },
-      { id: 'amo', name: 'Amos',           mb: 18  }, { id: 'jon', name: 'Jonah',            mb: 6   },
-      { id: 'mic', name: 'Micah',          mb: 14  }, { id: 'zec', name: 'Zechariah',        mb: 26  },
-      { id: 'mal', name: 'Malachi',        mb: 8   },
+      { id: 'gen', name: 'Genesis', hasAudio: true }, { id: 'exo', name: 'Exodus' },
+      { id: 'lev', name: 'Leviticus' }, { id: 'num', name: 'Numbers' },
+      { id: 'deu', name: 'Deuteronomy' }, { id: 'jos', name: 'Joshua' },
+      { id: 'jdg', name: 'Judges' }, { id: 'rut', name: 'Ruth' },
+      { id: '1sa', name: '1 Samuel' }, { id: '2sa', name: '2 Samuel' },
+      { id: '1ki', name: '1 Kings' }, { id: '2ki', name: '2 Kings' },
+      { id: 'ezr', name: 'Ezra' }, { id: 'neh', name: 'Nehemiah' },
+      { id: 'est', name: 'Esther' }, { id: 'job', name: 'Job' },
+      { id: 'psa', name: 'Psalms' }, { id: 'pro', name: 'Proverbs' },
+      { id: 'ecc', name: 'Ecclesiastes' }, { id: 'sos', name: 'Song of Solomon' },
+      { id: 'isa', name: 'Isaiah' }, { id: 'jer', name: 'Jeremiah' },
+      { id: 'lam', name: 'Lamentations' }, { id: 'eze', name: 'Ezekiel' },
+      { id: 'dan', name: 'Daniel' }, { id: 'hos', name: 'Hosea' },
+      { id: 'amo', name: 'Amos' }, { id: 'jon', name: 'Jonah' },
+      { id: 'mic', name: 'Micah' }, { id: 'zec', name: 'Zechariah' },
+      { id: 'mal', name: 'Malachi' },
       { group: 'New Testament' },
-      { id: 'mat', name: 'Matthew',        mb: 52  }, { id: 'mrk', name: 'Mark',             mb: 30  },
-      { id: 'luk', name: 'Luke',           mb: 46  }, { id: 'jhn', name: 'John',             mb: 40  },
-      { id: 'act', name: 'Acts',           mb: 54  }, { id: 'rom', name: 'Romans',           mb: 28  },
-      { id: '1co', name: '1 Corinthians',  mb: 30  }, { id: '2co', name: '2 Corinthians',    mb: 24  },
-      { id: 'gal', name: 'Galatians',      mb: 10  }, { id: 'eph', name: 'Ephesians',        mb: 10  },
-      { id: 'php', name: 'Philippians',    mb: 7   }, { id: 'col', name: 'Colossians',       mb: 7   },
-      { id: '1th', name: '1 Thessalonians',mb: 8   }, { id: '2th', name: '2 Thessalonians',  mb: 5   },
-      { id: '1ti', name: '1 Timothy',      mb: 10  }, { id: '2ti', name: '2 Timothy',        mb: 7   },
-      { id: 'tit', name: 'Titus',          mb: 5   }, { id: 'phm', name: 'Philemon',         mb: 2   },
-      { id: 'heb', name: 'Hebrews',        mb: 24  }, { id: 'jas', name: 'James',            mb: 8   },
-      { id: '1pe', name: '1 Peter',        mb: 8   }, { id: '2pe', name: '2 Peter',          mb: 5   },
-      { id: '1jn', name: '1 John',         mb: 8   }, { id: '2jn', name: '2 John',           mb: 2   },
-      { id: '3jn', name: '3 John',         mb: 2   }, { id: 'jud', name: 'Jude',             mb: 2   },
-      { id: 'rev', name: 'Revelation',     mb: 42  },
+      { id: 'mat', name: 'Matthew', hasAudio: true }, { id: 'mrk', name: 'Mark', hasAudio: true },
+      { id: 'luk', name: 'Luke', hasAudio: true }, { id: 'jhn', name: 'John', hasAudio: true },
+      { id: 'act', name: 'Acts' }, { id: 'rom', name: 'Romans' },
+      { id: '1co', name: '1 Corinthians' }, { id: '2co', name: '2 Corinthians' },
+      { id: 'gal', name: 'Galatians' }, { id: 'eph', name: 'Ephesians' },
+      { id: 'php', name: 'Philippians' }, { id: 'col', name: 'Colossians' },
+      { id: '1th', name: '1 Thessalonians' }, { id: '2th', name: '2 Thessalonians' },
+      { id: '1ti', name: '1 Timothy' }, { id: '2ti', name: '2 Timothy' },
+      { id: 'tit', name: 'Titus' }, { id: 'phm', name: 'Philemon' },
+      { id: 'heb', name: 'Hebrews' }, { id: 'jas', name: 'James' },
+      { id: '1pe', name: '1 Peter' }, { id: '2pe', name: '2 Peter' },
+      { id: '1jn', name: '1 John' }, { id: '2jn', name: '2 John' },
+      { id: '3jn', name: '3 John' }, { id: 'jud', name: 'Jude' },
+      { id: 'rev', name: 'Revelation' },
     ];
 
     function buildBookList() {
@@ -697,33 +755,54 @@
           container.appendChild(hdr);
           return;
         }
+        const audioBadge = b.hasAudio
+          ? `<span class="book-audio-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>Audio</span>`
+          : '';
         const row = document.createElement('label');
         row.className = 'book-item';
-        row.innerHTML = `<input class="book-checkbox" type="checkbox" data-mb="${b.mb}" /><span class="book-name">${b.name}</span><span class="book-size">${b.mb} MB</span>`;
+        row.innerHTML = `<input class="book-checkbox" type="checkbox" /><span class="book-name">${b.name}</span>${audioBadge}`;
         row.querySelector('input').addEventListener('change', function() {
           row.classList.toggle('checked', this.checked);
-          updateSizeEstimate();
+          updateScopeWarning();
         });
         container.appendChild(row);
       });
     }
 
-    function updateSizeEstimate() {
-      const checked = document.querySelectorAll('#book-list .book-checkbox:checked');
-      let total = 0;
-      checked.forEach(cb => total += parseInt(cb.dataset.mb));
-      const count = checked.length;
-      const estimateEl = document.getElementById('size-estimate');
-      estimateEl.style.display = count ? '' : 'none';
-      document.getElementById('size-value').textContent = total;
+    function updateScopeWarning() {
+      const count = document.querySelectorAll('#book-list .book-checkbox:checked').length;
+      const countLabel = document.getElementById('book-count-label');
+      countLabel.style.display = count ? '' : 'none';
       document.getElementById('book-count').textContent = count;
-      document.getElementById('scope-warning').style.display = total >= 400 ? 'flex' : 'none';
+      // Book count is knowable at selection time; download size isn't — source
+      // text/audio isn't fetched from DBL until books are selected at creation.
+      document.getElementById('scope-warning').style.display = count > 5 ? 'flex' : 'none';
     }
+
+    function toggleConnectivityDropdown(e) {
+      e.stopPropagation();
+      document.getElementById('connectivity-profile-menu').classList.toggle('open');
+    }
+
+    function chooseConnectivityProfile(value, label) {
+      document.getElementById('connectivity-profile-label').textContent = label;
+      document.getElementById('connectivity-profile-menu').classList.remove('open');
+    }
+
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('connectivity-profile-menu');
+      if (menu && !menu.closest('.dropdown-wrap').contains(e.target)) {
+        menu.classList.remove('open');
+      }
+    });
 
     function openAddMilestone() {
       buildBookList();
       document.getElementById('milestone-name').value = '';
-      updateSizeEstimate();
+      // Pre-populated from the parent project's Connectivity Profile (Meta Card) — hardcoded
+      // to match this mockup's "Sometimes Connected" project default.
+      chooseConnectivityProfile('sometimes-connected', 'Sometimes Connected');
+      updateScopeWarning();
       document.getElementById('add-milestone-modal').classList.add('open');
     }
 

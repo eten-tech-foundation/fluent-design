@@ -457,6 +457,19 @@ const CREATE_PROJECT_HTML = `
           </div>
         </div>
         <div class="cp-field">
+          <label class="ep-label"><span class="ep-required">*</span> Pericope Set</label>
+          <div class="cp-books-wrap">
+            <button class="cp-books-trigger" id="cp-pericope-set-trigger" type="button" onclick="cpToggleDropdown(event, 'cp-pericope-set-dropdown')">
+              <span id="cp-pericope-set-label">Select pericope set for the project</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="cp-books-dropdown" id="cp-pericope-set-dropdown">
+              <div class="cp-book-item" onclick="cpChoosePericope('fia', 'FIA')">Familiarization, Internalization, Articulation (FIA)</div>
+              <div class="cp-book-item" onclick="cpChoosePericope('fcbh', 'FCBH')">Faith Comes by Hearing (FCBH)</div>
+            </div>
+          </div>
+        </div>
+        <div class="cp-field">
           <label class="ep-label cp-label-row">
             Connectivity Profile
             <span class="cp-tooltip-wrap">
@@ -470,12 +483,17 @@ const CREATE_PROJECT_HTML = `
               </div>
             </span>
           </label>
-          <select class="ep-input" id="cp-connectivity-profile">
-            <option value="">Select profile</option>
-            <option value="usually-connected">Usually Connected</option>
-            <option value="sometimes-connected">Sometimes Connected</option>
-            <option value="rarely-connected">Rarely Connected</option>
-          </select>
+          <div class="cp-books-wrap">
+            <button class="cp-books-trigger" id="cp-connectivity-profile-trigger" type="button" onclick="cpToggleDropdown(event, 'cp-connectivity-profile-dropdown')">
+              <span id="cp-connectivity-profile-label">Select profile</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="cp-books-dropdown" id="cp-connectivity-profile-dropdown">
+              <div class="cp-book-item" onclick="cpChooseConnectivity('usually-connected', 'Usually Connected')">Usually Connected</div>
+              <div class="cp-book-item" onclick="cpChooseConnectivity('sometimes-connected', 'Sometimes Connected')">Sometimes Connected</div>
+              <div class="cp-book-item" onclick="cpChooseConnectivity('rarely-connected', 'Rarely Connected')">Rarely Connected</div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -905,6 +923,26 @@ const CP_BOOKS = [
 ];
 
 let cpSelectedBooks = new Set();
+let cpSelectedPericope = null; // { value, label }
+let cpSelectedConnectivity = null; // { value, label }
+
+function cpToggleDropdown(e, id) {
+  e.stopPropagation();
+  document.getElementById(id).classList.toggle('open');
+}
+
+function cpChoosePericope(value, label) {
+  cpSelectedPericope = { value, label };
+  document.getElementById('cp-pericope-set-label').textContent = label;
+  document.getElementById('cp-pericope-set-dropdown').classList.remove('open');
+  cpValidate();
+}
+
+function cpChooseConnectivity(value, label) {
+  cpSelectedConnectivity = { value, label };
+  document.getElementById('cp-connectivity-profile-label').textContent = label;
+  document.getElementById('cp-connectivity-profile-dropdown').classList.remove('open');
+}
 
 // ── Tabs ────────────────────────────────────────────────────────────────────
 function cpSwitchTab(tab) {
@@ -1214,7 +1252,15 @@ function openCreateProject() {
   document.getElementById('cp-books-dropdown').innerHTML = '';
   document.getElementById('cp-books-dropdown').classList.remove('open');
   cpSelectedBooks = new Set();
-  document.getElementById('cp-connectivity-profile').value = '';
+
+  cpSelectedPericope = null;
+  document.getElementById('cp-pericope-set-label').textContent = 'Select pericope set for the project';
+  document.getElementById('cp-pericope-set-dropdown').classList.remove('open');
+
+  cpSelectedConnectivity = null;
+  document.getElementById('cp-connectivity-profile-label').textContent = 'Select profile';
+  document.getElementById('cp-connectivity-profile-dropdown').classList.remove('open');
+
   cpValidate();
   document.getElementById('cp-overlay').classList.add('open');
 }
@@ -1260,7 +1306,8 @@ function cpValidate() {
     document.getElementById('cp-title').value.trim() &&
     cpSelectedSource &&
     cpSelectedTarget &&
-    cpSelectedBooks.size > 0;
+    cpSelectedBooks.size > 0 &&
+    cpSelectedPericope;
   document.getElementById('cp-submit').disabled = !ok;
 }
 
@@ -1274,9 +1321,11 @@ function initCreateProjectDialog() {
   document.body.insertAdjacentHTML('beforeend', CREATE_PROJECT_HTML);
   document.getElementById('cp-close').addEventListener('click', closeCreateProject);
   document.addEventListener('click', function(e) {
-    const dropdown = document.getElementById('cp-books-dropdown');
-    if (dropdown && !dropdown.closest('.cp-books-wrap').contains(e.target)) {
-      dropdown.classList.remove('open');
-    }
+    ['cp-books-dropdown', 'cp-pericope-set-dropdown', 'cp-connectivity-profile-dropdown'].forEach(id => {
+      const dropdown = document.getElementById(id);
+      if (dropdown && !dropdown.closest('.cp-books-wrap').contains(e.target)) {
+        dropdown.classList.remove('open');
+      }
+    });
   });
 }
