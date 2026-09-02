@@ -74,7 +74,7 @@ const CREATE_PROJECT_CSS = `
   }
   .cp-close:hover { opacity: 0.6; }
 
-  .cp-fields { display: grid; gap: 18px; margin-bottom: 24px; }
+  .cp-fields { display: grid; gap: 18px; margin-bottom: 32px; }
   .cp-field { display: grid; gap: 6px; }
 
   .cp-books-wrap { position: relative; }
@@ -120,7 +120,7 @@ const CREATE_PROJECT_CSS = `
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 8px 14px;
+    padding: 4px 14px;
     font-size: 14px;
     cursor: pointer;
     color: var(--foreground);
@@ -236,7 +236,7 @@ const CREATE_PROJECT_CSS = `
   }
   .cp-selected-chip-clear:hover { color: var(--foreground); }
 
-  .cp-footer { display: flex; justify-content: flex-end; }
+  .cp-footer { display: flex; justify-content: flex-end; margin-bottom: 12px}
   .cp-footer-split { justify-content: space-between; align-items: center; gap: 12px; }
   .cp-footer-status { font-size: 13px; color: #0f7a35; line-height: 1.4; }
   .dark .cp-footer-status { color: #7fd39d; }
@@ -486,7 +486,7 @@ const CREATE_PROJECT_HTML = `
           <div class="cp-books-wrap">
             <button class="cp-books-trigger" id="cp-connectivity-profile-trigger" type="button" onclick="cpToggleDropdown(event, 'cp-connectivity-profile-dropdown')">
               <span id="cp-connectivity-profile-label">Select profile</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+              <svg width="14" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div class="cp-books-dropdown" id="cp-connectivity-profile-dropdown">
               <div class="cp-book-item" onclick="cpChooseConnectivity('usually-connected', 'Usually Connected')">Usually Connected</div>
