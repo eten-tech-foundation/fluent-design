@@ -15,24 +15,6 @@
     /* ── Page layout ── */
     .content { padding: 18px 20px; display: flex; flex-direction: column; height: calc(100vh - 56px); }
 
-    /* ── Breadcrumb ── */
-    .breadcrumb {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      color: var(--muted-foreground);
-      margin-bottom: 16px;
-      flex-shrink: 0;
-    }
-    .breadcrumb a {
-      color: var(--primary);
-      text-decoration: none;
-    }
-    .breadcrumb a:hover { text-decoration: underline; }
-    .breadcrumb-sep { color: var(--border); }
-    .breadcrumb-current { color: var(--foreground); font-weight: 500; }
-
     /* ── Page header ── */
     .page-header {
       display: flex;
@@ -42,6 +24,7 @@
       flex-shrink: 0;
     }
     .page-header-left { display: flex; align-items: center; gap: 10px; }
+    .page-header-actions { display: flex; align-items: center; gap: 8px; }
     .back-btn {
       display: flex; align-items: center;
       color: var(--foreground);
@@ -67,6 +50,16 @@
       transition: background 0.15s;
     }
     .btn-outline:hover { background: #e8effc; }
+
+    .btn-small {
+      height: 28px; padding: 0 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm); background: var(--background);
+      font-size: 12px; font-weight: 600; font-family: var(--font);
+      color: var(--foreground); cursor: pointer; transition: background 0.1s;
+      margin-left: 8px;
+    }
+    .btn-small:hover { background: var(--muted); }
 
     /* ── Two-column body ── */
     .body-columns { display: flex; gap: 24px; flex: 1; min-height: 0; }
@@ -115,54 +108,77 @@
     .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--foreground); }
     .legend-dot { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
 
-    /* Milestone Users */
-    .users-section {
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .users-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 14px;
-      font-size: 15px;
-      font-weight: 600;
-      flex-shrink: 0;
-    }
-
-    .btn-icon-add {
-      width: 28px; height: 28px;
-      background: var(--primary);
-      border: none;
-      border-radius: 6px;
-      color: white;
-      font-size: 18px;
-      line-height: 1;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      font-family: var(--font);
-    }
-
-    .users-table-wrap { height: 172px; overflow-y: auto; }
-    .users-table { width: 100%; border-collapse: collapse; }
-    .users-table thead tr { background: var(--card); position: sticky; top: 0; z-index: 1; }
-    .users-table thead th {
-      padding: 11px 14px;
-      text-align: left;
-      font-size: 13px;
-      font-weight: 600;
+    /* ── Manage Books list rows ── */
+    .book-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px;
       border-bottom: 1px solid var(--border);
-      border-top: 1px solid var(--border);
     }
-    .users-table tbody tr { border-bottom: 1px solid var(--border); }
-    .users-table tbody tr:last-child { border-bottom: none; }
-    .users-table tbody tr:hover { background: var(--muted); }
-    .users-table tbody td { padding: 11px 14px; font-size: 14px; }
-    .users-table .td-action { text-align: right; width: 36px; }
+    .book-item:last-child { border-bottom: none; }
+    .book-item:hover { background: var(--muted); }
+    .book-info { display: flex; align-items: center; gap: 10px; }
+    .book-actions { display: flex; gap: 8px; }
+
+    /* ── Dropdowns (milestone actions menu, milestone picker) ── */
+    .dropdown-wrap { position: relative; }
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 10px;
+      min-width: 200px;
+      max-width: 300px;
+      z-index: 1000;
+      background: var(--popover);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    }
+    .dropdown-menu.open { display: block; }
+    .dropdown-menu::before {
+      content: '';
+      position: absolute;
+      top: -12px;
+      right: 12px;
+      border-width: 6px;
+      border-style: solid;
+      border-color: transparent transparent var(--border) transparent;
+    }
+    .dropdown-menu::after {
+      content: '';
+      position: absolute;
+      top: -11px;
+      right: 13px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: transparent transparent var(--popover) transparent;
+    }
+
+    .dropdown-trigger {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted-foreground);
+      padding: 4px;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.1s, color 0.1s;
+    }
+    .dropdown-trigger:hover {
+      background: var(--muted);
+      color: var(--foreground);
+    }
+
+    .dropdown-item {
+      padding: 8px 12px;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--foreground);
+      transition: background 0.1s;
+    }
+    .dropdown-item:hover {
+      background: var(--popover-hover);
+    }
 
     .trash-btn {
       background: none; border: none; cursor: pointer;
@@ -170,45 +186,6 @@
       display: inline-flex; align-items: center;
     }
     .trash-btn:hover { color: #df0c07; }
-
-    .role-cell {
-      position: relative;
-      cursor: pointer;
-      padding: 4px 8px;
-      border-radius: 4px;
-      transition: background 0.15s;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .role-cell:hover { background: var(--muted); }
-    .role-cell.editable { cursor: pointer; }
-    .role-dropdown {
-      position: fixed;
-      background: var(--popover);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      z-index: 100;
-      min-width: 160px;
-      padding: 4px 0;
-      display: none;
-      font-size: 14px;
-    }
-    .role-dropdown.open { display: block; }
-    .role-option { padding: 6px 12px; cursor: pointer; color: var(--foreground); display: flex; align-items: center; }
-    .role-option:hover { background: var(--muted); }
-    .role-cell.read-only { cursor: default; }
-    .role-cell.read-only .role-caret { display: none; }
-    .role-indicator { display: flex; align-items: center; gap: 4px; }
-    .role-caret {
-      width: 12px; height: 12px;
-      display: inline-block;
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat center;
-      opacity: 0.5;
-      transition: transform 0.15s;
-    }
-    .role-cell.open .role-caret { transform: rotate(180deg); }
 
     /* ── Right panel ── */
     .right-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; }
@@ -273,8 +250,7 @@
     @media (max-width: 1024px) {
       .body-columns { flex-direction: column; }
       .left-panel { width: 100%; flex-direction: row; }
-      .left-panel .meta-card,
-      .left-panel .users-section { flex: 1; min-width: 0; }
+      .left-panel .meta-card { flex: 1; min-width: 0; }
       .right-panel { min-width: 0; }
     }
 
@@ -293,7 +269,7 @@
       background: #fff;
       border-radius: var(--radius);
       box-shadow: 0 8px 32px rgba(0,0,0,0.22);
-      width: 360px;
+      width: 450px;
       display: flex;
       flex-direction: column;
       max-height: 80vh;
@@ -315,7 +291,7 @@
       padding: 0 2px; font-family: var(--font);
     }
     .modal-close:hover { color: var(--foreground); }
-    .modal-body { overflow-y: auto; flex: 1; }
+    .modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 20px; }
     .modal-footer {
       padding: 12px 18px;
       border-top: 1px solid var(--border);
@@ -323,6 +299,8 @@
       justify-content: flex-end;
       flex-shrink: 0;
     }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field-label { font-size: 13px; font-weight: 600; }
     .form-field { padding: 14px 18px 0; }
     .form-label { font-size: 13px; font-weight: 600; margin-bottom: 6px; display: block; }
     .form-label .req { color: #dc2626; margin-right: 3px; }
@@ -339,6 +317,29 @@
       appearance: none;
       cursor: pointer;
     }
+
+    .book-list-wrap { border: 1px solid var(--border); border-radius: var(--radius-sm); max-height: 240px; overflow-y: auto; }
+    .book-name { font-size: 14px; flex: 1; }
+    .book-audio-badge {
+      display: inline-flex; align-items: center; gap: 3px; flex-shrink: 0;
+      padding: 2px 7px; border-radius: 9999px; font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.03em;
+      background: #dff5e3; color: #0f7a35;
+    }
+    .dark .book-audio-badge { background: #1a3325; color: #7fd39d; }
+    .btn-cancel {
+      height: 36px; padding: 0 18px; border: 1px solid var(--border);
+      border-radius: var(--radius-sm); background: var(--background);
+      font-size: 14px; font-weight: 600; font-family: var(--font);
+      color: var(--foreground); cursor: pointer; transition: background 0.1s;
+    }
+    .btn-cancel:hover { background: var(--muted); }
+    .btn-primary {
+      background: var(--primary); color: white; border: none;
+      border-radius: var(--radius-sm); padding: 0 20px; height: 36px;
+      font-size: 14px; font-weight: 600; font-family: var(--font); cursor: pointer;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
   </style>
 </head>
 <body>
@@ -346,23 +347,23 @@
   <div id="fluent-header"></div>
 
   <div class="content">
-
-    <!-- Breadcrumb -->
-    <!--nav class="breadcrumb">
-      <a href="manager-dashboard.html">Projects</a>
-      <span class="breadcrumb-sep">/</span>
-      <a href="view-project.html">Kachi Koli NT</a>
-      <span class="breadcrumb-sep">/</span>
-      <span class="breadcrumb-current">Gospels</span>
-    </nav-->
-
     <!-- Page header -->
     <div class="page-header">
       <div class="page-header-left">
         <a class="back-btn" href="view-project.html">&#8249;</a>
         <h1 class="page-title">Kachi Koli - Gospels</h1>
       </div>
-      <button class="btn-outline" onclick="openExportModal()">Export Milestone</button>
+      <div class="page-header-actions">
+        <button class="btn-outline" onclick="openExportModal()">Export Milestone</button>
+        <div class="dropdown-wrap" id="milestone-actions">
+          <button class="dropdown-trigger" onclick="toggleMilestoneActions(event)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+          </button>
+          <div class="dropdown-menu" id="milestone-actions-menu">
+            <div class="dropdown-item" onclick="openManageBooksModal()">Manage Books</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="body-columns">
@@ -413,63 +414,6 @@
           </div>
         </div>
 
-        <!-- Milestone Team -->
-        <!--div class="users-section">
-          <div class="users-header">
-            Milestone Team
-            <button class="btn-icon-add" onclick="openAddUserModal()">+</button>
-          </div>
-          <div class="users-table-wrap">
-            <table class="users-table">
-              <thead>
-                <tr><th>Name</th><th>Role</th><th></th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>qa.manager</td>
-                  <td class="role-cell read-only" data-user-id="1">
-                    <div class="role-indicator">
-                      <span>Project Manager</span>
-                      <span class="role-caret"></span>
-                    </div>
-                  </td>
-                  <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
-                </tr>
-                <tr>
-                  <td>Roslin T</td>
-                  <td class="role-cell editable" data-user-id="2">
-                    <div class="role-indicator">
-                      <span>Translator</span>
-                      <span class="role-caret"></span>
-                    </div>
-                  </td>
-                  <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
-                </tr>
-                <tr>
-                  <td>Roslin P</td>
-                  <td class="role-cell editable" data-user-id="3">
-                    <div class="role-indicator">
-                      <span>Peer Checker</span>
-                      <span class="role-caret"></span>
-                    </div>
-                  </td>
-                  <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
-                </tr>
-                <tr>
-                  <td>Seema T</td>
-                  <td class="role-cell editable" data-user-id="4">
-                    <div class="role-indicator">
-                      <span>Translator</span>
-                      <span class="role-caret"></span>
-                    </div>
-                  </td>
-                  <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div-->
-
       </div><!-- /left-panel -->
 
       <!-- Right Panel -->
@@ -501,67 +445,67 @@
             <tbody>
               <!-- Matthew – all Complete -->
               <tr data-book="Matthew" onclick="openChapter(event,'Matthew',1)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>1</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>25 of 25</td></tr>
-              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',2)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>2</td><td>Seema T</td><td>Roslin P</td><td>Complete</td><td>23 of 23</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',2)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>2</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>23 of 23</td></tr>
               <tr data-book="Matthew" onclick="openChapter(event,'Matthew',3)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>3</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>17 of 17</td></tr>
-              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',4)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>4</td><td>Seema T</td><td>Seema T</td><td>Complete</td><td>25 of 25</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',4)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>4</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>25 of 25</td></tr>
               <tr data-book="Matthew" onclick="openChapter(event,'Matthew',5)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>5</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>48 of 48</td></tr>
-              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',6)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>6</td><td>Seema T</td><td>Roslin P</td><td>Complete</td><td>34 of 34</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',6)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>6</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>34 of 34</td></tr>
               <tr data-book="Matthew" onclick="openChapter(event,'Matthew',7)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>7</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>29 of 29</td></tr>
-              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',8)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>8</td><td>Seema T</td><td>Seema T</td><td>Complete</td><td>34 of 34</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',8)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>8</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>34 of 34</td></tr>
               <tr data-book="Matthew" onclick="openChapter(event,'Matthew',9)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>9</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>38 of 38</td></tr>
-              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',10)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>10</td><td>Seema T</td><td>Roslin P</td><td>Complete</td><td>42 of 42</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',10)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>10</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>42 of 42</td></tr>
               <tr data-book="Matthew" onclick="openChapter(event,'Matthew',11)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>11</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>30 of 30</td></tr>
-              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',12)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>12</td><td>Seema T</td><td>Seema T</td><td>Complete</td><td>50 of 50</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',12)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>12</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>50 of 50</td></tr>
               <tr data-book="Matthew" onclick="openChapter(event,'Matthew',13)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>13</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>58 of 58</td></tr>
-              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',14)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>14</td><td>Seema T</td><td>Roslin P</td><td>Complete</td><td>36 of 36</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',14)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>14</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>36 of 36</td></tr>
               <tr data-book="Matthew" onclick="openChapter(event,'Matthew',15)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>15</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>39 of 39</td></tr>
-              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',16)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>16</td><td>Seema T</td><td>Seema T</td><td>Complete</td><td>28 of 28</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',16)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>16</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>28 of 28</td></tr>
               <tr data-book="Matthew" onclick="openChapter(event,'Matthew',17)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>17</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>27 of 27</td></tr>
-              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',18)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>18</td><td>Seema T</td><td>Roslin P</td><td>Complete</td><td>35 of 35</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',18)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>18</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>35 of 35</td></tr>
               <tr data-book="Matthew" onclick="openChapter(event,'Matthew',19)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>19</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>30 of 30</td></tr>
-              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',20)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>20</td><td>Seema T</td><td>Seema T</td><td>Complete</td><td>34 of 34</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',20)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>20</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>34 of 34</td></tr>
               <tr data-book="Matthew" onclick="openChapter(event,'Matthew',21)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>21</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>46 of 46</td></tr>
-              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',22)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>22</td><td>Seema T</td><td>Roslin P</td><td>Complete</td><td>46 of 46</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',22)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>22</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>46 of 46</td></tr>
               <tr data-book="Matthew" onclick="openChapter(event,'Matthew',23)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>23</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>39 of 39</td></tr>
-              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',24)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>24</td><td>Seema T</td><td>Seema T</td><td>Complete</td><td>51 of 51</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',24)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>24</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>51 of 51</td></tr>
               <tr data-book="Matthew" onclick="openChapter(event,'Matthew',25)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>25</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>46 of 46</td></tr>
-              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',26)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>26</td><td>Seema T</td><td>Roslin P</td><td>Complete</td><td>75 of 75</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',26)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>26</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>75 of 75</td></tr>
               <tr data-book="Matthew" onclick="openChapter(event,'Matthew',27)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>27</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>66 of 66</td></tr>
-              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',28)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>28</td><td>Seema T</td><td>Roslin P</td><td>Complete</td><td>20 of 20</td></tr>
+              <tr data-book="Matthew" onclick="openChapter(event,'Matthew',28)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Matthew</td><td>28</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>20 of 20</td></tr>
               <!-- Mark – scattered progress -->
               <tr data-book="Mark" onclick="openChapter(event,'Mark',1)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>1</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>45 of 45</td></tr>
-              <tr data-book="Mark" onclick="openChapter(event,'Mark',2)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>2</td><td>Seema T</td><td>Roslin P</td><td>Complete</td><td>28 of 28</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',2)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>2</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>28 of 28</td></tr>
               <tr data-book="Mark" onclick="openChapter(event,'Mark',3)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>3</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>35 of 35</td></tr>
-              <tr data-book="Mark" onclick="openChapter(event,'Mark',4)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>4</td><td>Seema T</td><td>Seema T</td><td>Complete</td><td>41 of 41</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',4)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>4</td><td>Roslin T</td><td>Roslin T</td><td>Complete</td><td>41 of 41</td></tr>
               <tr data-book="Mark" onclick="openChapter(event,'Mark',5)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>5</td><td>Roslin T</td><td>Roslin P</td><td>Linguist Check</td><td>43 of 43</td></tr>
-              <tr data-book="Mark" onclick="openChapter(event,'Mark',6)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>6</td><td>Seema T</td><td>Roslin P</td><td>Consultant Check</td><td>56 of 56</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',6)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>6</td><td>Roslin T</td><td>Roslin P</td><td>Consultant Check</td><td>56 of 56</td></tr>
               <tr data-book="Mark" onclick="openChapter(event,'Mark',7)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>7</td><td>Roslin T</td><td>Roslin P</td><td>Community Review</td><td>37 of 37</td></tr>
-              <tr data-book="Mark" onclick="openChapter(event,'Mark',8)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>8</td><td>Seema T</td><td>Roslin P</td><td>Community Review</td><td>38 of 38</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',8)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>8</td><td>Roslin T</td><td>Roslin P</td><td>Community Review</td><td>38 of 38</td></tr>
               <tr data-book="Mark" onclick="openChapter(event,'Mark',9)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>9</td><td>Roslin T</td><td>Roslin P</td><td>Peer Check</td><td>50 of 50</td></tr>
-              <tr data-book="Mark" onclick="openChapter(event,'Mark',10)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>10</td><td>Seema T</td><td>Roslin P</td><td>Peer Check</td><td>52 of 52</td></tr>
-              <tr data-book="Mark" onclick="openChapter(event,'Mark',11)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>11</td><td>Roslin T</td><td>Seema T</td><td>Peer Check</td><td>33 of 33</td></tr>
-              <tr data-book="Mark" onclick="openChapter(event,'Mark',12)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>12</td><td>Seema T</td><td>—</td><td>Drafting</td><td>22 of 44</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',10)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>10</td><td>Roslin T</td><td>Roslin P</td><td>Peer Check</td><td>52 of 52</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',11)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>11</td><td>Roslin T</td><td>Roslin P</td><td>Peer Check</td><td>33 of 33</td></tr>
+              <tr data-book="Mark" onclick="openChapter(event,'Mark',12)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>12</td><td>Roslin T</td><td>—</td><td>Drafting</td><td>22 of 44</td></tr>
               <tr data-book="Mark" onclick="openChapter(event,'Mark',13)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>13</td><td>Roslin T</td><td>—</td><td>Drafting</td><td>0 of 37</td></tr>
               <tr data-book="Mark" onclick="openChapter(event,'Mark',14)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>14</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 72</td></tr>
               <tr data-book="Mark" onclick="openChapter(event,'Mark',15)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>15</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 47</td></tr>
               <tr data-book="Mark" onclick="openChapter(event,'Mark',16)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Mark</td><td>16</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 20</td></tr>
               <!-- Luke – scattered progress -->
               <tr data-book="Luke" onclick="openChapter(event,'Luke',1)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>1</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>80 of 80</td></tr>
-              <tr data-book="Luke" onclick="openChapter(event,'Luke',2)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>2</td><td>Seema T</td><td>Roslin P</td><td>Complete</td><td>52 of 52</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',2)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>2</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>52 of 52</td></tr>
               <tr data-book="Luke" onclick="openChapter(event,'Luke',3)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>3</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>38 of 38</td></tr>
-              <tr data-book="Luke" onclick="openChapter(event,'Luke',4)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>4</td><td>Seema T</td><td>Seema T</td><td>Complete</td><td>44 of 44</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',4)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>4</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>44 of 44</td></tr>
               <tr data-book="Luke" onclick="openChapter(event,'Luke',5)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>5</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>39 of 39</td></tr>
-              <tr data-book="Luke" onclick="openChapter(event,'Luke',6)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>6</td><td>Seema T</td><td>Roslin P</td><td>Theologian Check</td><td>49 of 49</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',6)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>6</td><td>Roslin T</td><td>Roslin P</td><td>Theologian Check</td><td>49 of 49</td></tr>
               <tr data-book="Luke" onclick="openChapter(event,'Luke',7)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>7</td><td>Roslin T</td><td>Roslin P</td><td>Consultant Check</td><td>50 of 50</td></tr>
-              <tr data-book="Luke" onclick="openChapter(event,'Luke',8)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>8</td><td>Seema T</td><td>Roslin P</td><td>Community Review</td><td>56 of 56</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',8)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>8</td><td>Roslin T</td><td>Roslin P</td><td>Community Review</td><td>56 of 56</td></tr>
               <tr data-book="Luke" onclick="openChapter(event,'Luke',9)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>9</td><td>Roslin T</td><td>Roslin P</td><td>Community Review</td><td>62 of 62</td></tr>
-              <tr data-book="Luke" onclick="openChapter(event,'Luke',10)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>10</td><td>Seema T</td><td>Roslin P</td><td>Peer Check</td><td>42 of 42</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',10)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>10</td><td>Roslin T</td><td>Roslin P</td><td>Peer Check</td><td>42 of 42</td></tr>
               <tr data-book="Luke" onclick="openChapter(event,'Luke',11)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>11</td><td>Roslin T</td><td>Roslin P</td><td>Peer Check</td><td>54 of 54</td></tr>
-              <tr data-book="Luke" onclick="openChapter(event,'Luke',12)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>12</td><td>Seema T</td><td>Seema T</td><td>Peer Check</td><td>59 of 59</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',12)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>12</td><td>Roslin T</td><td>Roslin P</td><td>Peer Check</td><td>59 of 59</td></tr>
               <tr data-book="Luke" onclick="openChapter(event,'Luke',13)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>13</td><td>Roslin T</td><td>Roslin P</td><td>Peer Check</td><td>35 of 35</td></tr>
-              <tr data-book="Luke" onclick="openChapter(event,'Luke',14)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>14</td><td>Seema T</td><td>—</td><td>Drafting</td><td>20 of 35</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',14)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>14</td><td>Roslin T</td><td>—</td><td>Drafting</td><td>20 of 35</td></tr>
               <tr data-book="Luke" onclick="openChapter(event,'Luke',15)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>15</td><td>Roslin T</td><td>—</td><td>Drafting</td><td>15 of 32</td></tr>
-              <tr data-book="Luke" onclick="openChapter(event,'Luke',16)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>16</td><td>Seema T</td><td>—</td><td>Drafting</td><td>8 of 31</td></tr>
+              <tr data-book="Luke" onclick="openChapter(event,'Luke',16)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>16</td><td>Roslin T</td><td>—</td><td>Drafting</td><td>8 of 31</td></tr>
               <tr data-book="Luke" onclick="openChapter(event,'Luke',17)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>17</td><td>Roslin T</td><td>—</td><td>Drafting</td><td>0 of 37</td></tr>
               <tr data-book="Luke" onclick="openChapter(event,'Luke',18)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>18</td><td>—</td><td>—</td><td>Drafting</td><td>0 of 43</td></tr>
               <tr data-book="Luke" onclick="openChapter(event,'Luke',19)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>Luke</td><td>19</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 48</td></tr>
@@ -614,7 +558,7 @@
             <option>qa.manager</option>
             <option>Roslin T</option>
             <option>Roslin P</option>
-            <option>Seema T</option>
+            <option>Roslin T</option>
           </select>
         </div>
         <div class="form-field" style="padding-bottom:18px;">
@@ -623,7 +567,7 @@
             <option>qa.manager</option>
             <option>Roslin T</option>
             <option>Roslin P</option>
-            <option>Seema T</option>
+            <option>Roslin T</option>
           </select>
         </div>
       </div>
@@ -660,6 +604,31 @@
       </div>
       <div class="modal-footer">
         <button class="btn-primary" onclick="closeExportModal()">Export</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manage Books Modal -->
+  <div class="modal-backdrop" id="manage-books-modal" onclick="closeManageBooksModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <span class="modal-title">Manage Books</span>
+        <button class="modal-close" onclick="closeManageBooksModal()" title="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="field">
+          <label class="field-label">Books in this Milestone</label>
+          <div class="book-list-wrap" id="books-in-milestone">
+            <!-- Books will be populated here -->
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeManageBooksModal()">Done</button>
       </div>
     </div>
   </div>
@@ -756,50 +725,93 @@
         });
       }
 
-      // Role editing
-      const ROLE_OPTIONS = ['Project Manager', 'Translator', 'Peer Checker', 'Observer'];
-      let openDropdown = null;
+    });
 
-      function closeRoleDropdown() {
-        if (openDropdown) {
-          openDropdown.closest('.role-cell').classList.remove('open');
-          openDropdown.remove();
-          openDropdown = null;
-        }
-      }
+    // ── Manage Books ──
+    const ALL_MILESTONES = [
+      { id: 'gospels', name: 'Gospels' },
+      { id: 'epistles', name: 'Epistles' },
+      { id: 'patriarchal', name: 'Patriarchal History' }
+    ];
+    const CURRENT_MILESTONE_ID = 'gospels';
 
-      document.querySelector('.users-table tbody').addEventListener('click', function(e) {
-        const cell = e.target.closest('.role-cell');
-        if (!cell || cell.classList.contains('read-only')) return;
-        e.stopPropagation();
-        const already = openDropdown && openDropdown.closest('.role-cell') === cell;
-        closeRoleDropdown();
-        if (!already) {
-          const dd = document.createElement('div');
-          dd.className = 'role-dropdown open';
-          ROLE_OPTIONS.forEach(role => {
-            const opt = document.createElement('div');
-            opt.className = 'role-option';
-            opt.textContent = role;
-            opt.addEventListener('click', function(ev) {
-              ev.stopPropagation();
-              cell.querySelector('.role-indicator span').textContent = role;
-              closeRoleDropdown();
-            });
-            dd.appendChild(opt);
-          });
-          cell.appendChild(dd);
-          const r = cell.getBoundingClientRect();
-          dd.style.top = (r.bottom + 4) + 'px';
-          dd.style.left = r.left + 'px';
-          dd.style.minWidth = r.width + 'px';
-          cell.classList.add('open');
-          openDropdown = dd;
-        }
+    let milestoneBooks = [
+      { id: 'mat', name: 'Matthew', hasAudio: true },
+      { id: 'mrk', name: 'Mark', hasAudio: true },
+      { id: 'luk', name: 'Luke', hasAudio: true },
+      { id: 'jhn', name: 'John', hasAudio: true }
+    ];
+    function openManageBooksModal() {
+      renderMilestoneBooks();
+      document.getElementById('manage-books-modal').classList.add('open');
+    }
+
+    function renderMilestoneBooks() {
+      const booksContainer = document.getElementById('books-in-milestone');
+      booksContainer.innerHTML = '';
+      milestoneBooks.forEach(book => {
+        const audioBadge = book.hasAudio
+          ? `<span class="book-audio-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>Audio</span>`
+          : '';
+
+        const bookRow = document.createElement('div');
+        bookRow.className = 'book-item';
+        bookRow.innerHTML = `
+          <div class="book-info">
+            <span class="book-name">${book.name}</span>
+            ${audioBadge}
+          </div>
+          <div class="book-actions">
+            <div class="dropdown-wrap">
+              <button class="btn-small" onclick="toggleMoveMenu(event)">Move ▾</button>
+              <div class="dropdown-menu">
+                ${ALL_MILESTONES
+                  .filter(m => m.id !== CURRENT_MILESTONE_ID)
+                  .map(m => `<div class="dropdown-item" onclick="moveBookToMilestone('${book.id}')">${m.name}</div>`)
+                  .join('')}
+              </div>
+            </div>
+            <button class="trash-btn" onclick="removeBookFromMilestone('${book.id}')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+          </div>
+        `;
+        booksContainer.appendChild(bookRow);
       });
+    }
 
-      document.addEventListener('click', function(e) {
-        if (!e.target.closest('.role-cell')) closeRoleDropdown();
+    function closeManageBooksModal(e) {
+      if (!e || e.target === document.getElementById('manage-books-modal')) {
+        document.getElementById('manage-books-modal').classList.remove('open');
+      }
+    }
+
+    function removeBookFromMilestone(bookId) {
+      milestoneBooks = milestoneBooks.filter(b => b.id !== bookId);
+      renderMilestoneBooks();
+    }
+
+    // ── Move Book (inline dropdown per row) ──
+    function toggleMoveMenu(e) {
+      e.stopPropagation();
+      const menu = e.currentTarget.nextElementSibling;
+      document.querySelectorAll('.dropdown-menu.open').forEach(m => { if (m !== menu) m.classList.remove('open'); });
+      menu.classList.toggle('open');
+    }
+
+    function moveBookToMilestone(bookId) {
+      milestoneBooks = milestoneBooks.filter(b => b.id !== bookId);
+      renderMilestoneBooks();
+    }
+
+    // ── Milestone actions dropdown ──
+    function toggleMilestoneActions(e) {
+      e.stopPropagation();
+      document.getElementById('milestone-actions-menu').classList.toggle('open');
+    }
+
+    // Close open dropdowns when clicking elsewhere
+    document.addEventListener('click', function(e) {
+      document.querySelectorAll('.dropdown-menu.open').forEach(menu => {
+        if (!menu.closest('.dropdown-wrap').contains(e.target)) menu.classList.remove('open');
       });
     });
   </script>

@@ -15,24 +15,6 @@
     /* ── Page layout ── */
     .content { padding: 18px 20px; display: flex; flex-direction: column; height: calc(100vh - 56px); }
 
-    /* ── Breadcrumb ── */
-    .breadcrumb {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      color: var(--muted-foreground);
-      margin-bottom: 16px;
-      flex-shrink: 0;
-    }
-    .breadcrumb a {
-      color: var(--primary);
-      text-decoration: none;
-    }
-    .breadcrumb a:hover { text-decoration: underline; }
-    .breadcrumb-sep { color: var(--border); }
-    .breadcrumb-current { color: var(--foreground); font-weight: 500; }
-
     /* ── Page header ── */
     .page-header {
       display: flex;
@@ -343,7 +325,7 @@
 
     .dropdown-wrap { position: relative; }
     .dropdown-trigger {
-      width: 100%; height: 38px; padding: 0 12px; border: 1px solid var(--border);
+      width: 100%; height: 36px; padding: 0 12px; border: 0 solid var(--border);
       border-radius: var(--radius-sm); font-size: 14px; font-family: var(--font);
       color: var(--foreground); background: var(--background);
       text-align: left; cursor: pointer;
@@ -418,14 +400,6 @@
   <div id="fluent-header"></div>
 
   <div class="content">
-
-    <!-- Breadcrumb -->
-    <!--nav class="breadcrumb">
-      <a href="manager-dashboard.html">Projects</a>
-      <span class="breadcrumb-sep">/</span>
-      <span class="breadcrumb-current">Kachi Koli NT</span>
-    </nav-->
-
     <!-- Page header -->
     <div class="page-header">
       <div class="page-title-group">
@@ -434,10 +408,12 @@
         </a>
         <h1 class="page-title">Kachi Koli NT</h1>
       </div>
-      <button class="btn-add-milestone" onclick="openAddMilestone()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add Milestone
-      </button>
+      <div class="page-header-actions">
+        <button class="btn-add-milestone" onclick="openAddMilestone()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Milestone
+        </button>
+      </div>
     </div>
 
     <div class="body-columns">
@@ -605,6 +581,33 @@
                 </td>
                 <td><span class="status-badge status-not-started">Not Started</span></td>
               </tr>
+              <tr onclick="window.location='view-milestone.html'">
+                <td>
+                  <div class="milestone-name-cell">
+                    <!--div class="milestone-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V8"/><path d="m5 12-2-2 9-5 9 5-2 2"/><path d="M5 17l-2-2 9-5 9 5-2 2"/></svg>
+                    </div-->
+                    <div>
+                      <div class="milestone-name">Patriarchal History</div>
+                      <div class="milestone-books">Genesis, Exodus</div>
+                    </div>
+                  </div>
+                </td>
+                <td>2 books · 90 chapters</td>
+                <td>
+                  <div class="progress-cell">
+                    <div class="progress-mini">
+                      <div class="p-complete"  style="width:9%"></div>
+                      <div class="p-advanced"  style="width: 4%"></div>
+                      <div class="p-community" style="width:7%"></div>
+                      <div class="p-peer"      style="width:10%"></div>
+                      <div class="p-drafting"  style="width:11%"></div>
+                    </div>
+                    <span class="progress-pct">41%</span>
+                  </div>
+                </td>
+                <td><span class="status-badge status-in-progress">In Progress</span></td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -639,7 +642,7 @@
           <div class="book-list-wrap" id="book-list"></div>
         </div>
 
-        <div class="field">
+        <!--div class="field">
           <label class="field-label">Connectivity Profile</label>
           <div class="dropdown-wrap" id="connectivity-profile-wrap">
             <button class="dropdown-trigger" id="connectivity-profile-trigger" type="button" onclick="toggleConnectivityDropdown(event)">
@@ -652,7 +655,7 @@
               <div class="dropdown-item" onclick="chooseConnectivityProfile('rarely-connected', 'Rarely Connected')">Rarely Connected</div>
             </div>
           </div>
-        </div>
+        </div-->
 
         <div class="scope-warning" id="scope-warning" style="display:none">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
@@ -784,10 +787,10 @@
       document.getElementById('connectivity-profile-menu').classList.toggle('open');
     }
 
-    function chooseConnectivityProfile(value, label) {
-      document.getElementById('connectivity-profile-label').textContent = label;
-      document.getElementById('connectivity-profile-menu').classList.remove('open');
-    }
+    //function chooseConnectivityProfile(value, label) {
+    //  document.getElementById('connectivity-profile-label').textContent = label;
+    //  document.getElementById('connectivity-profile-menu').classList.remove('open');
+    //}
 
     document.addEventListener('click', function(e) {
       const menu = document.getElementById('connectivity-profile-menu');
@@ -801,7 +804,7 @@
       document.getElementById('milestone-name').value = '';
       // Pre-populated from the parent project's Connectivity Profile (Meta Card) — hardcoded
       // to match this mockup's "Sometimes Connected" project default.
-      chooseConnectivityProfile('sometimes-connected', 'Sometimes Connected');
+      // chooseConnectivityProfile('sometimes-connected', 'Sometimes Connected');
       updateScopeWarning();
       document.getElementById('add-milestone-modal').classList.add('open');
     }

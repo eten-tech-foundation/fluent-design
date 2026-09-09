@@ -38,9 +38,9 @@ const HEADER_CSS = `
   /* ── Header ── */
   .header {
     background: var(--primary);
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: space-between;
     padding: 0 18px;
     height: 56px;
     position: sticky;
@@ -48,8 +48,36 @@ const HEADER_CSS = `
     z-index: 100;
   }
 
-  .header-left  { display: flex; align-items: center; gap: 32px; }
-  .header-right { display: flex; align-items: center; gap: 10px; }
+  .header-left   { justify-self: start; display: flex; align-items: center; gap: 32px; }
+  .header-banner-slot { justify-self: center; min-width: 0; }
+  .header-right  { justify-self: end; display: flex; align-items: center; gap: 10px; }
+
+  /* ── Role-change banner (shown centered in the header; see drafting.html) ── */
+  .role-change-banner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    background: #dc2626;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .in-editing-banner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    background: #ffff00;
+    color: #000000;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
 
   /* ── Org switcher ── */
   .org-switcher { position: relative; }
@@ -322,6 +350,16 @@ const HEADER_HTML = `
       </div>
     </div>
     <a class="logo" id="logo-link" href="manager-dashboard.html"><img src="Fluent-White Logo Only.svg" alt="fluent"></a>
+  </div>
+  <div class="header-banner-slot">
+    <div id="role-change-banner" class="role-change-banner" style="display:none" aria-live="assertive">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span>Your role has changed. You no longer have permission to edit this chapter.</span>
+    </div>
+    <div id="in-editing-banner" class="in-editing-banner" style="display:none" aria-live="assertive">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span>[Name] is editing this chapter.</span>
+    </div>
   </div>
   <div class="header-right">
     <div class="user-btn" id="user-menu-btn" onclick="toggleUserMenu(event)">
@@ -599,6 +637,17 @@ function navigateToRoleDashboard(role) {
   window.location.href = ORG_ROLE_DASHBOARDS[role] || ORG_ROLE_DASHBOARDS.manager;
 }
 
+// ── Role-change banner (dev trigger only, no real permission check) ─────────
+function toggleEditingWarning() {
+  const banner = document.getElementById('in-editing-banner');
+  banner.style.display = banner.style.display === 'none' ? 'flex' : 'none';
+}
+
+// ── Role-change banner (dev trigger only, no real permission check) ─────────
+function toggleRoleChangeWarning() {
+  const banner = document.getElementById('role-change-banner');
+  banner.style.display = banner.style.display === 'none' ? 'flex' : 'none';
+}
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 function renderHeader() {

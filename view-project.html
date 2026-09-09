@@ -191,6 +191,28 @@
     }
     .trash-btn:hover { color: #df0c07; }
 
+    .remove-confirm-banner {
+      display: none;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 0 14px 12px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      line-height: 1.5;
+      background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;
+    }
+    .dark .remove-confirm-banner { background: #3a2f10; border-color: #6b5522; color: #fbd97a; }
+    .remove-confirm-banner.open { display: flex; }
+    .remove-confirm-actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+    .remove-confirm-actions button {
+      font-size: 13px; padding: 5px 12px; border-radius: 6px; cursor: pointer;
+      font-family: var(--font); font-weight: 500;
+    }
+    .remove-confirm-cancel { background: white; border: 1px solid var(--border); color: var(--foreground); }
+    .remove-confirm-remove { background: #df0c07; border: none; color: white; }
+
     /* Role editing styles */
     .role-cell {
       position: relative;
@@ -763,6 +785,20 @@
             Project Users
             <button class="btn-icon-add" onclick="openAddUserModal()">+</button>
           </div>
+          <div class="remove-confirm-banner" id="remove-confirm-banner">
+            <span id="remove-confirm-text"></span>
+            <div class="remove-confirm-actions">
+              <button class="remove-confirm-remove" onclick="confirmRemoveUser()">Remove</button>
+              <button class="remove-confirm-cancel" onclick="closeRemoveConfirm()">Cancel</button>
+            </div>
+          </div>
+          <div class="remove-confirm-banner" id="role-confirm-banner">
+            <span id="role-confirm-text"></span>
+            <div class="remove-confirm-actions">
+              <button class="remove-confirm-remove" onclick="confirmRoleChange()">Change Role</button>
+              <button class="remove-confirm-cancel" onclick="closeRoleChangeConfirm()">Cancel</button>
+            </div>
+          </div>
           <div class="users-table-wrap">
             <table class="users-table">
               <thead>
@@ -770,10 +806,20 @@
               </thead>
               <tbody>
                 <tr>
-                  <td>qa.manager</td>
+                  <td>Chad W</td>
                   <td class="role-cell read-only" data-user-id="1">
                     <div class="role-indicator">
                       <span>Project Manager</span>
+                      <span class="role-caret"></span>
+                    </div>
+                  </td>
+                  <!--td class="td-action"><button class="trash-btn" ><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td-->
+                </tr>
+                <tr>
+                  <td>Chad T</td>
+                  <td class="role-cell editable" data-user-id="3">
+                    <div class="role-indicator">
+                      <span>Translator</span>
                       <span class="role-caret"></span>
                     </div>
                   </td>
@@ -800,7 +846,7 @@
                   <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
                 </tr>
                 <tr>
-                  <td>Chad W</td>
+                  <td>Observer 1</td>
                   <td class="role-cell editable" data-user-id="4">
                     <div class="role-indicator">
                       <span>Observer</span>
@@ -845,17 +891,17 @@
             </thead>
             <tbody>
               <tr data-book="1 John" onclick="openChapter(event,'1 John',1)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>1 John</td><td>1</td><td>Roslin T</td><td>Roslin P</td><td>Complete</td><td>10 of 10</td></tr>
-              <tr data-book="1 John" onclick="openChapter(event,'1 John',2)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>1 John</td><td>2</td><td>Roslin T</td><td>Seema T</td><td>Theological Check</td><td>29 of 29</td></tr>
+              <tr data-book="1 John" onclick="openChapter(event,'1 John',2)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>1 John</td><td>2</td><td>Roslin T</td><td>Roslin T</td><td>Theological Check</td><td>29 of 29</td></tr>
               <tr data-book="1 John" onclick="openChapter(event,'1 John',3)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>1 John</td><td>3</td><td>Roslin T</td><td>Roslin P</td><td>Linguist Check</td><td>24 of 24</td></tr>
-              <tr data-book="1 John" onclick="openChapter(event,'1 John',4)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>1 John</td><td>4</td><td>Roslin T</td><td>Seema T</td><td>Peer Check</td><td>21 of 21</td></tr>
+              <tr data-book="1 John" onclick="openChapter(event,'1 John',4)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>1 John</td><td>4</td><td>Roslin T</td><td>Roslin T</td><td>Peer Check</td><td>21 of 21</td></tr>
               <tr data-book="1 John" onclick="openChapter(event,'1 John',5)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>1 John</td><td>5</td><td>Roslin T</td><td>Roslin P</td><td><span style="display:inline-flex;align-items:center;gap:5px;">Draft <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg></span></td><td>8 of 21</td></tr>
-              <tr data-book="1 Peter" onclick="openChapter(event,'1 Peter',1)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>1 Peter</td><td>1</td><td>Roslin T</td><td>Seema T</td><td>Community Review</td><td>25 of 25</td></tr>
+              <tr data-book="1 Peter" onclick="openChapter(event,'1 Peter',1)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>1 Peter</td><td>1</td><td>Roslin T</td><td>Roslin T</td><td>Community Review</td><td>25 of 25</td></tr>
               <tr data-book="1 Peter" onclick="openChapter(event,'1 Peter',2)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>1 Peter</td><td>2</td><td>Roslin T</td><td>Roslin P</td><td>Linguist Check</td><td>25 of 25</td></tr>
-              <tr data-book="1 Peter" onclick="openChapter(event,'1 Peter',3)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>1 Peter</td><td>3</td><td>Roslin T</td><td>Seema T</td><td><span style="display:inline-flex;align-items:center;gap:5px;">Peer Check <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg></span></td><td>22 of 22</td></tr>
+              <tr data-book="1 Peter" onclick="openChapter(event,'1 Peter',3)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>1 Peter</td><td>3</td><td>Roslin T</td><td>Roslin T</td><td><span style="display:inline-flex;align-items:center;gap:5px;">Peer Check <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg></span></td><td>22 of 22</td></tr>
               <tr data-book="1 Peter" onclick="openChapter(event,'1 Peter',4)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>1 Peter</td><td>4</td><td>Roslin T</td><td>Roslin P</td><td>Peer Check</td><td>19 of 19</td></tr>
-              <tr data-book="1 Peter" onclick="openChapter(event,'1 Peter',5)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>1 Peter</td><td>5</td><td>Roslin T</td><td>Seema T</td><td>Draft</td><td>0 of 14</td></tr>
+              <tr data-book="1 Peter" onclick="openChapter(event,'1 Peter',5)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>1 Peter</td><td>5</td><td>Roslin T</td><td>Roslin T</td><td>Draft</td><td>0 of 14</td></tr>
               <tr data-book="2 John" onclick="openChapter(event,'2 John',1)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>2 John</td><td>1</td><td>Roslin T</td><td>Roslin P</td><td>Community Review</td><td>13 of 13</td></tr>
-              <tr data-book="2 John" onclick="openChapter(event,'2 John',2)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>2 John</td><td>2</td><td>Roslin T</td><td>Seema T</td><td><span style="display:inline-flex;align-items:center;gap:5px;">Peer Check <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg></span></td><td>18 of 18</td></tr>
+              <tr data-book="2 John" onclick="openChapter(event,'2 John',2)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>2 John</td><td>2</td><td>Roslin T</td><td>Roslin T</td><td><span style="display:inline-flex;align-items:center;gap:5px;">Peer Check <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg></span></td><td>18 of 18</td></tr>
               <tr data-book="2 John" onclick="openChapter(event,'2 John',3)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>2 John</td><td>3</td><td>Roslin T</td><td>Roslin P</td><td>Draft</td><td>0 of 17</td></tr>
               <tr data-book="3 John" onclick="openChapter(event,'3 John',1)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>3 John</td><td>1</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 15</td></tr>
               <tr data-book="3 John" onclick="openChapter(event,'3 John',2)"><td><input type="checkbox" class="chapter-cb" onchange="onChapterCheck()"></td><td>3 John</td><td>2</td><td>—</td><td>—</td><td>Not Started</td><td>0 of 16</td></tr>
@@ -1480,11 +1526,16 @@
         option.addEventListener('click', function(e) {
           e.stopPropagation();
 
-          // Apply optimistic update - immediately show the new role, no separate save step
-          cell.querySelector('.role-indicator span').textContent = role;
-          console.log(`Role updated to ${role} for user ${cell.closest('tr').querySelector('td:first-child').textContent.trim()}`);
-
+          const currentRole = cell.querySelector('.role-indicator span').textContent.trim();
+          const name = cell.closest('tr').querySelector('td:first-child').textContent.trim();
           closeRoleDropdown();
+
+          if (role === 'Observer' && currentRole !== 'Observer' && getAssignmentCells(name).length > 0) {
+            openRoleChangeConfirm(cell, name, role);
+            return;
+          }
+
+          applyRoleChange(cell, name, role);
         });
 
         dropdown.appendChild(option);
@@ -1523,6 +1574,80 @@
     document.addEventListener('click', function(e) {
       if (!e.target.closest('.role-cell')) closeRoleDropdown();
     });
+
+    // ── Remove project member ──
+    let pendingRemoveRow = null;
+
+    function getAssignmentCells(name) {
+      const cells = [];
+      document.querySelectorAll('.chapter-table tbody tr').forEach(row => {
+        const rowCells = row.querySelectorAll('td');
+        if (rowCells[3] && rowCells[3].textContent.trim() === name) cells.push(rowCells[3]);
+        if (rowCells[4] && rowCells[4].textContent.trim() === name) cells.push(rowCells[4]);
+      });
+      return cells;
+    }
+
+    function openRemoveConfirm(btn) {
+      const row = btn.closest('tr');
+      pendingRemoveRow = row;
+      const name = row.children[0].textContent.trim();
+      const roleSpan = row.querySelector('.role-cell span');
+      const role = roleSpan ? roleSpan.textContent.trim() : row.children[1].textContent.trim();
+      const hasAssignments = getAssignmentCells(name).length > 0;
+      document.getElementById('remove-confirm-text').textContent = hasAssignments
+        ? `Remove ${name} from this project? Their chapter assignments will be removed.`
+        : `Remove ${name} from this project?`;
+      document.getElementById('remove-confirm-banner').classList.add('open');
+    }
+
+    function closeRemoveConfirm() {
+      pendingRemoveRow = null;
+      document.getElementById('remove-confirm-banner').classList.remove('open');
+    }
+
+    function confirmRemoveUser() {
+      if (!pendingRemoveRow) return;
+      const name = pendingRemoveRow.children[0].textContent.trim();
+      getAssignmentCells(name).forEach(cell => { cell.textContent = '—'; });
+      pendingRemoveRow.remove();
+      closeRemoveConfirm();
+    }
+
+    document.querySelector('.users-table tbody').addEventListener('click', function(e) {
+      const btn = e.target.closest('.trash-btn');
+      if (!btn) return;
+      e.stopPropagation();
+      openRemoveConfirm(btn);
+    });
+
+    // ── Role change to Observer (with active assignments) ──
+    let pendingRoleChange = null;
+
+    function applyRoleChange(cell, name, role) {
+      cell.querySelector('.role-indicator span').textContent = role;
+      console.log(`Role updated to ${role} for user ${name}`);
+    }
+
+    function openRoleChangeConfirm(cell, name, role) {
+      pendingRoleChange = { cell, name, role };
+      document.getElementById('role-confirm-text').textContent =
+        `Change ${name}'s role to ${role}? Their current chapter assignments will be removed.`;
+      document.getElementById('role-confirm-banner').classList.add('open');
+    }
+
+    function closeRoleChangeConfirm() {
+      pendingRoleChange = null;
+      document.getElementById('role-confirm-banner').classList.remove('open');
+    }
+
+    function confirmRoleChange() {
+      if (!pendingRoleChange) return;
+      const { cell, name, role } = pendingRoleChange;
+      getAssignmentCells(name).forEach(assignmentCell => { assignmentCell.textContent = '—'; });
+      applyRoleChange(cell, name, role);
+      closeRoleChangeConfirm();
+    }
 
     // ── Chapter row click ──
     function openChapter(e, book, chapter) {

@@ -29,6 +29,20 @@
 
     .sub-left { display: flex; align-items: center; gap: 12px; flex: 1; }
 
+    /* Dev-only trigger, buried at the bottom of the OSN resource, not part of the real UI */
+    .dev-trigger-btn {
+      display: block;
+      margin: 24px auto 4px;
+      padding: 4px 10px;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-sm);
+      background: none;
+      font-size: 11px;
+      color: var(--muted-foreground);
+      cursor: pointer;
+    }
+    .dev-trigger-btn:hover { background: var(--muted); }
+
     .back-btn {
       background: none; border: none; cursor: pointer;
       color: var(--foreground); padding: 4px 6px;
@@ -1693,6 +1707,8 @@
             </div>
           </div>
         </div>
+        <button class="dev-trigger-btn" onclick="toggleEditingWarning()">Show In Editing Warning</button>
+        <button class="dev-trigger-btn" onclick="toggleRoleChangeWarning()">Show Role Change Warning</button>
       </div>
       </div>
     </div>
