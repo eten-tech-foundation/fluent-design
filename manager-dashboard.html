@@ -25,6 +25,8 @@
     }
     .page-title { font-size: 26px; font-weight: 700; }
 
+    .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+
     .btn-add-project {
       background: transparent;
       color: var(--primary);
@@ -115,6 +117,14 @@
       </button>
     </div>
 
+    <div class="toolbar">
+      <select class="select" id="sort-select" onchange="applySort()">
+        <option value="recent">Recent</option>
+        <option value="title">Title</option>
+        <option value="target">Target Language</option>
+      </select>
+    </div>
+
     <div class="table-wrap">
       <table>
         <thead>
@@ -194,12 +204,23 @@
   </main>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    function applySort() {
+      const sortBy = document.getElementById('sort-select').value;
       const tbody = document.getElementById('projects-tbody');
       const rows = Array.from(tbody.querySelectorAll('tr'));
-      rows.sort((a, b) => a.dataset.title.localeCompare(b.dataset.title));
+      rows.sort((a, b) => {
+        if (sortBy === 'title') return a.dataset.title.localeCompare(b.dataset.title);
+        if (sortBy === 'target') return a.dataset.target.localeCompare(b.dataset.target);
+        // Recent: most recently active first; projects with no activity yet sort last.
+        if (!a.dataset.activity && !b.dataset.activity) return 0;
+        if (!a.dataset.activity) return 1;
+        if (!b.dataset.activity) return -1;
+        return b.dataset.activity.localeCompare(a.dataset.activity);
+      });
       rows.forEach(row => tbody.appendChild(row));
-    });
+    }
+
+    document.addEventListener('DOMContentLoaded', applySort);
 
     // This page's Create Project flow (per WPH-Build-Projects-List-Page) collects
     // Project Name, Source Language/Bible, Target Language, Connectivity Profile
