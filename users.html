@@ -10,6 +10,7 @@
   <script src="header.js" defer></script>
   <script src="settings-dialog.js" defer></script>
   <script src="edit-profile.js" defer></script>
+  <script src="custom-select.js" defer></script>
   <style>
     .content {
       padding: 20px 24px;
@@ -66,6 +67,11 @@
     .users-table tbody tr { background: var(--background); border-bottom: 1px solid var(--border); cursor: pointer; }
     .users-table tbody tr:last-child { border-bottom: none; }
     .users-table tbody tr:hover { background: var(--muted); }
+
+    /* Translators and Observers are added/edited per-project (Add Project User
+       flow), not here — their rows are informational only in this org roster. */
+    .users-table tbody tr.row-view-only { cursor: default; }
+    .users-table tbody tr.row-view-only:hover { background: var(--background); }
 
     .users-table tbody td { padding: 11px 16px; font-size: 14px; }
 
@@ -154,6 +160,8 @@
 
     .required-star { color: #dc2626; }
 
+    .form-error { font-size: 12px; color: #dc2626; }
+
     .form-help {
       font-size: 12px;
       color: var(--muted-foreground);
@@ -234,8 +242,8 @@
         <tbody>
           <tr><td>Anna Rivera</td><td>Translator</td><td>anna.rivera@gmail.com</td><td><span class="badge badge-verified">verified</span></td></tr>
           <tr><td>Ben Okafor</td><td>Translator</td><td>ben.okafor@gmail.com</td><td><span class="badge badge-invited">invited</span></td></tr>
-          <tr><td>Chad W</td><td>Manager</td><td>chadw@fluent.app</td><td><span class="badge badge-verified">verified</span></td></tr>
-          <tr><td>Diana Chen</td><td>Manager</td><td>diana.chen@fluent.app</td><td><span class="badge badge-verified">verified</span></td></tr>
+          <tr><td>Chad W</td><td>Org Manager</td><td>chadw@fluent.app</td><td><span class="badge badge-verified">verified</span></td></tr>
+          <tr><td>Diana Chen</td><td>Project Manager</td><td>diana.chen@fluent.app</td><td><span class="badge badge-verified">verified</span></td></tr>
           <tr><td>Elias Brooke</td><td>Translator</td><td>elias.brooke@gmail.com</td><td><span class="badge badge-verified">verified</span></td></tr>
           <tr><td>Fatima Malik</td><td>Translator</td><td>fatima.malik@gmail.com</td><td><span class="badge badge-verified">verified</span></td></tr>
           <tr><td>Grace Adeyemi</td><td>Translator</td><td>grace.adeyemi@gmail.com</td><td><span class="badge badge-invited">invited</span></td></tr>
@@ -244,14 +252,14 @@
           <tr><td>Marcus Webb</td><td>Translator</td><td>marcus.webb@gmail.com</td><td><span class="badge badge-verified">verified</span></td></tr>
           <tr><td>Nadia Vasquez</td><td>Translator</td><td>nadia.vasquez@gmail.com</td><td><span class="badge badge-invited">invited</span></td></tr>
           <tr><td>Priya Sharma</td><td>Translator</td><td>priya.sharma@gmail.com</td><td><span class="badge badge-verified">verified</span></td></tr>
-          <tr><td>qa.manager</td><td>Manager</td><td>qa.manager@fluent.app</td><td><span class="badge badge-verified">verified</span></td></tr>
+          <tr><td>qa.manager</td><td>Project Manager</td><td>qa.manager@fluent.app</td><td><span class="badge badge-verified">verified</span></td></tr>
           <tr><td>Roslin P</td><td>Translator</td><td>roslinp@gmail.com</td><td><span class="badge badge-verified">verified</span></td></tr>
           <tr><td>Roslin T</td><td>Translator</td><td>roslint@gmail.com</td><td><span class="badge badge-verified">verified</span></td></tr>
-          <tr><td>Samuel Park</td><td>Manager</td><td>samuel.park@fluent.app</td><td><span class="badge badge-verified">verified</span></td></tr>
+          <tr><td>Samuel Park</td><td>Project Manager</td><td>samuel.park@fluent.app</td><td><span class="badge badge-verified">verified</span></td></tr>
           <tr><td>Seema T</td><td>Translator</td><td>seema.t@gmail.com</td><td><span class="badge badge-invited">invited</span></td></tr>
           <tr><td>Tom Nakamura</td><td>Translator</td><td>tom.nakamura@gmail.com</td><td><span class="badge badge-verified">verified</span></td></tr>
-          <tr><td>Victor Oduya</td><td>Translator</td><td>victor.oduya@gmail.com</td><td><span class="badge badge-verified">verified</span></td></tr>
-          <tr><td>Yuki Tanaka</td><td>Translator</td><td>yuki.tanaka@gmail.com</td><td><span class="badge badge-invited">invited</span></td></tr>
+          <tr><td>Victor Oduya</td><td>Observer</td><td>victor.oduya@gmail.com</td><td><span class="badge badge-verified">verified</span></td></tr>
+          <tr><td>Yuki Tanaka</td><td>Observer</td><td>yuki.tanaka@gmail.com</td><td><span class="badge badge-invited">invited</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -301,8 +309,13 @@
             <span class="required-star">*</span> Role
           </label>
           <select class="form-select" id="field-role">
-            <option value="Translator">Translator</option>
+            <option value="Org Manager">Org Manager</option>
+            <option value="Project Manager">Project Manager</option>
           </select>
+        </div>
+
+        <div class="form-field" id="email-error-field" style="display:none">
+          <span class="form-error">This person is already in your organization.</span>
         </div>
       </div>
 
@@ -313,13 +326,22 @@
   </div>
 
   <script>
-    // Wire up row clicks to open Edit Profile dialog
+    const EDITABLE_ROLES = ['Org Manager', 'Project Manager'];
+    const CURRENT_USER_EMAIL = 'chadw@fluent.app';
+
+    // Only Org Manager / Project Manager rows are edited from this page.
+    // Translators and Observers are added and edited per-project via the
+    // existing Add Project User flow, so their rows are view-only here.
     document.addEventListener('DOMContentLoaded', function() {
       document.querySelectorAll('.users-table tbody tr').forEach(function(row) {
+        const cells = row.querySelectorAll('td');
+        const role  = cells[1].textContent.trim();
+        if (!EDITABLE_ROLES.includes(role)) {
+          row.classList.add('row-view-only');
+          return;
+        }
         row.addEventListener('click', function() {
-          const cells = row.querySelectorAll('td');
           const fullName   = cells[0].textContent.trim();
-          const role       = cells[1].textContent.trim();
           const email      = cells[2].textContent.trim();
           const nameParts  = fullName.split(' ');
           const firstName  = nameParts[0] || '';
@@ -330,18 +352,25 @@
             firstName:   firstName,
             lastName:    lastName,
             role:        role,
+            disableRole: email === CURRENT_USER_EMAIL,
           });
         });
       });
     });
 
-    const backdrop   = document.getElementById('add-user-backdrop');
-    const openBtn    = document.getElementById('open-add-user');
-    const closeBtn   = document.getElementById('close-dialog');
-    const addBtn     = document.getElementById('btn-add-user');
-    const fieldEmail = document.getElementById('field-email');
-    const fieldName  = document.getElementById('field-display-name');
-    const fieldRole  = document.getElementById('field-role');
+    const backdrop    = document.getElementById('add-user-backdrop');
+    const openBtn     = document.getElementById('open-add-user');
+    const closeBtn    = document.getElementById('close-dialog');
+    const addBtn      = document.getElementById('btn-add-user');
+    const fieldEmail  = document.getElementById('field-email');
+    const fieldName   = document.getElementById('field-display-name');
+    const fieldRole   = document.getElementById('field-role');
+    const emailError  = document.getElementById('email-error-field');
+
+    function existingEmails() {
+      return Array.from(document.querySelectorAll('.users-table tbody td:nth-child(3)'))
+        .map(td => td.textContent.trim().toLowerCase());
+    }
 
     function openDialog() {
       backdrop.classList.add('open');
@@ -353,13 +382,17 @@
       // reset form
       document.querySelectorAll('.form-input').forEach(el => el.value = '');
       fieldRole.selectedIndex = 0;
+      emailError.style.display = 'none';
       checkRequired();
     }
 
     function checkRequired() {
+      const isDuplicate = existingEmails().includes(fieldEmail.value.trim().toLowerCase());
+      emailError.style.display = isDuplicate ? '' : 'none';
       const ready = fieldEmail.value.trim() !== '' &&
                     fieldName.value.trim()  !== '' &&
-                    fieldRole.value         !== '';
+                    fieldRole.value         !== '' &&
+                    !isDuplicate;
       addBtn.classList.toggle('active', ready);
     }
 

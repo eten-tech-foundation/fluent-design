@@ -149,7 +149,7 @@ const HEADER_CSS = `
     color: var(--foreground);
     margin-bottom: 8px;
   }
-  .org-role-chips { display: flex; flex-wrap: nowrap; gap: 5px; }
+  .org-role-chips { display: flex; flex-wrap: wrap; gap: 5px; }
 
   .org-role-chip {
     padding: 3px 9px;
@@ -318,9 +318,25 @@ const HEADER_HTML = `
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
             Projects
           </a>
+        </div>
+        <div id="menu-org-manager" style="display:none">
+          <a class="main-menu-item" href="manager-dashboard.html">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Dashboard
+          </a>
+          <a class="main-menu-item" href="manager-dashboard.html">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Projects
+          </a>
           <a class="main-menu-item" href="users.html">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             Users
+          </a>
+        </div>
+        <div id="menu-super-admin" style="display:none">
+          <a class="main-menu-item" href="organizations.html">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M14 9h1"/><path d="M14 13h1"/><path d="M9 21v-4h6v4"/></svg>
+            Organizations
           </a>
         </div>
         <div id="menu-translator" style="display:none">
@@ -395,15 +411,27 @@ const HEADER_HTML = `
 // ── Role state ───────────────────────────────────────────────────────────────
 let currentRole = 'manager';
 
+const ROLE_USER_LABELS = {
+  manager:      'Chad M',
+  translator:   'Chad T',
+  observer:     'Chad T',
+  'org-manager': 'Chad O',
+  'super-admin': 'Chad S',
+};
+
 function applyRoleUI() {
-  const isManager    = currentRole === 'manager';
-  const isTranslator = currentRole === 'translator';
-  const isObserver   = currentRole === 'observer';
-  document.getElementById('user-menu-label').textContent  = isManager ? 'Chad M' : 'Chad T';
+  const isManager     = currentRole === 'manager';
+  const isTranslator  = currentRole === 'translator';
+  const isObserver    = currentRole === 'observer';
+  const isOrgManager  = currentRole === 'org-manager';
+  const isSuperAdmin  = currentRole === 'super-admin';
+  document.getElementById('user-menu-label').textContent  = ROLE_USER_LABELS[currentRole] || 'Chad M';
   document.getElementById('logo-link').href                = ORG_ROLE_DASHBOARDS[currentRole] || ORG_ROLE_DASHBOARDS.manager;
-  document.getElementById('menu-manager').style.display   = isManager    ? '' : 'none';
-  document.getElementById('menu-translator').style.display = isTranslator ? '' : 'none';
-  document.getElementById('menu-observer').style.display   = isObserver   ? '' : 'none';
+  document.getElementById('menu-manager').style.display     = isManager     ? '' : 'none';
+  document.getElementById('menu-translator').style.display  = isTranslator  ? '' : 'none';
+  document.getElementById('menu-observer').style.display    = isObserver    ? '' : 'none';
+  document.getElementById('menu-org-manager').style.display = isOrgManager  ? '' : 'none';
+  document.getElementById('menu-super-admin').style.display = isSuperAdmin  ? '' : 'none';
 }
 
 // ── Toggle menus ─────────────────────────────────────────────────────────────
@@ -487,14 +515,24 @@ function toggleTheme() {
 // `roles` lists the roles the current user holds within that org.
 const DEFAULT_ORG_CONFIG = {
   orgs: [
-    { id: 'bcs-india', name: 'BCS', roles: ['manager', 'translator'] },
+    { id: 'bcs-india', name: 'BCS', roles: ['manager', 'translator', 'org-manager'] },
     { id: 'wycliffe', name: 'Wycliffe Global Partners', roles: ['translator', 'observer'] },
   ],
   activeOrgId: 'bcs-india',
 };
 
-const ORG_ROLE_LABELS = { manager: 'Project Manager', translator: 'Translator', observer: 'Observer' };
-const ORG_ROLE_DASHBOARDS = { manager: 'manager-dashboard.html', translator: 'translator-dashboard.html', observer: 'observer-dashboard.html' };
+const ORG_ROLE_LABELS = { manager: 'Project Manager', translator: 'Translator', observer: 'Observer', 'org-manager': 'Org Manager' };
+const ORG_ROLE_DASHBOARDS = {
+  manager: 'manager-dashboard.html',
+  translator: 'translator-dashboard.html',
+  observer: 'observer-dashboard.html',
+  'org-manager': 'manager-dashboard.html',
+  'super-admin': 'organizations.html',
+};
+
+// Super User is a platform-level role with no org — it doesn't appear in any
+// org's `roles` list, and is rendered as its own section in the switcher.
+const SUPER_ADMIN_LABEL = 'Super User';
 
 function getOrgState() {
   const config = window.ORG_CONFIG || DEFAULT_ORG_CONFIG;
@@ -576,10 +614,25 @@ function renderUserMenuOrgSwitcher() {
   const orgIcon   = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
   const chevronSvg = `<svg class="um-org-chevron" id="um-org-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>`;
 
+  // Super User has no org, so it renders as its own unaffiliated row below
+  // the org groups rather than as a chip nested under one.
+  const superAdminSection = `
+    <div class="org-dropdown-group">
+      <div class="org-dropdown-org-name"><span>Platform</span></div>
+      <div class="org-role-chips">
+        <button class="org-role-chip ${currentRole === 'super-admin' ? 'active' : ''}"
+                onclick="selectSuperAdmin()">${SUPER_ADMIN_LABEL}</button>
+      </div>
+    </div>
+  `;
+
   if (state.orgs.length <= 1) {
     section.innerHTML = `
       <div class="um-org-trigger" style="cursor:default;" title="${activeOrg.name}">
         <div class="um-org-trigger-left">${orgIcon} <span class="um-org-name">${activeOrg.name}</span></div>
+      </div>
+      <div class="um-org-dropdown-body open" id="um-org-dropdown-body">
+        ${superAdminSection}
       </div>`;
     return;
   }
@@ -607,6 +660,7 @@ function renderUserMenuOrgSwitcher() {
     <div class="um-org-dropdown-body" id="um-org-dropdown-body">
       <div class="org-dropdown-header" style="padding:6px 16px 4px;">Switch Organization</div>
       ${items}
+      ${superAdminSection}
     </div>
   `;
 }
@@ -626,11 +680,22 @@ function toggleUserMenuOrgDropdown(event) {
 // role-appropriate dashboard for the selected org happens in a single step.
 function selectOrgRole(orgId, role) {
   localStorage.setItem('fluent_active_org', orgId);
+  localStorage.setItem('fluent_current_role', role);
   document.getElementById('org-dropdown')?.classList.remove('open');
   document.getElementById('org-btn')?.classList.remove('open');
   document.getElementById('user-menu')?.classList.remove('open');
   document.dispatchEvent(new CustomEvent('orgchange', { detail: { orgId, role } }));
   navigateToRoleDashboard(role);
+}
+
+// Super User has no org, so it only ever sets the role — the previously
+// active org is left in localStorage untouched for whenever the user
+// switches back into an org-scoped role.
+function selectSuperAdmin() {
+  localStorage.setItem('fluent_current_role', 'super-admin');
+  document.getElementById('user-menu')?.classList.remove('open');
+  document.dispatchEvent(new CustomEvent('orgchange', { detail: { orgId: null, role: 'super-admin' } }));
+  navigateToRoleDashboard('super-admin');
 }
 
 function navigateToRoleDashboard(role) {
@@ -659,8 +724,13 @@ function renderHeader() {
   const placeholder = document.getElementById('fluent-header');
   if (placeholder) placeholder.outerHTML = HEADER_HTML;
 
+  // Pages tied to one role (translator-dashboard.html, observer-dashboard.html,
+  // etc.) declare data-role and always win. Pages shared across roles
+  // (manager-dashboard.html, view-project.html, users.html, organizations.html)
+  // have no data-role, so fall back to the last role picked from the switcher.
   const pageRole = document.body.dataset.role;
-  if (pageRole) currentRole = pageRole;
+  currentRole = pageRole || localStorage.getItem('fluent_current_role') || 'manager';
+  localStorage.setItem('fluent_current_role', currentRole);
 
   initTheme();
   initTTS();
@@ -669,7 +739,7 @@ function renderHeader() {
   if (typeof initCreateProjectDialog === 'function') initCreateProjectDialog();
   if (typeof initEditProfileDialog === 'function') initEditProfileDialog();
 
-  if (currentRole !== 'manager') applyRoleUI();
+  applyRoleUI();
 }
 
 document.addEventListener('DOMContentLoaded', renderHeader);

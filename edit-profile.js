@@ -123,7 +123,10 @@ const EDIT_PROFILE_HTML = `
       <div class="ep-field">
         <label class="ep-label" for="ep-role"><span class="ep-required">*</span> Role</label>
         <select class="ep-input" id="ep-role" onchange="epValidate()">
+          <option value="Org Manager">Org Manager</option>
+          <option value="Project Manager">Project Manager</option>
           <option value="Translator" selected>Translator</option>
+          <option value="Observer">Observer</option>
         </select>
       </div>
     </div>
@@ -139,14 +142,16 @@ const EDIT_PROFILE_HTML = `
 // ── Edit Profile dialog logic ─────────────────────────────────────────────────
 function openEditProfile(data) {
   document.getElementById('user-menu').classList.remove('open');
+  const roleEl = document.getElementById('ep-role');
   if (data) {
     document.getElementById('ep-email').value        = data.email        || '';
     document.getElementById('ep-display-name').value = data.displayName  || '';
     document.getElementById('ep-firstname').value    = data.firstName    || '';
     document.getElementById('ep-lastname').value     = data.lastName     || '';
-    const roleEl = document.getElementById('ep-role');
     if (data.role) roleEl.value = data.role;
   }
+  // A user can never change their own role through this dialog.
+  roleEl.disabled = !!(data && data.disableRole);
   document.getElementById('ep-overlay').classList.add('open');
   epValidate();
 }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fluent — Manager Dashboard</title>
+  <title>Fluent — Projects</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
@@ -12,19 +12,23 @@
   <script src="settings-dialog.js" defer></script>
   <script src="edit-profile.js" defer></script>
   <script src="create-project.js" defer></script>
+  <script src="custom-select.js" defer></script>
   <style>
     /* ── Page Content ── */
     .content { padding: 18px 20px; }
 
-    .page-title { font-size: 26px; font-weight: 700; margin-bottom: 20px; }
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .page-title { font-size: 26px; font-weight: 700; }
 
-    /* ── Toolbar ── */
-    .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
-
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-      border: none;
+    .btn-add-project {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
       border-radius: var(--radius);
       padding: 0 16px;
       height: 36px;
@@ -33,21 +37,11 @@
       font-family: var(--font);
       cursor: pointer;
       transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    .btn-primary:hover { background: var(--primary-hover); }
-
-    .select {
-      height: 36px;
-      padding: 0 30px 0 12px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 14px;
-      font-family: var(--font);
-      color: var(--foreground);
-      background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;
-      appearance: none;
-      cursor: pointer;
-    }
+    .btn-add-project:hover { background: #e8effc; }
 
     /* ── Table ── */
     .table-wrap {
@@ -113,103 +107,85 @@
   <div id="fluent-header"></div>
 
   <main class="content">
-    <h1 class="page-title">Projects</h1>
-
-    <div class="toolbar">
-      <button class="btn-primary" onclick="openCreateProject()">Create Project</button>
-      <select class="select" id="sort-select" onchange="applyFilters()">
-        <option value="recent">Recent</option>
-        <option value="title">Title</option>
-        <option value="targetLanguage">Target Language</option>
-      </select>
-      <select class="select" id="status-select" onchange="applyFilters()">
-        <option value="all">Show All</option>
-        <option value="potentially_stalled">Potentially Stalled</option>
-        <option value="not_assigned">Not Assigned</option>
-      </select>
+    <div class="page-header">
+      <h1 class="page-title">Projects</h1>
+      <button class="btn-add-project" onclick="openProjectsCreateDialog()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Create Project
+      </button>
     </div>
 
     <div class="table-wrap">
       <table>
         <thead>
           <tr>
-            <th>Title</th>
+            <th>Project Name</th>
             <th>Source Language</th>
             <th>Target Language</th>
             <th>Source Bible</th>
-            <th>Status</th>
-            <th>Progress</th>
+            <th>Milestones</th>
+            <th>Overall Progress</th>
           </tr>
         </thead>
         <tbody id="projects-tbody">
           <tr onclick="window.location='view-project.html'"
-              data-title="ISV_Koli Kachhi" data-target="Kachi Koli"
-              data-activity="2026-06-03" data-status="active">
-            <td>ISV_Koli Kachhi</td>
-            <td>Gujarati</td>
-            <td>Kachi Koli</td>
-            <td>IRV Gujarati</td>
-            <td><span class="badge badge-active">Active</span></td>
-            <td><div class="progress"><div class="p-complete" style="width:5%"></div><div class="p-advanced" style="width:8%"></div><div class="p-community" style="width:10%"></div></div></td>
-          </tr>
-          <tr onclick="window.location='view-project.html'"
-              data-title="Test Project" data-target="Gujarati"
-              data-activity="2026-05-10" data-status="potentially_stalled">
-            <td>Test Project</td>
-            <td>Gujarati</td>
-            <td>Gujarati</td>
-            <td>IRV Gujarati</td>
-            <td><span class="badge badge-stalled">Potentially Stalled</span></td>
-            <td><div class="progress"><div class="p-complete" style="width:38%"></div><div class="p-advanced" style="width:12%"></div><div class="p-community" style="width:10%"></div><div class="p-peer" style="width:5%"></div></div></td>
-          </tr>
-          <tr onclick="window.location='view-project.html'"
-              data-title="James_Test" data-target="Kukna"
+              data-title="Kukna NT" data-target="Kukna"
               data-activity="2026-05-15" data-status="potentially_stalled">
-            <td>James_Test</td>
+            <td>Kukna NT</td>
             <td>Gujarati</td>
             <td>Kukna</td>
             <td>IRV Gujarati</td>
-            <td><span class="badge badge-stalled">Potentially Stalled</span></td>
+            <td>1</td>
             <td><div class="progress"><div class="p-complete" style="width:52%"></div><div class="p-advanced" style="width:10%"></div><div class="p-peer" style="width:4%"></div></div></td>
           </tr>
           <tr onclick="window.location='view-project.html'"
-              data-title="Jonah_Test" data-target="Varli Davri"
+              data-title="Varli NT" data-target="Varli Davri"
               data-activity="2026-05-05" data-status="potentially_stalled">
-            <td>Jonah_Test</td>
+            <td>Varli NT</td>
             <td>Gujarati</td>
             <td>Varli Davri</td>
             <td>IRV Gujarati</td>
-            <td><span class="badge badge-stalled">Potentially Stalled</span></td>
+            <td>2</td>
             <td><div class="progress"><div class="p-complete" style="width:12%"></div><div class="p-community" style="width:5%"></div><div class="p-drafting" style="width:3%"></div></div></td>
           </tr>
           <tr onclick="window.location='view-project.html'"
-              data-title="ISV_Koli Kachhi" data-target="Kachi Koli"
+              data-title="Kachi Koli NT" data-target="Kachi Koli"
               data-activity="2026-04-20" data-status="potentially_stalled">
-            <td>ISV_Koli Kachhi</td>
+            <td>Kachi Koli NT</td>
             <td>Gujarati</td>
             <td>Kachi Koli</td>
             <td>IRV Gujarati</td>
-            <td><span class="badge badge-stalled">Potentially Stalled</span></td>
+            <td>2</td>
             <td><div class="progress"><div class="p-complete" style="width:28%"></div><div class="p-advanced" style="width:15%"></div><div class="p-community" style="width:20%"></div></div></td>
           </tr>
           <tr onclick="window.location='view-project.html'"
-              data-title="ISV_Koli Kachhi" data-target="Kachi Koli"
+              data-title="Tamang NT" data-target="Tamang"
               data-activity="" data-status="not_assigned">
-            <td>ISV_Koli Kachhi</td>
-            <td>Gujarati</td>
-            <td>Kachi Koli</td>
-            <td>IRV Gujarati</td>
-            <td><span class="badge badge-outline">Not Assigned</span></td>
-            <td><div class="progress"><div class="p-drafting" style="width:3%"></div></div></td>
+            <td>Tamang NT</td>
+            <td>Nepali</td>
+            <td>Tamang</td>
+            <td>Nepali OV</td>
+            <td>0</td>
+            <td><div class="progress"></div></td>
           </tr>
           <tr onclick="window.location='view-project.html'"
-              data-title="Test Project 1" data-target="Kukna"
+              data-title="Western Magar NT" data-target="Western Magar"
+              data-activity="" data-status="not_assigned">
+            <td>Western Magar NT</td>
+            <td>Nepali</td>
+            <td>Western Magar</td>
+            <td>Nepali OV</td>
+            <td>1</td>
+            <td><div class="progress"></div></td>
+          </tr>
+          <tr onclick="window.location='view-project.html'"
+              data-title="Ewe NT" data-target="Ewe"
               data-activity="2026-05-20" data-status="potentially_stalled">
-            <td>Test Project 1</td>
-            <td>Gujarati</td>
-            <td>Kukna</td>
-            <td>IRV Gujarati</td>
-            <td><span class="badge badge-stalled">Potentially Stalled</span></td>
+            <td>Ewe NT</td>
+            <td>French</td>
+            <td>Ewe</td>
+            <td>LSG</td>
+            <td>1</td>
             <td><div class="progress"><div class="p-complete" style="width:15%"></div><div class="p-advanced" style="width:20%"></div><div class="p-community" style="width:25%"></div></div></td>
           </tr>
         </tbody>
@@ -218,35 +194,43 @@
   </main>
 
   <script>
-    function applyFilters() {
-      const sortBy     = document.getElementById('sort-select').value;
-      const statusFilter = document.getElementById('status-select').value;
-      const tbody      = document.getElementById('projects-tbody');
-      const rows       = Array.from(tbody.querySelectorAll('tr'));
+    document.addEventListener('DOMContentLoaded', () => {
+      const tbody = document.getElementById('projects-tbody');
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      rows.sort((a, b) => a.dataset.title.localeCompare(b.dataset.title));
+      rows.forEach(row => tbody.appendChild(row));
+    });
 
-      // Sort
-      rows.sort((a, b) => {
-        if (sortBy === 'recent') {
-          const da = a.dataset.activity ? new Date(a.dataset.activity).getTime() : 0;
-          const db = b.dataset.activity ? new Date(b.dataset.activity).getTime() : 0;
-          return db - da;
-        }
-        if (sortBy === 'title')
-          return a.dataset.title.localeCompare(b.dataset.title);
-        if (sortBy === 'targetLanguage')
-          return a.dataset.target.localeCompare(b.dataset.target);
-        return 0;
-      });
+    // This page's Create Project flow (per WPH-Build-Projects-List-Page) collects
+    // Project Name, Source Language/Bible, Target Language, Connectivity Profile
+    // (web#280), and a required Pericope Set (web#285), then creates the project
+    // with zero milestones — no Import tab or Books field. Reuse the shared
+    // cp-dialog markup/styles from components.js so it looks identical to every
+    // other dialog in the system, but trim it on open (not on DOMContentLoaded —
+    // components.js injects the dialog on that same event, and listener order
+    // isn't guaranteed) and override validation/submit for this simpler flow.
+    function openProjectsCreateDialog() {
+      const tabsBar = document.querySelector('.cp-tabs');
+      if (tabsBar) tabsBar.style.display = 'none';
+      const booksField = document.getElementById('cp-books-trigger').closest('.cp-field');
+      if (booksField) booksField.style.display = 'none';
 
-      // Filter + re-insert
-      rows.forEach(row => {
-        const match = statusFilter === 'all' || row.dataset.status === statusFilter;
-        row.style.display = match ? '' : 'none';
-        tbody.appendChild(row);
-      });
+      window.cpValidate = function() {
+        const ok =
+          document.getElementById('cp-title').value.trim() &&
+          cpSelectedSource &&
+          cpSelectedTarget &&
+          cpSelectedPericope;
+        document.getElementById('cp-submit').disabled = !ok;
+      };
+
+      document.getElementById('cp-submit').onclick = function() {
+        closeCreateProject();
+        window.location = 'view-project.html';
+      };
+
+      openCreateProject();
     }
-
-    document.addEventListener('DOMContentLoaded', applyFilters);
   </script>
 
 </body>
