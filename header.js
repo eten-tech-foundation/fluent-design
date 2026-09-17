@@ -333,7 +333,7 @@ const HEADER_HTML = `
             Users
           </a>
         </div>
-        <div id="menu-super-admin" style="display:none">
+        <div id="menu-super-user" style="display:none">
           <a class="main-menu-item" href="organizations.html">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M14 9h1"/><path d="M14 13h1"/><path d="M9 21v-4h6v4"/></svg>
             Organizations
@@ -416,7 +416,7 @@ const ROLE_USER_LABELS = {
   translator:   'Chad T',
   observer:     'Chad T',
   'org-manager': 'Chad O',
-  'super-admin': 'Chad S',
+  'super-user': 'Chad S',
 };
 
 function applyRoleUI() {
@@ -424,14 +424,14 @@ function applyRoleUI() {
   const isTranslator  = currentRole === 'translator';
   const isObserver    = currentRole === 'observer';
   const isOrgManager  = currentRole === 'org-manager';
-  const isSuperAdmin  = currentRole === 'super-admin';
+  const isSuperUser  = currentRole === 'super-user';
   document.getElementById('user-menu-label').textContent  = ROLE_USER_LABELS[currentRole] || 'Chad M';
   document.getElementById('logo-link').href                = ORG_ROLE_DASHBOARDS[currentRole] || ORG_ROLE_DASHBOARDS.manager;
   document.getElementById('menu-manager').style.display     = isManager     ? '' : 'none';
   document.getElementById('menu-translator').style.display  = isTranslator  ? '' : 'none';
   document.getElementById('menu-observer').style.display    = isObserver    ? '' : 'none';
   document.getElementById('menu-org-manager').style.display = isOrgManager  ? '' : 'none';
-  document.getElementById('menu-super-admin').style.display = isSuperAdmin  ? '' : 'none';
+  document.getElementById('menu-super-user').style.display = isSuperUser  ? '' : 'none';
 }
 
 // ── Toggle menus ─────────────────────────────────────────────────────────────
@@ -527,12 +527,12 @@ const ORG_ROLE_DASHBOARDS = {
   translator: 'translator-dashboard.html',
   observer: 'observer-dashboard.html',
   'org-manager': 'manager-dashboard.html',
-  'super-admin': 'organizations.html',
+  'super-user': 'organizations.html',
 };
 
 // Super User is a platform-level role with no org — it doesn't appear in any
 // org's `roles` list, and is rendered as its own section in the switcher.
-const SUPER_ADMIN_LABEL = 'Super User';
+const SUPER_USER_LABEL = 'Super User';
 
 function getOrgState() {
   const config = window.ORG_CONFIG || DEFAULT_ORG_CONFIG;
@@ -616,12 +616,12 @@ function renderUserMenuOrgSwitcher() {
 
   // Super User has no org, so it renders as its own unaffiliated row below
   // the org groups rather than as a chip nested under one.
-  const superAdminSection = `
+  const SuperUserSection = `
     <div class="org-dropdown-group">
       <div class="org-dropdown-org-name"><span>Platform</span></div>
       <div class="org-role-chips">
-        <button class="org-role-chip ${currentRole === 'super-admin' ? 'active' : ''}"
-                onclick="selectSuperAdmin()">${SUPER_ADMIN_LABEL}</button>
+        <button class="org-role-chip ${currentRole === 'super-user' ? 'active' : ''}"
+                onclick="selectSuperUser()">${SUPER_USER_LABEL}</button>
       </div>
     </div>
   `;
@@ -632,7 +632,7 @@ function renderUserMenuOrgSwitcher() {
         <div class="um-org-trigger-left">${orgIcon} <span class="um-org-name">${activeOrg.name}</span></div>
       </div>
       <div class="um-org-dropdown-body open" id="um-org-dropdown-body">
-        ${superAdminSection}
+        ${SuperUserSection}
       </div>`;
     return;
   }
@@ -660,7 +660,7 @@ function renderUserMenuOrgSwitcher() {
     <div class="um-org-dropdown-body" id="um-org-dropdown-body">
       <div class="org-dropdown-header" style="padding:6px 16px 4px;">Switch Organization</div>
       ${items}
-      ${superAdminSection}
+      ${SuperUserSection}
     </div>
   `;
 }
@@ -691,11 +691,11 @@ function selectOrgRole(orgId, role) {
 // Super User has no org, so it only ever sets the role — the previously
 // active org is left in localStorage untouched for whenever the user
 // switches back into an org-scoped role.
-function selectSuperAdmin() {
-  localStorage.setItem('fluent_current_role', 'super-admin');
+function selectSuperUser() {
+  localStorage.setItem('fluent_current_role', 'super-user');
   document.getElementById('user-menu')?.classList.remove('open');
-  document.dispatchEvent(new CustomEvent('orgchange', { detail: { orgId: null, role: 'super-admin' } }));
-  navigateToRoleDashboard('super-admin');
+  document.dispatchEvent(new CustomEvent('orgchange', { detail: { orgId: null, role: 'super-user' } }));
+  navigateToRoleDashboard('super-user');
 }
 
 function navigateToRoleDashboard(role) {
