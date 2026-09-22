@@ -73,6 +73,8 @@ body {
 .btn-primary { background: var(--primary); color: white; border: none; border-radius: var(--radius); padding: 0 16px; height: 36px; font-size: 14px; font-weight: 600; font-family: var(--font); cursor: pointer; }
 .btn-primary:hover { background: var(--primary-hover); }
 .btn-primary:disabled { background: var(--border); color: #fff; cursor: not-allowed; }
+.btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); border-radius: var(--radius); padding: 0 16px; height: 36px; font-size: 14px; font-weight: 500; font-family: var(--font); cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; transition: background 0.15s; }
+.btn-outline:hover { background: #e8effc; }
 .trash-btn { background: none; border: none; cursor: pointer; color: var(--muted-foreground); padding: 2px; display: inline-flex; align-items: center; }
 .trash-btn:hover { color: #df0c07; }
 
