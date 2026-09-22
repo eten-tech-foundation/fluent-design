@@ -63,7 +63,7 @@ const EDIT_PROFILE_CSS = `
   }
   .ep-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(11,80,208,0.15); }
   .ep-input:disabled { background: var(--muted); color: var(--muted-foreground); cursor: not-allowed; }
-  .dark .ep-input { background: #2a3240; border-color: var(--border); color: var(--foreground); }
+  .dark .ep-input { background:var(--popover); border-color: var(--border); color: var(--foreground); }
   .dark .ep-input:disabled { background: #1c222d; }
 
   .ep-helper { font-size: 12px; color: var(--muted-foreground); }
