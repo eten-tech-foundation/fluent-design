@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="main.css">
   <script src="header.js" defer></script>
   <script src="settings-dialog.js" defer></script>
   <script src="edit-profile.js" defer></script>
@@ -17,13 +18,7 @@
     .content { padding: 18px 20px; display: flex; flex-direction: column; height: calc(100vh - 56px); }
 
     /* ── Page header ── */
-    .page-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      flex-shrink: 0;
-    }
+    
     .page-header-left { display: flex; align-items: center; gap: 10px; }
     .page-header-actions { display: flex; align-items: center; gap: 8px; }
     .back-btn {
@@ -35,7 +30,6 @@
       line-height: 1;
       padding: 2px 4px;
     }
-    .page-title { font-size: 24px; font-weight: 700; }
 
     .btn-outline {
       background: transparent;
@@ -63,51 +57,20 @@
     .btn-small:hover { background: var(--muted); }
 
     /* ── Two-column body ── */
-    .body-columns { display: flex; gap: 24px; flex: 1; min-height: 0; }
 
     /* ── Left panel ── */
-    .left-panel {
-      width: 390px;
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
 
-    .meta-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 12px 24px;
-    }
+    
 
-    .meta-row { display: flex; align-items: baseline; gap: 12px; padding: 4px 0; }
-    .meta-label { font-weight: 700; font-size: 1rem; width: 150px; flex-shrink: 0; }
-    .meta-value { font-weight: 500; font-size: 1rem; color: var(--muted-foreground); }
+    
 
     /* Progress bar */
     .progress-wrap { margin-top: 12px; border-top: 0px solid var(--border); position: relative; }
-    .progress-bar { width: 100%; height: 10px; border-radius: 99px; overflow: hidden; display: flex; position: relative; }
 
-    .progress-tooltip {
-      position: fixed;
-      background: var(--popover);
-      color: var(--foreground);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 6px 10px;
-      font-size: 12px;
-      z-index: 100;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      display: none;
-      white-space: nowrap;
-      pointer-events: none;
-    }
+    
     .progress-tooltip.show { display: block; }
 
-    .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; margin-top: 10px; }
-    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--foreground); }
-    .legend-dot { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+    
 
     /* ── Manage Books list rows ── */
     .book-item {
@@ -181,15 +144,9 @@
       background: var(--popover-hover);
     }
 
-    .trash-btn {
-      background: none; border: none; cursor: pointer;
-      color: var(--muted-foreground); padding: 2px;
-      display: inline-flex; align-items: center;
-    }
-    .trash-btn:hover { color: #df0c07; }
+    
 
     /* ── Right panel ── */
-    .right-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 
     .right-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-shrink: 0; }
 
@@ -207,20 +164,7 @@
       min-width: 160px;
     }
 
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: var(--radius);
-      padding: 0 16px;
-      height: 36px;
-      font-size: 14px;
-      font-weight: 600;
-      font-family: var(--font);
-      cursor: pointer;
-    }
-    .btn-primary:hover { background: var(--primary-hover); }
-    .btn-primary:disabled { background: var(--border); color: #fff; cursor: not-allowed; }
+    
 
     .chapter-table-wrap {
       border: 1px solid var(--border);
@@ -256,16 +200,7 @@
     }
 
     /* ── Modals ── */
-    .modal-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      z-index: 300;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-backdrop.open { display: flex; }
+
     .modal {
       background: #fff;
       border-radius: var(--radius);
@@ -276,48 +211,15 @@
       max-height: 80vh;
       overflow: hidden;
     }
-    .modal.modal--form { background: var(--popover); }
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 18px 12px;
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-    .modal-title { font-size: 15px; font-weight: 600; }
-    .modal-close {
-      background: none; border: none; cursor: pointer;
-      font-size: 20px; line-height: 1; color: var(--muted-foreground);
-      padding: 0 2px; font-family: var(--font);
-    }
-    .modal-close:hover { color: var(--foreground); }
-    .modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 20px; }
-    .modal-footer {
-      padding: 12px 18px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: flex-end;
-      flex-shrink: 0;
-    }
+
+    
+
+    
+    
     .field { display: flex; flex-direction: column; gap: 6px; }
     .field-label { font-size: 13px; font-weight: 600; }
-    .form-field { padding: 14px 18px 0; }
-    .form-label { font-size: 13px; font-weight: 600; margin-bottom: 6px; display: block; }
-    .form-label .req { color: #dc2626; margin-right: 3px; }
-    .form-select {
-      width: 100%;
-      height: 38px;
-      padding: 0 30px 0 12px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 14px;
-      font-family: var(--font);
-      color: var(--foreground);
-      background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;
-      appearance: none;
-      cursor: pointer;
-    }
+
+    
 
     .book-list-wrap { border: 1px solid var(--border); border-radius: var(--radius-sm); max-height: 240px; overflow-y: auto; }
     .book-name { font-size: 14px; flex: 1; }
@@ -340,7 +242,7 @@
       border-radius: var(--radius-sm); padding: 0 20px; height: 36px;
       font-size: 14px; font-weight: 600; font-family: var(--font); cursor: pointer;
     }
-    .btn-primary:hover { background: var(--primary-hover); }
+    
   </style>
 </head>
 <body>

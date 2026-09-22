@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="main.css">
   <script src="header.js" defer></script>
   <script src="settings-dialog.js" defer></script>
   <script src="edit-profile.js" defer></script>
@@ -16,25 +17,10 @@
     body { display: flex; flex-direction: column; }
 
     /* ── Sub-header ── */
-    .sub-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 24px 14px 20px;
-      background: var(--background);
-      flex-shrink: 0;
-      gap: 10px;
-    }
 
     .sub-left { display: flex; align-items: center; gap: 12px; }
 
-    .back-btn {
-      background: none; border: none; cursor: pointer;
-      color: var(--foreground); padding: 4px 6px;
-      display: flex; align-items: center;
-      border-radius: var(--radius-sm);
-    }
-    .back-btn:hover { background: var(--muted); }
+    
 
     .page-title {
       font-size: 1.5rem;

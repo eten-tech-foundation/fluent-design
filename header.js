@@ -5,35 +5,9 @@
 // with renderHeader() below via optional init hooks.
 
 const HEADER_CSS = `
-  :root {
-    --background: #ffffff;
-    --foreground: #1a1a1a;
-    --card: #eaeef5;
-    --primary: #0b50d0;
-    --primary-hover: #0940a8;
-    --muted: #f2f4f8;
-    --muted-foreground: #555555;
-    --text-disabled: #a0a0a0;
-    --popover: #dde3ed;
-    --border: #c4cad6;
-    --radius: 0.75rem;
-    --radius-sm: calc(var(--radius) - 4px);
-    --radius-md: calc(var(--radius) - 2px);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) + 4px);
-    --font: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: var(--font);
-    background: var(--background);
-    color: var(--foreground);
-    font-size: 16px;
-    line-height: 1.5;
-    font-weight: 450;
-  }
+  /* Tokens, base reset, and body defaults now live in main.css (loaded as a
+     <link> on every page before this script runs) so there's one source of
+     truth instead of this JS-injected copy. */
 
   /* ── Header ── */
   .header {
@@ -59,8 +33,8 @@ const HEADER_CSS = `
     gap: 8px;
     padding: 8px 16px;
     border-radius: var(--radius);
-    background: #dc2626;
-    color: #ffffff;
+    background: var(--destructive);
+    color: var(--error-foreground);
     font-size: 13px;
     font-weight: 600;
     white-space: nowrap;
@@ -280,19 +254,7 @@ const HEADER_CSS = `
 
   .user-menu-divider { border: none; border-top: 1px solid var(--border); margin: 4px 0; }
 
-  /* ── Dark mode tokens ── */
-  .dark {
-    --background: #0d1117;
-    --foreground: #e6e6e6;
-    --card: #1c222d;
-    --primary: #3d7cf2;
-    --primary-hover: #336ad6;
-    --muted: #202630;
-    --muted-foreground: #9da6b5;
-    --popover: #2a3240;
-    --border: #3d4552;
-  }
-  .dark body { background: var(--background); color: var(--foreground); }
+  /* Dark mode tokens now live in main.css */
   .dark .hamburger { background: #2a3240; }
   .dark .hamburger span { background: var(--foreground); }
   .dark .user-btn { background: #2a3240; }

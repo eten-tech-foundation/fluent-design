@@ -45,9 +45,7 @@ const CUSTOM_SELECT_CSS = `
 
   .cs-dropdown {
     display: none;
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0; right: 0;
+    position: fixed;
     background: #fff;
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
@@ -67,8 +65,7 @@ const CUSTOM_SELECT_CSS = `
     cursor: pointer;
     white-space: nowrap;
   }
-  .cs-item:hover { background: var(--muted); }
-  .dark .cs-item:hover { background: #333c4c; }
+  .cs-item:hover { background: var(--list-hover); }
   .cs-item.selected { font-weight: 600; color: var(--primary); }
   .cs-item.cs-item-disabled { color: var(--muted-foreground); cursor: not-allowed; }
 `;
@@ -142,6 +139,10 @@ function csEnhanceSelect(select) {
   function openDropdown() {
     document.querySelectorAll('.cs-dropdown.open').forEach(d => { d.classList.remove('open'); d.previousElementSibling?.classList.remove('open'); });
     renderOptions();
+    const rect = trigger.getBoundingClientRect();
+    dropdown.style.top = (rect.bottom + 4) + 'px';
+    dropdown.style.left = rect.left + 'px';
+    dropdown.style.width = rect.width + 'px';
     dropdown.classList.add('open');
     trigger.classList.add('open');
   }

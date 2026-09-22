@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="main.css">
   <script src="header.js" defer></script>
   <script src="settings-dialog.js" defer></script>
   <script src="edit-profile.js" defer></script>
@@ -23,19 +24,7 @@
 
     .page-title { font-size: 24px; font-weight: 700; margin-bottom: 14px; }
 
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: var(--radius);
-      padding: 0 16px;
-      height: 36px;
-      font-size: 14px;
-      font-weight: 600;
-      font-family: var(--font);
-      cursor: pointer;
-    }
-    .btn-primary:hover { background: var(--primary-hover); }
+    
 
     .table-wrap {
       border: 1px solid var(--border);
@@ -46,14 +35,7 @@
       background: var(--card);
     }
 
-    .users-table { width: 100%; border-collapse: collapse; }
-
-    .users-table thead tr {
-      background: var(--card);
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
+    
 
     .users-table thead th {
       padding: 11px 16px;
@@ -65,8 +47,6 @@
     }
 
     .users-table tbody tr { background: var(--background); border-bottom: 1px solid var(--border); cursor: pointer; }
-    .users-table tbody tr:last-child { border-bottom: none; }
-    .users-table tbody tr:hover { background: var(--muted); }
 
     /* Translators and Observers are added/edited per-project (Add Project User
        flow), not here — their rows are informational only in this org roster. */

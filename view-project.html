@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="main.css">
   <script src="header.js" defer></script>
   <script src="settings-dialog.js" defer></script>
   <script src="edit-profile.js" defer></script>
@@ -17,13 +18,7 @@
     .content { padding: 18px 20px; display: flex; flex-direction: column; height: calc(100vh - 56px); }
 
     /* ── Page header ── */
-    .page-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      flex-shrink: 0;
-    }
+    
     .page-title-group { display: flex; align-items: center; gap: 10px; }
     .back-btn {
       display: flex;
@@ -38,50 +33,20 @@
       transition: background 0.1s, color 0.1s;
     }
     .back-btn:hover { background: var(--muted); color: var(--foreground); }
-    .page-title { font-size: 24px; font-weight: 700; }
 
     /* ── Two-column body ── */
-    .body-columns { display: flex; gap: 24px; flex: 1; min-height: 0; }
 
     /* ── Left panel ── */
-    .left-panel {
-      width: 390px;
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
 
-    .meta-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 12px 24px;
-    }
+    
 
-    .meta-row { display: flex; align-items: baseline; gap: 12px; padding: 4px 0; }
     .meta-label { font-weight: 700; font-size: 1rem; width: 180px; flex-shrink: 0; }
-    .meta-value { font-weight: 500; font-size: 1rem; color: var(--muted-foreground); }
 
     /* ── Progress bar ── */
     .progress-section { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 14px; }
     .progress-label { font-size: 12px; font-weight: 600; color: var(--muted-foreground); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
-    .progress-bar { width: 100%; height: 10px; border-radius: 99px; overflow: hidden; display: flex; position: relative; }
 
-    .progress-tooltip {
-      position: fixed;
-      background: var(--popover);
-      color: var(--foreground);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 6px 10px;
-      font-size: 12px;
-      z-index: 100;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      display: none;
-      white-space: nowrap;
-      pointer-events: none;
-    }
+    
     .progress-tooltip::before {
       content: '';
       position: absolute;
@@ -102,16 +67,12 @@
       border-style: solid;
       border-color: var(--popover) transparent transparent transparent;
     }
-    .p-complete  { background: #16A34A; height: 100%; }
-    .p-advanced  { background: #1D9BF0; height: 100%; }
-    .p-community { background: #9333EA; height: 100%; }
-    .p-peer      { background: #EA580C; height: 100%; }
-    .p-drafting  { background: #FDE047; height: 100%; }
+
+    
+
     .p-empty     { background: #C4CAD6; height: 100%; }
 
-    .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; margin-top: 10px; }
-    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--foreground); }
-    .legend-dot { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+    
 
     /* ── Team section ── */
     .users-section {
@@ -147,28 +108,14 @@
     }
 
     .users-table-wrap { overflow-y: auto; }
-    .users-table { width: 100%; border-collapse: collapse; }
+    
     .users-table thead tr { background: var(--card); }
-    .users-table thead th {
-      padding: 11px 14px;
-      text-align: left;
-      font-size: 13px;
-      font-weight: 600;
-      border-bottom: 1px solid var(--border);
-      border-top: 1px solid var(--border);
-    }
-    .users-table tbody tr { border-bottom: 1px solid var(--border); }
-    .users-table tbody tr:last-child { border-bottom: none; }
-    .users-table tbody tr:hover { background: var(--muted); }
-    .users-table tbody td { padding: 11px 14px; font-size: 14px; }
+
+    
+
     .users-table .td-action { text-align: right; width: 36px; }
 
-    .trash-btn {
-      background: none; border: none; cursor: pointer;
-      color: var(--muted-foreground); padding: 2px;
-      display: inline-flex; align-items: center;
-    }
-    .trash-btn:hover { color: #df0c07; }
+    
 
     .role-badge {
       display: inline-flex;
@@ -203,7 +150,6 @@
     .btn-add-milestone:hover { background: #e8effc; }
 
     /* ── Right panel ── */
-    .right-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 
     .right-header {
       display: flex;
@@ -289,12 +235,7 @@
     .milestone-books { font-size: 12px; color: var(--muted-foreground); margin-top: 1px; }
 
     /* ── Add Milestone modal ── */
-    .modal-backdrop {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.45); z-index: 300;
-      align-items: center; justify-content: center;
-    }
-    .modal-backdrop.open { display: flex; }
+
     .modal {
       background: var(--background); border-radius: var(--radius);
       box-shadow: 0 8px 40px rgba(0,0,0,0.22);
@@ -313,7 +254,7 @@
       transition: background 0.1s, color 0.1s;
     }
     .modal-close:hover { background: var(--muted); color: var(--foreground); }
-    .modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 20px; }
+    
     .field { display: flex; flex-direction: column; gap: 6px; }
     .field-label { font-size: 13px; font-weight: 600; }
     .field-input {
@@ -393,7 +334,48 @@
       border-radius: var(--radius-sm); padding: 0 20px; height: 36px;
       font-size: 14px; font-weight: 600; font-family: var(--font); cursor: pointer;
     }
-    .btn-primary:hover { background: var(--primary-hover); }
+
+    /* ── Add Project User modal ── */
+
+    .form-field:last-of-type { padding-bottom: 4px; }
+    .modal-body .tab-bar {
+      display: flex; gap: 0; padding: 12px 18px 0; border-bottom: 1px solid var(--border);
+    }
+    .modal-body .tab {
+      padding: 8px 16px 10px; margin-bottom: -1px; font-size: 14px; font-weight: 500;
+      color: var(--muted-foreground); cursor: pointer; border: none;
+      border-bottom: 2px solid transparent; background: none; font-family: var(--font);
+    }
+    .modal-body .tab:first-child { padding-left: 0; }
+    .modal-body .tab:hover { color: var(--foreground); }
+    .modal-body .tab.active {
+      color: var(--foreground); font-weight: 600; border-bottom: 2px solid var(--primary);
+    }
+
+    
+    
+    .multiselect { position: relative; }
+    .multiselect-trigger {
+      width: 100%; height: 38px; padding: 0 30px 0 12px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      font-size: 14px; font-family: var(--font);
+      background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;
+      cursor: pointer; text-align: left; display: flex; align-items: center;
+      color: var(--muted-foreground);
+    }
+    .multiselect-trigger.has-value { color: var(--foreground); }
+    .multiselect-panel {
+      display: none; position: fixed; background: var(--popover);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12); z-index: 400; overflow: hidden;
+    }
+    .multiselect-panel.open { display: block; }
+    .multiselect-option {
+      display: flex; align-items: center; gap: 10px; padding: 9px 14px;
+      font-size: 14px; cursor: pointer; user-select: none;
+    }
+    .multiselect-option:hover { background: var(--list-hover); }
+    .multiselect-option input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--primary); cursor: pointer; }
   </style>
 </head>
 <body>
@@ -474,7 +456,7 @@
         <div class="users-section">
           <div class="users-header">
             Project Team
-            <button class="btn-icon-add">+</button>
+            <button class="btn-icon-add" onclick="openAddUserModal()">+</button>
           </div>
           <div class="users-table-wrap">
             <table class="users-table">
@@ -672,6 +654,69 @@
     </div>
   </div>
 
+  <!-- Add Project User modal -->
+  <div class="modal-backdrop" id="add-user-modal" onclick="closeAddUserModal(event)">
+    <div class="modal modal--form" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <span class="modal-title">Add Project User</span>
+        <button class="modal-close" onclick="closeAddUserModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="tab-bar">
+          <button class="tab active" id="existing-user-tab" onclick="switchToAddUserTab('existing')">Existing User</button>
+          <button class="tab" id="invite-email-tab" onclick="switchToAddUserTab('invite')">Invite by Email</button>
+        </div>
+
+        <div id="existing-user-content">
+          <div class="form-field" style="padding-bottom: 18px;">
+            <label class="form-label">Select User(s)</label>
+            <div class="multiselect" id="add-user-multiselect">
+              <button class="multiselect-trigger" id="add-user-trigger" onclick="toggleAddUserDropdown(event)">
+                Select user(s)
+              </button>
+              <div class="multiselect-panel" id="add-user-panel">
+                <label class="multiselect-option"><input type="checkbox" class="add-user-cb" value="Anna Rivera" onchange="onAddUserCheck()"> Anna Rivera</label>
+                <label class="multiselect-option"><input type="checkbox" class="add-user-cb" value="Ben Okafor" onchange="onAddUserCheck()"> Ben Okafor</label>
+                <label class="multiselect-option"><input type="checkbox" class="add-user-cb" value="Diana Chen" onchange="onAddUserCheck()"> Diana Chen</label>
+                <label class="multiselect-option"><input type="checkbox" class="add-user-cb" value="Marcus Webb" onchange="onAddUserCheck()"> Marcus Webb</label>
+                <label class="multiselect-option"><input type="checkbox" class="add-user-cb" value="Priya Sharma" onchange="onAddUserCheck()"> Priya Sharma</label>
+                <label class="multiselect-option"><input type="checkbox" class="add-user-cb" value="Tom Nakamura" onchange="onAddUserCheck()"> Tom Nakamura</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Role</label>
+            <select class="form-select" id="add-user-role">
+              <option value="Project Manager">Project Manager</option>
+              <option value="Translator">Translator</option>
+              <option value="Peer Checker">Peer Checker</option>
+              <option value="Observer">Observer</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="invite-email-content" style="display: none;">
+          <div class="form-field">
+            <label class="form-label"><span class="req">*</span>Email Address</label>
+            <input type="email" class="form-input" id="invite-email-address" placeholder="user@example.com">
+          </div>
+          <div class="form-field">
+            <label class="form-label"><span class="req">*</span>Role</label>
+            <select class="form-select" id="invite-user-role">
+              <option value="Project Manager">Project Manager</option>
+              <option value="Translator" selected>Translator</option>
+              <option value="Peer Checker">Peer Checker</option>
+              <option value="Observer">Observer</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary" id="save-users-btn" disabled onclick="saveUsers()">Save Users</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const progressBar = document.getElementById('project-progress-bar');
@@ -815,6 +860,114 @@
         document.getElementById('add-milestone-modal').classList.remove('open');
       }
     }
+
+    // ── Add Project User modal ──
+    function openAddUserModal() {
+      document.querySelectorAll('.add-user-cb').forEach(cb => cb.checked = false);
+      const trigger = document.getElementById('add-user-trigger');
+      trigger.textContent = 'Select user(s)';
+      trigger.classList.remove('has-value');
+      document.getElementById('add-user-panel').classList.remove('open');
+      document.getElementById('save-users-btn').disabled = true;
+      document.getElementById('add-user-role').selectedIndex = 0;
+      switchToAddUserTab('existing');
+      document.getElementById('add-user-modal').classList.add('open');
+    }
+
+    function closeAddUserModal(e) {
+      if (!e || e.target === document.getElementById('add-user-modal')) {
+        document.getElementById('add-user-panel').classList.remove('open');
+        document.getElementById('add-user-modal').classList.remove('open');
+      }
+    }
+
+    function switchToAddUserTab(tab) {
+      const existingContent = document.getElementById('existing-user-content');
+      const inviteContent = document.getElementById('invite-email-content');
+      const existingTab = document.getElementById('existing-user-tab');
+      const inviteTab = document.getElementById('invite-email-tab');
+
+      if (tab === 'existing') {
+        existingContent.style.display = 'block';
+        inviteContent.style.display = 'none';
+        existingTab.classList.add('active');
+        inviteTab.classList.remove('active');
+      } else {
+        existingContent.style.display = 'none';
+        inviteContent.style.display = 'block';
+        existingTab.classList.remove('active');
+        inviteTab.classList.add('active');
+      }
+    }
+
+    function toggleAddUserDropdown(e) {
+      e.stopPropagation();
+      const panel = document.getElementById('add-user-panel');
+      const rect = document.getElementById('add-user-trigger').getBoundingClientRect();
+      panel.style.top   = (rect.bottom + 4) + 'px';
+      panel.style.left  = rect.left + 'px';
+      panel.style.width = rect.width + 'px';
+      panel.classList.toggle('open');
+    }
+
+    function onAddUserCheck() {
+      const checked = [...document.querySelectorAll('.add-user-cb:checked')];
+      const trigger = document.getElementById('add-user-trigger');
+      if (checked.length === 0) {
+        trigger.textContent = 'Select user(s)';
+        trigger.classList.remove('has-value');
+      } else if (checked.length === 1) {
+        trigger.textContent = checked[0].value;
+        trigger.classList.add('has-value');
+      } else {
+        trigger.textContent = `${checked.length} users selected`;
+        trigger.classList.add('has-value');
+      }
+      document.getElementById('save-users-btn').disabled = checked.length === 0;
+    }
+
+    function roleBadgeClass(role) {
+      return role === 'Project Manager' ? 'role-badge manager' : 'role-badge';
+    }
+
+    function saveUsers() {
+      const existingTabActive = document.getElementById('existing-user-content').style.display !== 'none';
+
+      if (existingTabActive) {
+        const checked = [...document.querySelectorAll('.add-user-cb:checked')];
+        const role = document.getElementById('add-user-role').value;
+        closeAddUserModal();
+
+        const usersTable = document.querySelector('.users-table tbody');
+        checked.forEach(user => {
+          const newRow = document.createElement('tr');
+          newRow.innerHTML = `
+            <td>${user.value}</td>
+            <td><span class="${roleBadgeClass(role)}">${role}</span></td>
+            <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
+          `;
+          usersTable.appendChild(newRow);
+        });
+      } else {
+        const email = document.getElementById('invite-email-address').value;
+        const role = document.getElementById('invite-user-role').value;
+
+        if (!email || !role) {
+          alert('Please fill in all required fields.');
+          return;
+        }
+
+        closeAddUserModal();
+        alert(`Invitation sent to ${email} for role: ${role}. They will be prompted to set a display name when they accept.`);
+      }
+    }
+
+    document.addEventListener('click', e => {
+      const panel = document.getElementById('add-user-panel');
+      if (panel && !document.getElementById('add-user-multiselect').contains(e.target)) {
+        panel.classList.remove('open');
+      }
+    });
   </script>
 
 </body>

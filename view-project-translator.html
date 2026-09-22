@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="main.css">
   <script src="header.js" defer></script>
   <script src="settings-dialog.js" defer></script>
   <script src="edit-profile.js" defer></script>
@@ -14,14 +15,6 @@
   <style>
     /* ── Page layout ── */
     .content { padding: 18px 20px; display: flex; flex-direction: column; height: calc(100vh - 52px); }
-
-    .page-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      flex-shrink: 0;
-    }
 
     .page-header-left { display: flex; align-items: center; gap: 10px; }
 
@@ -34,8 +27,6 @@
       line-height: 1;
       padding: 2px 4px;
     }
-
-    .page-title { font-size: 24px; font-weight: 700; }
 
     .btn-outline {
       background: transparent;
@@ -53,49 +44,17 @@
     .btn-outline:hover { background: #e8effc; }
 
     /* ── Two-column body ── */
-    .body-columns { display: flex; gap: 24px; flex: 1; min-height: 0; }
 
     /* ── Left panel ── */
-    .left-panel {
-      width: 390px;
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
 
-    .meta-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 12px 24px;
-    }
+    
 
-    .meta-row { display: flex; align-items: baseline; gap: 12px; padding: 4px 0; }
-
-    .meta-label { font-weight: 700; font-size: 1rem; width: 150px; flex-shrink: 0; }
-
-    .meta-value { font-weight: 500; font-size: 1rem; color: var(--muted-foreground); }
+    
 
     /* Progress bar */
     .progress-wrap { margin-top: 12px; border-top: 0px solid var(--border); position: relative; }
 
-    .progress-bar { width: 100%; height: 10px; border-radius: 99px; overflow: hidden; display: flex; position: relative; }
-
-    .progress-tooltip {
-      position: fixed;
-      background: var(--popover);
-      color: var(--foreground);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 6px 10px;
-      font-size: 12px;
-      z-index: 100;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      display: none;
-      white-space: nowrap;
-      pointer-events: none;
-    }
+    
 
     .progress-tooltip::before {
       content: '';
@@ -123,11 +82,7 @@
       display: block;
     }
 
-    .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; margin-top: 10px; }
-
-    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--foreground); }
-
-    .legend-dot { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+    
 
     /* Project Users */
     .users-section {
@@ -163,33 +118,15 @@
 
     .users-table-wrap { height: 172px; overflow-y: auto; }
 
-    .users-table { width: 100%; border-collapse: collapse; }
+    
 
-    .users-table thead tr { background: var(--card); position: sticky; top: 0; z-index: 1; }
+    
 
-    .users-table thead th {
-      padding: 11px 14px;
-      text-align: left;
-      font-size: 13px;
-      font-weight: 600;
-      border-bottom: 1px solid var(--border);
-      border-top: 1px solid var(--border);
-    }
-
-    .users-table tbody tr { border-bottom: 1px solid var(--border); }
-    .users-table tbody tr:last-child { border-bottom: none; }
-    .users-table tbody tr:hover { background: var(--muted); }
-
-    .users-table tbody td { padding: 11px 14px; font-size: 14px; }
+    
 
     .users-table .td-action { text-align: right; width: 36px; }
 
-    .trash-btn {
-      background: none; border: none; cursor: pointer;
-      color: var(--muted-foreground); padding: 2px;
-      display: inline-flex; align-items: center;
-    }
-    .trash-btn:hover { color: #df0c07; }
+    
 
     /* Role editing styles */
     .role-cell {
@@ -268,7 +205,6 @@
       transform: rotate(180deg);
     }
     /* ── Right panel ── */
-    .right-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 
     .right-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-shrink: 0; }
 
@@ -286,19 +222,7 @@
       min-width: 160px;
     }
 
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: var(--radius);
-      padding: 0 16px;
-      height: 36px;
-      font-size: 14px;
-      font-weight: 600;
-      font-family: var(--font);
-      cursor: pointer;
-    }
-    .btn-primary:hover { background: var(--primary-hover); }
+    
 
     .chapter-table-wrap {
       border: 1px solid var(--border);
@@ -351,12 +275,9 @@
 
     .chapter-table input[type="checkbox"] { width: 15px; height: 15px; cursor: pointer; accent-color: var(--primary); }
 
-    .btn-primary:disabled { background: var(--border); color: #fff; cursor: not-allowed; }
-
     /* ── Assign modal ── */
-    .modal.modal--form { background: var(--popover); }
 
-    .form-field { padding: 14px 18px 0; }
+    
     .form-field:last-of-type { padding-bottom: 4px; }
 
     /* ── Modal tabs (underline style) ── */
@@ -387,34 +308,9 @@
       border-bottom: 2px solid var(--primary);
     }
 
-    .form-label { font-size: 13px; font-weight: 600; margin-bottom: 6px; display: block; }
-    .form-label .req { color: #dc2626; margin-right: 3px; }
+    
 
-    .form-select {
-      width: 100%;
-      height: 38px;
-      padding: 0 30px 0 12px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 14px;
-      font-family: var(--font);
-      color: var(--foreground);
-      background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;
-      appearance: none;
-      cursor: pointer;
-    }
-    .form-input {
-      width: 100%;
-      height: 38px;
-      padding: 0 12px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 14px;
-      font-family: var(--font);
-      color: var(--foreground);
-      background: white;
-      box-sizing: border-box;
-    }
+    
 
     /* ── Multiselect dropdown ── */
     .multiselect { position: relative; }
@@ -497,46 +393,12 @@
     }
 
     /* ── Export modal ── */
-    .modal-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      z-index: 300;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-backdrop.open { display: flex; }
 
-    .modal {
-      background: #fff;
-      border-radius: var(--radius);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.22);
-      width: 360px;
-      display: flex;
-      flex-direction: column;
-      max-height: 80vh;
-      overflow: hidden;
-    }
+    
 
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 18px 12px;
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
+    
 
-    .modal-title { font-size: 15px; font-weight: 600; }
-
-    .modal-close {
-      background: none; border: none; cursor: pointer;
-      font-size: 20px; line-height: 1; color: var(--muted-foreground);
-      padding: 0 2px;
-      font-family: var(--font);
-    }
-    .modal-close:hover { color: var(--foreground); }
+    
 
     .modal-body { overflow-y: auto; flex: 1; }
 
@@ -584,13 +446,6 @@
 
     .export-sb-warning { margin: 12px 18px 12px; }
 
-    .modal-footer {
-      padding: 12px 18px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: flex-end;
-      flex-shrink: 0;
-    }
   </style>
 </head>
 <body data-role="observer">
