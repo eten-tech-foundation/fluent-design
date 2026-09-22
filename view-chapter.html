@@ -116,9 +116,11 @@
       overflow: hidden;
     }
 
+    @keyframes spin { to { transform: rotate(360deg); } }
+
     /* ── Resources panel ── */
     .resources-panel {
-      width: 300px;
+      width: 392px;
       min-width: 0;
       flex-shrink: 0;
       display: flex;
@@ -136,40 +138,729 @@
       flex-shrink: 0;
     }
 
+    /* ── Resources / AI Assistant tab row ── */
+    .resources-tab-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 10px 16px 10px;
+      flex-shrink: 0;
+    }
+    .resources-tab {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 8px 10px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      font-family: var(--font);
+      color: var(--muted-foreground);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .resources-tab.selected { color: var(--foreground); border-bottom-color: var(--primary); }
+    .resources-tab[data-tab="ai-assistant"] { color: var(--primary); }
+
+    .resources-tab-panel.hidden { display: none; }
+
     /* ── Chip row ── */
-    .chip-row-wrapper { position: relative; overflow: hidden; margin-bottom: 8px; flex-shrink: 0; }
-    .chip-row-scroll { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 4px 16px; scroll-behavior: smooth; }
+    .chip-row-wrapper {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-shrink: 0;
+      padding: 0 16px;
+      gap: 8px;
+    }
+    .chip-row-scroll-wrap {
+      position: relative;
+      flex: 1;
+      overflow: hidden;
+    }
+    .chip-row-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 6px 0;
+      scroll-behavior: smooth;
+    }
     .chip-row-scroll::-webkit-scrollbar { display: none; }
+
     .chip {
-      flex-shrink: 0; padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
-      font-family: var(--font); cursor: pointer; white-space: nowrap;
-      border: 1.5px solid var(--primary); background: none; color: var(--primary);
-      transition: background 0.15s, color 0.15s; line-height: 1;
+      flex-shrink: 0;
+      padding: 10px 18px;
+      border-radius: 14px;
+      font-size: .875rem;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      white-space: nowrap;
+      border: 2px solid var(--primary);
+      background: none;
+      color: var(--primary);
+      transition: background 0.15s, color 0.15s;
+      line-height: 1;
     }
     .chip.selected { background: var(--primary); color: white; }
     .chip:hover:not(.selected) { background: var(--muted); }
+
+    .chip-arrow {
+      position: absolute;
+      z-index: 2;
+      top: 0; bottom: 0;
+      width: 28px;
+      border: none; cursor: pointer;
+      color: var(--foreground);
+      display: flex; align-items: center; justify-content: center;
+      background: none; padding: 0;
+      opacity: 0.8;
+    }
+    .chip-arrow:hover { opacity: 1; }
+    .chip-arrow.hidden { display: none; }
+    .chip-arrow-left { left: 0; }
+    .chip-arrow-right { right: 0; }
+
+    .chip-fade {
+      position: absolute; z-index: 1;
+      top: 0; bottom: 0;
+      width: 44px;
+      pointer-events: none;
+    }
+    .chip-fade.hidden { display: none; }
+    .chip-fade-left { left: 0; background: linear-gradient(to right, var(--background) 40%, transparent); }
+    .chip-fade-right { right: 0; background: linear-gradient(to left, var(--background) 40%, transparent); }
+
+    /* ── Custom select ── */
+    .res-select-wrap { position: relative; width: 100%; }
+    .res-select-btn {
+      width: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px;
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: .875rem; font-weight: 600;
+      font-family: var(--font);
+      color: var(--foreground);
+      background: var(--background);
+      cursor: pointer; text-align: left;
+      transition: border-color 0.15s;
+    }
+    .res-select-btn:hover { border-color: #9fa8bb; }
+    .res-select-caret {
+      flex-shrink: 0; color: var(--muted-foreground);
+      transition: transform 0.15s;
+    }
+    .res-select-wrap.open .res-select-caret { transform: rotate(180deg); }
+    .res-select-dropdown {
+      position: fixed;
+      background: var(--background);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.14);
+      z-index: 1000;
+      overflow: hidden;
+      display: none;
+    }
+    .res-select-wrap.open .res-select-dropdown { display: block; }
+    .res-select-opt {
+      padding: 8px 10px;
+      font-size: .875rem; font-weight: 500;
+      font-family: var(--font);
+      color: var(--foreground);
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .res-select-opt:hover { background: var(--muted); }
+    .res-select-opt.selected { font-weight: 700; color: var(--primary); }
+
+    .res-lang-bar {
+      padding: 0 4px 10px 16px;
+      flex-shrink: 0;
+    }
 
     .notes-list {
       flex: 1; overflow-y: auto;
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      margin: 0 4px 16px;
+      margin: 0 4px 16px 16px;
+      padding-top: 8px;
     }
 
     .note-toggle {
-      width: 100%; display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 16px; background: none; border: none; cursor: pointer;
-      font-size: 13px; font-weight: 500; color: var(--foreground);
+      width: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 32px;
+      background: none; border: none; cursor: pointer;
+      font-size: 1rem; font-weight: 700;
+      color: var(--foreground);
       font-family: var(--font); text-align: left;
-      border-bottom: 1px solid var(--border);
     }
-    .note-toggle:last-of-type { border-bottom: none; }
     .note-toggle:hover { background: var(--muted); }
     .note-chevron { transition: transform 0.2s; flex-shrink: 0; color: var(--muted-foreground); }
     .note-toggle.open .note-chevron { transform: rotate(180deg); }
-    .note-body { display: none; padding: 8px 16px 16px; font-size: 13px; line-height: 1.6; color: var(--foreground); border-bottom: 1px solid var(--border); }
+
+    .note-body {
+      display: none;
+      padding: 8px 32px 24px 48px;
+      font-size: 13px; line-height: 1.6;
+      color: var(--foreground);
+    }
     .note-body.open { display: block; }
-    .note-verse-label { font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 5px; }
+    .note-verse-label { font-size: .75rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+
+    /* ── Bibles selector ── */
+    .bibles-selector {
+      display: none; flex-direction: column;
+      min-height: 0; flex: 1;
+      padding: 0 16px 16px; gap: 12px;
+    }
+    .bibles-selector.active { display: flex; }
+
+    .bible-version-list {
+      flex: 1; overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      display: flex; flex-direction: column;
+    }
+    .bible-version-option {
+      width: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px; padding: 14px 16px;
+      background: none; border: none;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px; font-weight: 500;
+      font-family: var(--font);
+      color: var(--foreground);
+      cursor: pointer; text-align: left;
+      transition: background 0.15s;
+    }
+    .bible-version-option:last-child { border-bottom: none; }
+    .bible-version-option:hover { background: var(--muted); }
+    .bible-version-option.selected {
+      width: calc(100% - 12px);
+      background: var(--background);
+      border: 1.5px solid var(--primary);
+      border-radius: var(--radius-md);
+      color: var(--primary); font-weight: 600;
+      margin: 2px 6px; padding: 12.5px 14.5px;
+    }
+    .bible-version-chevron { flex-shrink: 0; color: var(--muted-foreground); }
+    .bible-version-option.selected .bible-version-chevron { color: var(--primary); }
+
+    /* ── Images resource ── */
+    .images-list {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 8px 16px 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      align-content: start;
+    }
+    .thumbnail {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      background: var(--background);
+    }
+    .thumbnail:hover { opacity: 0.85; }
+    .thumbnail-img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      border-radius: 9px 9px 0 0;
+    }
+    .thumbnail-title {
+      display: block;
+      padding: 5px 6px 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--primary);
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ── Image overlay ── */
+    .img-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.72);
+      align-items: center; justify-content: center;
+    }
+    .img-overlay.open { display: flex; }
+    .img-overlay-inner {
+      max-width: 80vw; max-height: 80vh;
+      border-radius: 12px; overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+    }
+    .img-overlay-inner img {
+      display: block;
+      max-width: 80vw; max-height: 80vh;
+      object-fit: contain;
+    }
+
+    .no-resources {
+      flex: 1;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: var(--muted-foreground);
+      font-style: italic; padding: 32px 16px;
+    }
+
+    /* ── TQ ── */
+    .tq-toggle {
+      width: 100%;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
+      padding: 12px 24px;
+      background: none; border: none; cursor: pointer;
+      text-align: left; font-family: var(--font);
+      color: var(--foreground);
+    }
+    .tq-toggle:hover { background: var(--muted); }
+    .tq-chev { flex-shrink: 0; margin-top: 3px; color: var(--muted-foreground); transition: transform 0.2s; }
+    .tq-toggle.open .tq-chev { transform: rotate(180deg); }
+    .tq-item { margin-top: 8px; }
+    .tq-inner { display: flex; flex-direction: column; gap: 3px; flex: 1; }
+    .tq-ref { font-size: 12px; font-weight: 700; color: var(--muted-foreground); text-transform: uppercase; letter-spacing: 0.05em; }
+    .tq-question { font-size: 14px; font-weight: 600; line-height: 1.45; }
+    .tq-body { display: none; padding: 4px 16px 14px 38px; font-size: 14px; line-height: 1.6;  }
+    .tq-body.open { display: block; }
+
+    /* ── TW ── */
+    .tw-toggle {
+      width: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px;
+      background: none; border: none; cursor: pointer;
+      font-size: 15px; font-weight: 700;
+      color: var(--foreground); font-family: var(--font); text-align: left;
+    }
+    .tw-toggle:hover { background: var(--muted); }
+    .tw-chev { flex-shrink: 0; transition: transform 0.2s; }
+    .tw-toggle.open .tw-chev { transform: rotate(180deg); }
+    .tw-item { padding: 0 12px; }
+    .tw-body { display: none; padding: 4px 32px 16px; font-size: 14px; line-height: 1.6; color: var(--foreground); }
+    .tw-body.open { display: block; }
+    .tw-verses-label { font-size: 14px; font-weight: 700; color: var(--foreground); margin: 10px 0 6px; }
+    .tw-verse-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 14px; }
+    .tw-verse-tag { padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 500; color: var(--foreground); }
+    .tw-article { font-size: 13px; line-height: 1.65; }
+    .tw-article h1 { font-size: 14px; font-weight: 700; margin: 0 0 8px; }
+    .tw-article h2 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted-foreground); margin: 10px 0 5px; }
+    .tw-article ul { padding-left: 16px; margin: 4px 0; }
+    .tw-article li { margin: 3px 0; }
+    .tw-article p { margin: 5px 0; }
+
+    /* ── Article sticky player (TW & OSN) ── */
+    .art-player {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: var(--background);
+      border-bottom: 1px solid var(--border);
+      margin: -4px -32px 14px;
+      padding: 10px 32px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .art-player-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex-shrink: 1;
+      min-width: 0;
+      max-width: 130px;
+    }
+    .art-pb-btn-wrap { position: relative; flex-shrink: 0; }
+    .art-pb-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px;
+      border: 1.5px solid var(--primary); border-radius: 50%;
+      background: var(--primary); color: white;
+      cursor: pointer; padding: 0; flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .art-pb-btn.art-pb-outline {
+      background: var(--background); color: var(--primary);
+    }
+    .art-pb-btn.art-pb-outline:hover { background: var(--muted); }
+    .art-pb-restart:disabled {
+      border-color: var(--border); color: var(--text-disabled);
+      background: var(--background); cursor: default;
+    }
+    .art-pb-restart:disabled:hover { background: var(--background); }
+    .art-pb-sparkle-badge {
+      position: absolute; bottom: -3px; right: -3px;
+      width: 13px; height: 13px;
+      background: var(--primary); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid var(--background); pointer-events: none;
+    }
+    .art-pb-scrub-wrap {
+      flex: 1; display: flex; align-items: center;
+      height: 20px; cursor: pointer; min-width: 0;
+    }
+    .art-pb-track {
+      position: relative; width: 100%; height: 4px;
+      background: var(--border); border-radius: 2px;
+    }
+    .art-pb-fill {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      background: var(--primary); border-radius: 2px; width: 0%;
+    }
+    .art-pb-thumb {
+      position: absolute; top: 50%; left: 0%;
+      transform: translate(-50%, -50%);
+      width: 10px; height: 10px;
+      background: var(--primary); border-radius: 50%;
+    }
+    .art-pb-time {
+      font-size: 11px; color: var(--muted-foreground);
+      white-space: nowrap; min-width: 60px;
+      text-align: right; font-variant-numeric: tabular-nums; flex-shrink: 0;
+    }
+
+    /* ── TN play bar ── */
+    .note-play-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 0 2px;
+      margin-top: 14px;
+    }
+    .note-pb-btn-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
+    .note-pb-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 26px; height: 26px;
+      border: 1.5px solid var(--primary); border-radius: 50%;
+      background: var(--background); color: var(--primary);
+      cursor: pointer; padding: 0;
+      transition: background 0.15s;
+    }
+    .note-pb-btn:hover { background: var(--muted); }
+    .note-pb-restart:disabled {
+      border-color: var(--border);
+      color: var(--text-disabled);
+      cursor: default;
+    }
+    .note-pb-restart:disabled:hover { background: var(--background); }
+    .note-pb-sparkle-badge {
+      position: absolute;
+      bottom: -3px; right: -3px;
+      width: 13px; height: 13px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid var(--background);
+      pointer-events: none;
+    }
+    .note-pb-scrub-wrap {
+      flex: 1;
+      display: flex; align-items: center;
+      height: 20px;
+      cursor: pointer;
+    }
+    .note-pb-track {
+      position: relative;
+      width: 100%;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+    }
+    .note-pb-fill {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      background: var(--primary);
+      border-radius: 2px;
+      width: 0%;
+    }
+    .note-pb-thumb {
+      position: absolute;
+      top: 50%; left: 0%;
+      transform: translate(-50%, -50%);
+      width: 10px; height: 10px;
+      background: var(--primary);
+      border-radius: 50%;
+    }
+    .note-pb-time {
+      font-size: 11px;
+      color: var(--muted-foreground);
+      white-space: nowrap;
+      min-width: 30px;
+      font-variant-numeric: tabular-nums;
+      flex-shrink: 0;
+    }
+    @keyframes note-pb-spin { to { transform: rotate(360deg); } }
+    .note-pb-spinning { animation: note-pb-spin 0.8s linear infinite; }
+
+    /* ── TQ play controls ── */
+    .tq-q-outer { position: relative; }
+    .tq-a-outer { position: relative; }
+    .tq-play-group {
+      position: absolute;
+      left: 0; top: 2px;
+      display: flex; align-items: center;
+      gap: 4px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.15s;
+      z-index: 1;
+    }
+    .tq-toggle:hover .tq-q-outer .tq-play-group,
+    .tq-a-outer:hover .tq-play-group,
+    .tq-play-group.playing { opacity: 1; pointer-events: auto; }
+    .tq-pb-btn-wrap { position: relative; flex-shrink: 0; }
+    .tq-pb-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px;
+      border: 1.5px solid var(--primary); border-radius: 50%;
+      background: var(--background); color: var(--primary);
+      cursor: pointer; padding: 0;
+      transition: background 0.15s; flex-shrink: 0;
+    }
+    .tq-pb-btn:hover { background: var(--muted); }
+    .tq-pb-restart:disabled { border-color: var(--border); color: var(--text-disabled); cursor: default; }
+    .tq-pb-restart:disabled:hover { background: var(--background); }
+    .tq-pb-sparkle-badge {
+      position: absolute; bottom: -3px; right: -3px;
+      width: 12px; height: 12px;
+      background: var(--primary); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid var(--background);
+      pointer-events: none;
+    }
+
+    /* ── AI Assistant pane ── */
+    .ai-pane {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .ai-pane.active { display: flex; }
+
+    .ai-pane-inner {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin: 0 4px 16px 16px;
+      overflow: hidden;
+    }
+
+    .ai-pane-header {
+      padding: 12px 20px 10px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .ai-pane-ref {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--foreground);
+    }
+    .ai-lang-bar {
+      padding: 12px 4px 10px 16px;
+    }
+
+    .ai-pane-body {
+      flex: 1;
+      overflow-y: auto;
+      display: block;
+    }
+
+    /* ── First-time notice ── */
+    .ai-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 11px 14px 11px 12px;
+      background: #eff6ff;
+      border-bottom: 1px solid #bfdbfe;
+      border-left: 3px solid #3b82f6;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #1e3a5f;
+    }
+    .ai-notice-icon { flex-shrink: 0; color: #3b82f6; margin-top: 1px; }
+    .ai-notice-text { flex: 1; }
+    .ai-notice-text strong { font-weight: 600; }
+    .ai-notice-dismiss {
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      color: #60a5fa;
+      line-height: 1;
+      margin-top: 1px;
+    }
+    .ai-notice-dismiss:hover { color: #1e3a5f; }
+
+    /* ── AI summary ── */
+    .ai-summary {
+      padding: 14px 20px 16px;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--foreground);
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── Suggested questions ── */
+    .ai-questions {
+      padding: 12px 16px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ai-questions-label {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted-foreground);
+      margin-bottom: 2px;
+    }
+    .ai-question-btn {
+      width: 100%;
+      text-align: left;
+      padding: 8px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      background: none;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: var(--font);
+      color: var(--primary);
+      cursor: pointer;
+      line-height: 1.4;
+      transition: background 0.1s, border-color 0.1s;
+    }
+    .ai-question-btn:hover { background: var(--muted); border-color: var(--primary); }
+    .ai-question-btn:disabled { opacity: 0.45; cursor: default; }
+
+    /* ── Conversation thread ── */
+    .ai-thread {
+      padding: 14px 20px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .ai-thread-turn { display: flex; flex-direction: column; gap: 4px; }
+    .ai-turn-label {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .ai-turn-label.user { color: var(--muted-foreground); }
+    .ai-turn-label.asst { color: var(--primary); }
+    .ai-turn-text { font-size: 13px; line-height: 1.65; color: var(--foreground); }
+    .ai-turn-user .ai-turn-text { color: var(--muted-foreground); font-style: italic; }
+
+    /* ── Error state ── */
+    .ai-turn-error {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #dc2626;
+      padding: 2px 0;
+    }
+    .ai-retry-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border: 1.5px solid #dc2626;
+      border-radius: var(--radius);
+      background: none;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--font);
+      color: #dc2626;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.1s;
+    }
+    .ai-retry-btn:hover { background: #fef2f2; }
+
+    /* ── Loading ── */
+    .ai-loading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 20px;
+      font-size: 13px;
+      color: var(--muted-foreground);
+    }
+    .ai-loading-spinner {
+      width: 15px; height: 15px;
+      border: 2px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    /* ── Input bar ── */
+    .ai-input-bar {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      padding: 10px 12px;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .ai-input {
+      flex: 1;
+      resize: none;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 7px 10px;
+      font-size: 13px;
+      font-family: var(--font);
+      line-height: 1.5;
+      color: var(--foreground);
+      background: var(--background);
+      outline: none;
+      overflow: hidden;
+      min-height: 34px;
+      max-height: 120px;
+      box-sizing: border-box;
+      transition: border-color 0.15s;
+    }
+    .ai-input:focus { border-color: var(--primary); }
+    .ai-send-btn {
+      width: 34px; height: 34px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: var(--primary);
+      color: white;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .ai-send-btn:hover { background: var(--primary-hover); }
 
     /* ── Resize handle ── */
     .resize-handle {
@@ -180,6 +871,7 @@
       opacity: 0; transition: opacity 0.15s; margin-right: 4px;
     }
     .resize-handle:hover, .resize-handle.dragging { opacity: 1; }
+    .resize-handle.visible { display: flex; }
 
     /* ── Verse section ── */
     .verse-section {
@@ -207,6 +899,27 @@
       color: var(--foreground); flex-shrink: 0;
       background: var(--background);
     }
+
+    /* ── Source column tabs (Bibles resource) ── */
+    .source-tabs { display: flex; align-items: center; gap: 20px; }
+    .source-tab {
+      background: none; border: none;
+      border-bottom: 2px solid transparent;
+      padding: 0 0 6px;
+      font-size: 1.25rem; font-weight: 600;
+      font-family: var(--font);
+      color: var(--muted-foreground);
+      cursor: pointer;
+    }
+    .source-tab.active { color: var(--foreground); border-bottom-color: var(--primary); }
+    .tab-divider { width: 3px; height: 22px; background: var(--foreground); border-radius: 1.5px; }
+    .tab2-tab { display: inline-flex; align-items: center; gap: 6px; }
+    .tab2-tab .tab2-close {
+      background: none; border: none; cursor: pointer;
+      color: var(--muted-foreground); font-size: 18px; line-height: 1; padding: 0;
+      transition: color 0.15s;
+    }
+    .tab2-tab .tab2-close:hover { color: var(--foreground); }
 
     /* ── Verse rows ── */
     .verse-row {
@@ -292,57 +1005,120 @@
 
     <!-- Resources panel (closed by default) -->
     <div id="resources-panel" class="resources-panel closed">
-      <div class="resources-header">Resources</div>
+
+      <!-- Tab row -->
+      <div class="resources-tab-row">
+        <button class="resources-tab" data-tab="ai-assistant" onclick="selectResourceTab(this)" title="AI Assistant">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c0 0 1 5.5 3.5 8S24 12 24 12s-5.5 1-8 3.5S12 24 12 24s-1-5.5-3.5-8S0 12 0 12s5.5-1 8-3.5S12 2 12 2z"/></svg>
+        </button>
+        <button class="resources-tab selected" data-tab="resources" onclick="selectResourceTab(this)">Resources</button>
+      </div>
+
+      <!-- Resources tab panel -->
+      <div class="resources-tab-panel" id="resources-tab-panel-1">
+
+      <!-- Chip row -->
       <div class="chip-row-wrapper">
-        <div class="chip-row-scroll">
-          <button class="chip selected" data-value="notes" onclick="selectChip(this)">TN</button>
-          <button class="chip" data-value="questions" onclick="selectChip(this)">TQ</button>
-          <button class="chip" data-value="words" onclick="selectChip(this)">TW</button>
+        <div class="chip-row-scroll-wrap">
+          <button class="chip-arrow chip-arrow-left hidden" id="chip-arrow-left" onclick="scrollChips(-1)" aria-label="Scroll left">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div class="chip-fade chip-fade-left hidden" id="chip-fade-left"></div>
+          <div class="chip-row-scroll" id="chip-row-scroll">
+            <button class="chip selected" data-value="notes" onclick="selectChip(this)">TN</button>
+            <button class="chip" data-value="images" onclick="selectChip(this)">Images &amp; Maps</button>
+            <button class="chip" data-value="bibles" onclick="selectChip(this)">Bibles</button>
+            <button class="chip" data-value="questions" onclick="selectChip(this)">TQ</button>
+            <button class="chip" data-value="words" onclick="selectChip(this)">TW</button>
+            <button class="chip" data-value="osn" onclick="selectChip(this)">OSN</button>
+          </div>
+          <div class="chip-fade chip-fade-right" id="chip-fade-right"></div>
+          <button class="chip-arrow chip-arrow-right hidden" id="chip-arrow-right" onclick="scrollChips(1)" aria-label="Scroll right">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
         </div>
       </div>
-      <div id="notes-list" class="notes-list">
-        <button class="note-toggle open" onclick="toggleNote(this)">
-          <span>5:1 — born of God</span>
-          <svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="note-body open">
-          <div class="note-verse-label">5:1</div>
-          "Born of God" describes spiritual regeneration. Everyone who trusts that Jesus is the Messiah has been spiritually reborn through God. This sonship creates a family bond with other believers.
-        </div>
-        <button class="note-toggle" onclick="toggleNote(this)">
-          <span>5:4 — overcomes the world</span>
-          <svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="note-body">
-          <div class="note-verse-label">5:4</div>
-          "The world" here refers to the system of values and powers that oppose God. Faith is the means by which believers gain the victory that Christ has already won. Alternate translation: "conquers the world."
-        </div>
-        <button class="note-toggle" onclick="toggleNote(this)">
-          <span>5:6 — water and blood</span>
-          <svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="note-body">
-          <div class="note-verse-label">5:6</div>
-          Most interpreters understand "water" as Jesus' baptism and "blood" as his crucifixion, emphasizing that Jesus came as a fully human savior who both began his ministry and died a real death.
-        </div>
-        <button class="note-toggle" onclick="toggleNote(this)">
-          <span>5:16 — sin leading to death</span>
-          <svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="note-body">
-          <div class="note-verse-label">5:16</div>
-          This is a difficult passage. The "sin leading to death" has been interpreted as deliberate apostasy or willful rejection of Christ. John does not define it precisely. The passage encourages intercession for fellow believers.
+
+      <!-- Language selector (TN / TQ / TW / OSN) -->
+      <div id="res-lang-bar" class="res-lang-bar">
+        <div class="res-select-wrap" id="res-language-select">
+          <button class="res-select-btn" type="button" onclick="toggleResSelect(this.closest('.res-select-wrap'))">
+            <span class="res-select-label">English</span>
+            <svg class="res-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="res-select-dropdown">
+            <div class="res-select-opt selected" data-value="en" onclick="pickResSelectOpt(this)">English</div>
+            <div class="res-select-opt" data-value="hi" onclick="pickResSelectOpt(this)">Hindi</div>
+          </div>
         </div>
       </div>
-      <div id="questions-list" class="notes-list" style="display:none">
-        <div class="note-toggle" style="font-weight:500; font-size:13px; padding:14px 16px; border-bottom:1px solid var(--border);">5:4 — What gives the believer victory over the world?</div>
-        <div class="note-toggle" style="font-weight:500; font-size:13px; padding:14px 16px; border-bottom:1px solid var(--border);">5:11 — Where does eternal life reside, according to John?</div>
-        <div class="note-toggle" style="font-weight:500; font-size:13px; padding:14px 16px;">5:21 — What is John's final exhortation to believers?</div>
+
+      <!-- Bibles -->
+      <div id="bibles-list" class="bibles-selector">
+        <div class="res-select-wrap" id="bible-language-select">
+          <button class="res-select-btn" type="button" onclick="toggleResSelect(this.closest('.res-select-wrap'))">
+            <span class="res-select-label"></span>
+            <svg class="res-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="res-select-dropdown"></div>
+        </div>
+        <div class="bible-version-list" id="bible-version-list"></div>
+        <div class="no-resources" id="bible-empty-state" style="display:none;">No Bibles available.</div>
       </div>
-      <div id="words-list" class="notes-list" style="display:none">
-        <div class="note-toggle" style="font-weight:500; font-size:13px; padding:14px 16px; border-bottom:1px solid var(--border);">Eternal Life</div>
-        <div class="note-toggle" style="font-weight:500; font-size:13px; padding:14px 16px; border-bottom:1px solid var(--border);">Faith / Belief</div>
-        <div class="note-toggle" style="font-weight:500; font-size:13px; padding:14px 16px;">Testimony / Witness</div>
+
+      <!-- TN Notes -->
+      <div id="notes-list" class="notes-list"></div>
+
+      <!-- Images & Maps -->
+      <div id="images-list" class="images-list" style="display:none">
+        <div class="no-resources">No images available for this passage.</div>
+      </div>
+
+      <!-- Image overlay -->
+      <div id="img-overlay" class="img-overlay" onclick="closeImage()">
+        <div class="img-overlay-inner" onclick="event.stopPropagation()">
+          <img id="img-overlay-img" src="" alt=""/>
+        </div>
+      </div>
+
+      <!-- TQ -->
+      <div id="questions-list" class="notes-list" style="display:none"></div>
+
+      <!-- TW -->
+      <div id="words-list" class="notes-list" style="display:none"></div>
+
+      <!-- OSN -->
+      <div id="osn-list" class="notes-list" style="display:none"></div>
+      </div>
+
+      <!-- AI Assistant -->
+      <div id="ai-assistant-pane" class="ai-pane">
+        <div class="res-lang-bar ai-lang-bar">
+          <div class="res-select-wrap" id="ai-lang-select">
+            <button class="res-select-btn" type="button" onclick="toggleResSelect(this.closest('.res-select-wrap'))">
+              <span class="res-select-label">English</span>
+              <svg class="res-select-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="res-select-dropdown">
+              <div class="res-select-opt selected" data-value="en" onclick="pickResSelectOpt(this)">English</div>
+              <div class="res-select-opt" data-value="hi" onclick="pickResSelectOpt(this)">Hindi</div>
+            </div>
+          </div>
+        </div>
+        <div class="ai-pane-inner">
+          <div class="ai-pane-header">
+            <div class="ai-pane-ref" id="ai-pane-ref">1 John 5</div>
+          </div>
+          <div class="ai-pane-body" id="ai-pane-body"></div>
+          <div class="ai-input-bar">
+            <textarea id="ai-input" class="ai-input" placeholder="Ask a question about this passage…" rows="1"
+              oninput="autoResizeAIInput(this)"
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitAIQuestion();}"></textarea>
+            <button class="ai-send-btn" onclick="submitAIQuestion()" title="Send">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -357,10 +1133,17 @@
     <!-- Verse section -->
     <div class="verse-section">
       <div class="verse-headers">
-        <div class="verse-col-header">IRV Gujarati</div>
+        <div class="verse-col-header source-tabs" id="source-tabs">
+          <button class="source-tab active" id="tab1-btn" onclick="switchSourceTab(1)">IRV Gujarati</button>
+          <div class="tab-divider" id="tab-divider" style="display:none"></div>
+          <div class="source-tab tab2-tab" id="tab2-tab" style="display:none" onclick="switchSourceTab(2)">
+            <span class="tab2-label" id="tab2-label"></span>
+            <button class="tab2-close" onclick="closeTab2(event)" aria-label="Close Bible tab">&#215;</button>
+          </div>
+        </div>
         <div class="verse-col-header">Kachi Koli</div>
       </div>
-      <div class="verse-area">
+      <div class="verse-area" id="verse-area">
         <div id="verse-scroll"></div>
       </div>
     </div>
@@ -427,15 +1210,18 @@
       for (let n = 1; n <= 21; n++) {
         const row = document.createElement('div');
         row.className = 'verse-row';
+        row.id = 'row-' + n;
         row.innerHTML =
           '<div class="verse-source">' +
             '<span class="verse-num">' + n + '</span>' +
-            '<div class="source-card">' + esc(sourceText[n] || '') + '</div>' +
+            '<div class="source-card" id="src-' + n + '">' + esc(sourceText[n] || '') + '</div>' +
           '</div>' +
           '<div><div class="translation-card">' + esc(translationText[n] || '') + '</div></div>';
         container.appendChild(row);
       }
     }
+
+    // ── Resources panel toggle ───────────────────────────────────────────────
 
     function toggleResources() {
       const panel  = document.getElementById('resources-panel');
@@ -444,26 +1230,930 @@
       const isOpen = !panel.classList.contains('closed');
       panel.classList.toggle('closed', isOpen);
       btn.classList.toggle('closed', isOpen);
-      handle.style.display = isOpen ? 'none' : 'flex';
+      handle.classList.toggle('visible', !isOpen);
     }
 
+    // ── Resources / AI Assistant tab row ─────────────────────────────────────
+
+    function selectResourceTab(el) {
+      document.querySelectorAll('.resources-tab').forEach(function(t) { t.classList.remove('selected'); });
+      el.classList.add('selected');
+
+      const showAI = el.dataset.tab === 'ai-assistant';
+      document.querySelectorAll('.resources-tab-panel').forEach(function(p) {
+        p.classList.toggle('hidden', showAI);
+      });
+      document.getElementById('ai-assistant-pane').classList.toggle('active', showAI);
+      if (showAI) renderAIPane();
+    }
+
+    // ── Chip row ──────────────────────────────────────────────────────────────
+
     function selectChip(el) {
-      ['notes-list', 'questions-list', 'words-list'].forEach(function(id) {
+      artPBReset();
+      ['notes-list', 'images-list', 'questions-list', 'words-list', 'osn-list'].forEach(function(id) {
         document.getElementById(id).style.display = 'none';
       });
+      document.getElementById('bibles-list').classList.remove('active');
+
       document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('selected'); });
       el.classList.add('selected');
-      const map = { notes: 'notes-list', questions: 'questions-list', words: 'words-list' };
-      const target = map[el.dataset.value];
-      if (target) document.getElementById(target).style.display = 'block';
+
+      const showLang = ['notes', 'questions', 'words', 'osn'].includes(el.dataset.value);
+      document.getElementById('res-lang-bar').style.display = showLang ? '' : 'none';
+
+      switch (el.dataset.value) {
+        case 'notes':     document.getElementById('notes-list').style.display = 'block'; break;
+        case 'images':    document.getElementById('images-list').style.display = 'grid'; break;
+        case 'bibles':    document.getElementById('bibles-list').classList.add('active'); initBiblesPanel(); break;
+        case 'questions': document.getElementById('questions-list').style.display = 'block'; break;
+        case 'words':     document.getElementById('words-list').style.display = 'block'; break;
+        case 'osn':       document.getElementById('osn-list').style.display = 'block'; break;
+      }
     }
+
+    function scrollChips(dir) {
+      document.getElementById('chip-row-scroll').scrollBy({ left: dir * 150, behavior: 'smooth' });
+      setTimeout(updateChipScrollArrows, 150);
+    }
+
+    function updateChipScrollArrows() {
+      const el     = document.getElementById('chip-row-scroll');
+      const atLeft  = el.scrollLeft <= 0;
+      const atRight = el.scrollLeft >= el.scrollWidth - el.clientWidth - 1;
+      document.getElementById('chip-arrow-left').classList.toggle('hidden', atLeft);
+      document.getElementById('chip-fade-left').classList.toggle('hidden', atLeft);
+      document.getElementById('chip-arrow-right').classList.toggle('hidden', atRight);
+      document.getElementById('chip-fade-right').classList.toggle('hidden', atRight);
+    }
+
+    // ── TN / TQ / TW toggles ─────────────────────────────────────────────────
 
     function toggleNote(el) {
       el.classList.toggle('open');
       el.nextElementSibling.classList.toggle('open');
     }
 
-    // Resize handle
+    function toggleTQ(el) {
+      el.classList.toggle('open');
+      el.nextElementSibling.classList.toggle('open');
+    }
+
+    function toggleTW(el) {
+      var body = el.nextElementSibling;
+      var wasOpen = el.classList.contains('open');
+      el.classList.toggle('open');
+      body.classList.toggle('open');
+      if (wasOpen) {
+        var player = body.querySelector('.art-player');
+        if (player) artPBStopId(player.dataset.artPbId);
+      }
+    }
+
+    function openImage(src) {
+      document.getElementById('img-overlay-img').src = src;
+      document.getElementById('img-overlay').classList.add('open');
+    }
+    function closeImage() {
+      document.getElementById('img-overlay').classList.remove('open');
+    }
+
+    // ── Article sticky player (TW & OSN) ─────────────────────────────────────
+
+    var ART_PB_PLAY_SVG    = '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+    var ART_PB_PAUSE_SVG   = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+    var ART_PB_RESTART_SVG = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>';
+    var ART_PB_LOADER_SVG  = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" class="note-pb-spinning"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>';
+    var ART_PB_SPARKLE_SVG = '<svg width="7" height="7" viewBox="0 0 24 24" fill="white"><path d="M12 2c0 0 1 5.5 3.5 8S24 12 24 12s-5.5 1-8 3.5S12 24 12 24s-1-5.5-3.5-8S0 12 0 12s5.5-1 8-3.5S12 2 12 2z"/></svg>';
+
+    var artPBStates   = {};
+    var artPBActiveId = null;
+
+    function artPBFmt(s) {
+      s = Math.round(s);
+      return Math.floor(s / 60) + ':' + (s % 60 < 10 ? '0' : '') + (s % 60);
+    }
+
+    function artPBHTML(id, title) {
+      return '<div class="art-player" data-art-pb-id="' + id + '">'
+        + '<div class="art-pb-btn-wrap">'
+        +   '<button class="art-pb-btn art-pb-play" onclick="artPBPlay(this)" title="Play">' + ART_PB_PLAY_SVG + '</button>'
+        +   '<span class="art-pb-sparkle-badge" title="AI-generated audio">' + ART_PB_SPARKLE_SVG + '</span>'
+        + '</div>'
+        + '<button class="art-pb-btn art-pb-outline art-pb-restart" disabled onclick="artPBRestart(this)" title="Restart">' + ART_PB_RESTART_SVG + '</button>'
+        + '<span class="art-player-title">' + title + '</span>'
+        + '<div class="art-pb-scrub-wrap" onclick="artPBScrub(this, event)">'
+        +   '<div class="art-pb-track"><div class="art-pb-fill"></div><div class="art-pb-thumb"></div></div>'
+        + '</div>'
+        + '<span class="art-pb-time">0:00&nbsp;/&nbsp;--:--</span>'
+        + '</div>';
+    }
+
+    function artPBInject() {
+      var entries = [];
+      TW_DATA.forEach(function(w, i) { entries.push({ id: 'art-player-tw-' + i, pbId: 'tw-' + i, title: w.term }); });
+      OSN_DATA.forEach(function(o, i) { entries.push({ id: 'art-player-osn-' + i, pbId: 'osn-' + i, title: o.title }); });
+      entries.forEach(function(entry) {
+        var el = document.getElementById(entry.id);
+        if (el) el.innerHTML = artPBHTML(entry.pbId, entry.title);
+      });
+    }
+
+    function artPBPlay(btn) {
+      var player = btn.closest('.art-player');
+      var id     = player.dataset.artPbId;
+
+      if (artPBActiveId && artPBActiveId !== id) artPBStopId(artPBActiveId);
+      if (notePBActiveId) { notePBStopId(notePBActiveId); notePBActiveId = null; }
+      tqStopAll();
+
+      if (!artPBStates[id]) artPBStates[id] = { playing: false, pos: 0, duration: 45, hasLoaded: false };
+      var st = artPBStates[id];
+
+      if (st.playing) {
+        clearInterval(st.timer);
+        st.playing = false;
+        artPBActiveId = null;
+        artPBSetPlayIcon(player, 'play');
+      } else if (!st.hasLoaded) {
+        artPBSetPlayIcon(player, 'loading');
+        artPBActiveId = id;
+        setTimeout(function() {
+          if (artPBActiveId !== id) return;
+          st.hasLoaded = true;
+          artPBBegin(player, id, st);
+        }, 900);
+      } else {
+        artPBBegin(player, id, st);
+      }
+    }
+
+    function artPBBegin(player, id, st) {
+      st.playing = true;
+      artPBActiveId = id;
+      artPBSetPlayIcon(player, 'pause');
+      artPBEnableRestart(player, true);
+      artPBUpdateProgress(player, st.pos, st.duration);
+      st.timer = setInterval(function() {
+        st.pos = Math.min(st.pos + 0.5, st.duration);
+        artPBUpdateProgress(player, st.pos, st.duration);
+        if (st.pos >= st.duration) {
+          clearInterval(st.timer);
+          st.playing = false;
+          if (artPBActiveId === id) artPBActiveId = null;
+          artPBSetPlayIcon(player, 'play');
+        }
+      }, 500);
+    }
+
+    function artPBStopId(id) {
+      var st = artPBStates[id];
+      if (!st) return;
+      clearInterval(st.timer);
+      st.playing = false;
+      if (artPBActiveId === id) artPBActiveId = null;
+      var player = document.querySelector('.art-player[data-art-pb-id="' + id + '"]');
+      if (player) artPBSetPlayIcon(player, 'play');
+    }
+
+    function artPBRestart(btn) {
+      var player = btn.closest('.art-player');
+      var id     = player.dataset.artPbId;
+      var st     = artPBStates[id];
+      if (!st) return;
+      clearInterval(st.timer);
+      st.pos     = 0;
+      st.playing = false;
+      if (artPBActiveId === id) artPBActiveId = null;
+      artPBSetPlayIcon(player, 'play');
+      artPBEnableRestart(player, false);
+      artPBUpdateProgress(player, 0, st.duration);
+    }
+
+    function artPBScrub(scrubWrap, event) {
+      var player = scrubWrap.closest('.art-player');
+      var id     = player.dataset.artPbId;
+      if (!artPBStates[id]) return;
+      var st    = artPBStates[id];
+      var track = scrubWrap.querySelector('.art-pb-track');
+      var rect  = track.getBoundingClientRect();
+      var pct   = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+      st.pos    = pct * st.duration;
+      artPBUpdateProgress(player, st.pos, st.duration);
+      if (st.pos > 0) artPBEnableRestart(player, true);
+    }
+
+    function artPBSetPlayIcon(player, mode) {
+      var btn = player.querySelector('.art-pb-play');
+      if (!btn) return;
+      if (mode === 'play')    btn.innerHTML = ART_PB_PLAY_SVG;
+      if (mode === 'pause')   btn.innerHTML = ART_PB_PAUSE_SVG;
+      if (mode === 'loading') btn.innerHTML = ART_PB_LOADER_SVG;
+      btn.title = mode === 'pause' ? 'Pause' : mode === 'loading' ? 'Loading…' : 'Play';
+    }
+
+    function artPBEnableRestart(player, enabled) {
+      var btn = player.querySelector('.art-pb-restart');
+      if (btn) btn.disabled = !enabled;
+    }
+
+    function artPBUpdateProgress(player, pos, dur) {
+      var fill  = player.querySelector('.art-pb-fill');
+      var thumb = player.querySelector('.art-pb-thumb');
+      var time  = player.querySelector('.art-pb-time');
+      var pct   = dur > 0 ? (pos / dur) * 100 : 0;
+      if (fill)  fill.style.width = pct + '%';
+      if (thumb) thumb.style.left = pct + '%';
+      if (time)  time.textContent = artPBFmt(pos) + ' / ' + artPBFmt(dur);
+    }
+
+    function artPBReset() {
+      if (artPBActiveId) artPBStopId(artPBActiveId);
+      artPBStates   = {};
+      artPBActiveId = null;
+    }
+
+    // ── TN play bar ──────────────────────────────────────────────────────────
+
+    var NOTE_PB_PLAY_SVG    = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+    var NOTE_PB_PAUSE_SVG   = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+    var NOTE_PB_RESTART_SVG = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>';
+    var NOTE_PB_LOADER_SVG  = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" class="note-pb-spinning"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>';
+    var NOTE_PB_SPARKLE_SVG = '<svg width="7" height="7" viewBox="0 0 24 24" fill="white"><path d="M12 2c0 0 1 5.5 3.5 8S24 12 24 12s-5.5 1-8 3.5S12 24 12 24s-1-5.5-3.5-8S0 12 0 12s5.5-1 8-3.5S12 2 12 2z"/></svg>';
+
+    var notePBStates   = {};
+    var notePBActiveId = null;
+
+    function notePBHTML(id) {
+      return '<div class="note-play-bar" data-note-pb-id="' + id + '">'
+        + '<div class="note-pb-btn-wrap">'
+        + '<button class="note-pb-btn note-pb-play" onclick="notePBPlay(this)" title="Play">' + NOTE_PB_PLAY_SVG + '</button>'
+        + '<span class="note-pb-sparkle-badge" title="AI-generated audio">' + NOTE_PB_SPARKLE_SVG + '</span>'
+        + '</div>'
+        + '<button class="note-pb-btn note-pb-restart" disabled onclick="notePBRestart(this)" title="Restart">' + NOTE_PB_RESTART_SVG + '</button>'
+        + '<div class="note-pb-scrub-wrap" onclick="notePBScrub(this, event)">'
+        + '<div class="note-pb-track"><div class="note-pb-fill"></div><div class="note-pb-thumb"></div></div>'
+        + '</div>'
+        + '<span class="note-pb-time">0:00</span>'
+        + '</div>';
+    }
+
+    function notePBPlay(btn) {
+      var bar = btn.closest('.note-play-bar');
+      var id  = bar.dataset.notePbId;
+
+      if (notePBActiveId && notePBActiveId !== id) notePBStopId(notePBActiveId);
+
+      if (!notePBStates[id]) notePBStates[id] = { playing: false, pos: 0, duration: 35, hasLoaded: false };
+      var st = notePBStates[id];
+
+      if (st.playing) {
+        clearInterval(st.timer);
+        st.playing = false;
+        notePBActiveId = null;
+        notePBSetIcon(bar, 'play');
+      } else if (!st.hasLoaded) {
+        notePBSetIcon(bar, 'loading');
+        notePBActiveId = id;
+        setTimeout(function() {
+          st.hasLoaded = true;
+          notePBBeginPlayback(bar, id, st);
+        }, 900);
+      } else {
+        notePBBeginPlayback(bar, id, st);
+      }
+    }
+
+    function notePBBeginPlayback(bar, id, st) {
+      tqStopAll();
+      st.playing = true;
+      notePBActiveId = id;
+      notePBSetIcon(bar, 'pause');
+      notePBEnableRestart(bar, true);
+      st.timer = setInterval(function() {
+        st.pos = Math.min(st.pos + 0.5, st.duration);
+        notePBUpdateProgress(bar, st.pos, st.duration);
+        if (st.pos >= st.duration) {
+          clearInterval(st.timer);
+          st.playing = false;
+          notePBActiveId = null;
+          notePBSetIcon(bar, 'play');
+        }
+      }, 500);
+    }
+
+    function notePBStopId(id) {
+      var st = notePBStates[id];
+      if (!st) return;
+      clearInterval(st.timer);
+      st.playing = false;
+      var bar = document.querySelector('.note-play-bar[data-note-pb-id="' + id + '"]');
+      if (bar) notePBSetIcon(bar, 'play');
+    }
+
+    function notePBRestart(btn) {
+      var bar = btn.closest('.note-play-bar');
+      var id  = bar.dataset.notePbId;
+      var st  = notePBStates[id];
+      if (!st) return;
+      clearInterval(st.timer);
+      st.playing = false;
+      st.pos = 0;
+      if (notePBActiveId === id) notePBActiveId = null;
+      notePBSetIcon(bar, 'play');
+      notePBUpdateProgress(bar, 0, st.duration);
+      notePBEnableRestart(bar, false);
+    }
+
+    function notePBScrub(scrubWrap, event) {
+      var bar   = scrubWrap.closest('.note-play-bar');
+      var id    = bar.dataset.notePbId;
+      if (!notePBStates[id]) notePBStates[id] = { playing: false, pos: 0, duration: 35, hasLoaded: false };
+      var st    = notePBStates[id];
+      var track = scrubWrap.querySelector('.note-pb-track');
+      var rect  = track.getBoundingClientRect();
+      var pct   = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+      st.pos    = pct * st.duration;
+      notePBUpdateProgress(bar, st.pos, st.duration);
+      if (st.pos > 0) notePBEnableRestart(bar, true);
+    }
+
+    function notePBSetIcon(bar, mode) {
+      var playBtn = bar.querySelector('.note-pb-play');
+      if (!playBtn) return;
+      if (mode === 'play')    { playBtn.innerHTML = NOTE_PB_PLAY_SVG;   playBtn.title = 'Play'; }
+      if (mode === 'pause')   { playBtn.innerHTML = NOTE_PB_PAUSE_SVG;  playBtn.title = 'Pause'; }
+      if (mode === 'loading') { playBtn.innerHTML = NOTE_PB_LOADER_SVG; playBtn.title = 'Loading…'; }
+    }
+
+    function notePBEnableRestart(bar, enabled) {
+      var btn = bar.querySelector('.note-pb-restart');
+      if (btn) btn.disabled = !enabled;
+    }
+
+    function notePBUpdateProgress(bar, pos, duration) {
+      var pct   = duration > 0 ? (pos / duration) * 100 : 0;
+      var fill  = bar.querySelector('.note-pb-fill');
+      var thumb = bar.querySelector('.note-pb-thumb');
+      var time  = bar.querySelector('.note-pb-time');
+      if (fill)  fill.style.width = pct + '%';
+      if (thumb) thumb.style.left = pct + '%';
+      if (time) {
+        var s = Math.floor(pos);
+        time.textContent = Math.floor(s / 60) + ':' + (s % 60 < 10 ? '0' : '') + (s % 60);
+      }
+    }
+
+    // ── TQ play controls ─────────────────────────────────────────────────────
+
+    var tqPBStates   = {};
+    var tqPBActiveId = null;
+
+    function tqStopAll() {
+      if (tqPBActiveId) { tqPBForceStop(tqPBActiveId); tqPBActiveId = null; }
+    }
+
+    function tqPBGroupHTML(id) {
+      var PLAY_SVG    = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+      var RESTART_SVG = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>';
+      var SPARKLE_SVG = '<svg width="7" height="7" viewBox="0 0 24 24" fill="white"><path d="M12 2c0 0 1 5.5 3.5 8S24 12 24 12s-5.5 1-8 3.5S12 24 12 24s-1-5.5-3.5-8S0 12 0 12s5.5-1 8-3.5S12 2 12 2z"/></svg>';
+      return '<div class="tq-play-group" data-tq-pb-id="' + id + '" onclick="event.stopPropagation()">'
+        + '<div class="tq-pb-btn-wrap">'
+        + '<button class="tq-pb-btn tq-pb-play" onclick="tqPBPlay(this, event)" title="Play">' + PLAY_SVG + '</button>'
+        + '<span class="tq-pb-sparkle-badge" title="AI-generated audio">' + SPARKLE_SVG + '</span>'
+        + '</div>'
+        + '<button class="tq-pb-btn tq-pb-restart" disabled onclick="tqPBRestart(this, event)" title="Restart">' + RESTART_SVG + '</button>'
+        + '</div>';
+    }
+
+    function tqPBPlay(btn, event) {
+      if (event) event.stopPropagation();
+      var group = btn.closest('.tq-play-group');
+      var id    = group.dataset.tqPbId;
+
+      if (notePBActiveId) { notePBStopId(notePBActiveId); notePBActiveId = null; }
+      if (tqPBActiveId && tqPBActiveId !== id) tqPBForceStop(tqPBActiveId);
+
+      if (!tqPBStates[id]) tqPBStates[id] = { playing: false, hasLoaded: false };
+      var st = tqPBStates[id];
+
+      if (st.playing) {
+        clearTimeout(st.timer);
+        st.playing = false;
+        tqPBSetIcon(group, 'play');
+      } else if (!st.hasLoaded) {
+        tqPBSetIcon(group, 'loading');
+        group.classList.add('playing');
+        tqPBActiveId = id;
+        setTimeout(function() {
+          var g = document.querySelector('.tq-play-group[data-tq-pb-id="' + id + '"]');
+          if (!g || tqPBActiveId !== id) return;
+          st.hasLoaded = true;
+          st.playing = true;
+          tqPBSetIcon(g, 'pause');
+          tqPBEnableRestart(g, true);
+          var dur = (id.charAt(0) === 'q') ? 6000 : 9000;
+          st.timer = setTimeout(function() {
+            st.playing = false;
+            if (tqPBActiveId === id) tqPBActiveId = null;
+            var g2 = document.querySelector('.tq-play-group[data-tq-pb-id="' + id + '"]');
+            if (g2) { tqPBSetIcon(g2, 'play'); g2.classList.remove('playing'); }
+          }, dur);
+        }, 850);
+      } else {
+        st.playing = true;
+        tqPBActiveId = id;
+        group.classList.add('playing');
+        tqPBSetIcon(group, 'pause');
+        tqPBEnableRestart(group, true);
+        var dur2 = (id.charAt(0) === 'q') ? 6000 : 9000;
+        st.timer = setTimeout(function() {
+          st.playing = false;
+          if (tqPBActiveId === id) tqPBActiveId = null;
+          var g3 = document.querySelector('.tq-play-group[data-tq-pb-id="' + id + '"]');
+          if (g3) { tqPBSetIcon(g3, 'play'); g3.classList.remove('playing'); }
+        }, dur2);
+      }
+    }
+
+    function tqPBForceStop(id) {
+      var st = tqPBStates[id];
+      if (!st) return;
+      clearTimeout(st.timer);
+      st.playing = false;
+      if (tqPBActiveId === id) tqPBActiveId = null;
+      var group = document.querySelector('.tq-play-group[data-tq-pb-id="' + id + '"]');
+      if (group) { tqPBSetIcon(group, 'play'); group.classList.remove('playing'); }
+    }
+
+    function tqPBRestart(btn, event) {
+      if (event) event.stopPropagation();
+      var group = btn.closest('.tq-play-group');
+      var id    = group.dataset.tqPbId;
+      var st    = tqPBStates[id];
+      if (!st) return;
+      clearTimeout(st.timer);
+      st.playing   = false;
+      st.hasLoaded = false;
+      if (tqPBActiveId === id) tqPBActiveId = null;
+      tqPBSetIcon(group, 'play');
+      tqPBEnableRestart(group, false);
+      group.classList.remove('playing');
+    }
+
+    function tqPBSetIcon(group, mode) {
+      var playBtn = group.querySelector('.tq-pb-play');
+      if (!playBtn) return;
+      var PLAY_SVG   = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+      var PAUSE_SVG  = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+      var LOADER_SVG = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" class="note-pb-spinning"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>';
+      if (mode === 'play')    { playBtn.innerHTML = PLAY_SVG;   playBtn.title = 'Play'; }
+      if (mode === 'pause')   { playBtn.innerHTML = PAUSE_SVG;  playBtn.title = 'Pause'; }
+      if (mode === 'loading') { playBtn.innerHTML = LOADER_SVG; playBtn.title = 'Loading…'; }
+    }
+
+    function tqPBEnableRestart(group, enabled) {
+      var btn = group.querySelector('.tq-pb-restart');
+      if (btn) btn.disabled = !enabled;
+    }
+
+    // ── Custom select helpers ─────────────────────────────────────────────────
+
+    function toggleResSelect(wrapEl) {
+      const isOpen = wrapEl.classList.contains('open');
+      document.querySelectorAll('.res-select-wrap.open').forEach(function(w) { w.classList.remove('open'); });
+      if (!isOpen) {
+        wrapEl.classList.add('open');
+        positionResSelectDropdown(wrapEl);
+      }
+    }
+
+    function positionResSelectDropdown(wrapEl) {
+      const dropdown = wrapEl.querySelector('.res-select-dropdown');
+      const rect = wrapEl.getBoundingClientRect();
+      dropdown.style.top  = (rect.bottom + 2) + 'px';
+      dropdown.style.left = rect.left + 'px';
+      dropdown.style.width = rect.width + 'px';
+    }
+
+    function pickResSelectOpt(optEl) {
+      const wrapEl = optEl.closest('.res-select-wrap');
+      if (!wrapEl) return;
+      wrapEl.querySelectorAll('.res-select-opt').forEach(function(o) { o.classList.remove('selected'); });
+      optEl.classList.add('selected');
+      const labelEl = wrapEl.querySelector('.res-select-label');
+      if (labelEl) labelEl.textContent = optEl.textContent;
+      wrapEl.classList.remove('open');
+    }
+
+    function setResSelectOptions(id, values, onchange) {
+      const wrapEl = document.getElementById(id);
+      if (!wrapEl) return;
+      const dropdown = wrapEl.querySelector('.res-select-dropdown');
+      const labelEl  = wrapEl.querySelector('.res-select-label');
+      dropdown.innerHTML = '';
+      values.forEach(function(val, i) {
+        const div = document.createElement('div');
+        div.className = 'res-select-opt' + (i === 0 ? ' selected' : '');
+        div.dataset.value = val;
+        div.textContent = val;
+        div.addEventListener('click', function(e) {
+          e.stopPropagation();
+          wrapEl.querySelectorAll('.res-select-opt').forEach(function(o) { o.classList.remove('selected'); });
+          div.classList.add('selected');
+          if (labelEl) labelEl.textContent = val;
+          wrapEl.classList.remove('open');
+          if (onchange) onchange(val);
+        });
+        dropdown.appendChild(div);
+      });
+      if (values.length && labelEl) labelEl.textContent = values[0];
+    }
+
+    function getResSelectValue(id) {
+      const wrapEl = document.getElementById(id);
+      if (!wrapEl) return '';
+      const sel = wrapEl.querySelector('.res-select-opt.selected');
+      return sel ? sel.dataset.value : '';
+    }
+
+    function setResSelectValue(id, value) {
+      const wrapEl = document.getElementById(id);
+      if (!wrapEl) return;
+      const labelEl = wrapEl.querySelector('.res-select-label');
+      wrapEl.querySelectorAll('.res-select-opt').forEach(function(opt) {
+        const isSel = opt.dataset.value === value;
+        opt.classList.toggle('selected', isSel);
+        if (isSel && labelEl) labelEl.textContent = opt.textContent;
+      });
+    }
+
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.res-select-wrap')) {
+        document.querySelectorAll('.res-select-wrap.open').forEach(function(w) { w.classList.remove('open'); });
+      }
+    });
+
+    // ── Bibles ────────────────────────────────────────────────────────────────
+
+    const bibleData = {
+      English: [
+        { id: 'eng-bsb', abbr: 'BSB', label: 'Berean Standard Bible' },
+      ],
+    };
+
+    const bibleText = {
+      'eng-bsb': {
+        1:  'Everyone who believes that Jesus is the Christ is born of God, and everyone who loves the Father loves the child born of Him.',
+        2:  'This is how we know that we love the children of God: by loving God and obeying His commandments.',
+        3:  'For this is love for God: to keep His commandments. And His commandments are not burdensome,',
+        4:  'because everyone born of God overcomes the world. This is the victory that has overcome the world: our faith.',
+        5:  'Who is the one who overcomes the world but the one who believes that Jesus is the Son of God?',
+        6:  'Jesus Christ is the One who came by water and blood, not by water only, but by water and blood. And the Spirit is the One who testifies, because the Spirit is the truth.',
+        7:  'For there are three that testify:',
+        8:  'the Spirit, the water, and the blood; and these three are in agreement.',
+        9:  'We accept the testimony of men, yet God\'s testimony is greater, for it is the testimony of God that He has given about His Son.',
+        10: 'The one who believes in the Son of God has this testimony within him. The one who does not believe God has made Him out to be a liar, because he has not believed the testimony God has given about His Son.',
+        11: 'And this is that testimony: God has given us eternal life, and this life is in His Son.',
+        12: 'Whoever has the Son has life; whoever does not have the Son of God does not have life.',
+        13: 'I have written these things to you who believe in the name of the Son of God, so that you may know that you have eternal life.',
+        14: 'And this is the confidence we have in approaching God: that if we ask anything according to His will, He hears us.',
+        15: 'And if we know that He hears us in whatever we ask, we know that we have what we have asked of Him.',
+        16: 'If anyone sees his brother committing a sin that does not lead to death, he should pray, and God will give life to him. There is a sin that leads to death; I am not saying he should pray about that.',
+        17: 'All wrongdoing is sin, but there is sin that does not lead to death.',
+        18: 'We know that anyone born of God does not continue to sin, because the One born of God keeps him safe, and the evil one cannot touch him.',
+        19: 'We know that we are of God, and that the whole world lies in the power of the evil one.',
+        20: 'We know that the Son of God has come, and has given us understanding, so that we may know Him who is true; and we are in Him who is true, in His Son Jesus Christ. He is the true God and eternal life.',
+        21: 'Little children, keep yourselves from idols.',
+      },
+    };
+
+    let currentBibleLanguage = null;
+    let currentBibleVersion  = null;
+    const chevSvg = '<svg class="bible-version-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+
+    function initBiblesPanel() {
+      const langs  = Object.keys(bibleData).sort();
+      const wrapEl = document.getElementById('bible-language-select');
+      const empty  = document.getElementById('bible-empty-state');
+
+      if (!langs.length) {
+        if (wrapEl) wrapEl.style.display = 'none';
+        document.getElementById('bible-version-list').style.display = 'none';
+        empty.style.display = 'block';
+        return;
+      }
+      if (wrapEl) wrapEl.style.display = '';
+      empty.style.display  = 'none';
+      setResSelectOptions('bible-language-select', langs, renderBibleVersionList);
+      const defaultLang = currentBibleLanguage || langs[0];
+      setResSelectValue('bible-language-select', defaultLang);
+      renderBibleVersionList(defaultLang);
+    }
+
+    function renderBibleVersionList(language) {
+      const listEl   = document.getElementById('bible-version-list');
+      const empty    = document.getElementById('bible-empty-state');
+      const versions = (bibleData[language] || []).slice().sort(function(a, b) { return a.label.localeCompare(b.label); });
+
+      listEl.innerHTML = '';
+      if (!versions.length) {
+        listEl.style.display = 'none';
+        empty.style.display  = 'block';
+        return;
+      }
+      listEl.style.display = 'flex';
+      empty.style.display  = 'none';
+
+      versions.forEach(function(version) {
+        const isSel = currentBibleLanguage === language && currentBibleVersion === version.id;
+        const btn   = document.createElement('button');
+        btn.className = 'bible-version-option' + (isSel ? ' selected' : '');
+        btn.innerHTML = '<span>' + version.label + '</span>' + chevSvg;
+        btn.onclick   = function() { openBibleTab(language, version); };
+        listEl.appendChild(btn);
+      });
+    }
+
+    function switchSourceTab(n) {
+      document.getElementById('tab1-btn').classList.toggle('active', n === 1);
+      document.getElementById('tab2-tab').classList.toggle('active', n === 2);
+    }
+
+    function openBibleTab(language, version) {
+      currentBibleLanguage = language;
+      currentBibleVersion  = version.id;
+
+      document.getElementById('tab2-label').textContent = version.abbr;
+      document.getElementById('tab2-tab').style.display  = 'inline-flex';
+      document.getElementById('tab-divider').style.display = 'block';
+
+      const verses = bibleText[version.id] || {};
+      document.querySelectorAll('.source-card[id^="src-"]').forEach(function(card) {
+        if (!card.dataset.tab1) card.dataset.tab1 = card.textContent;
+        const n = parseInt(card.id.replace('src-', ''), 10);
+        card.textContent = verses[n] !== undefined ? verses[n] : '';
+      });
+      switchSourceTab(2);
+      renderBibleVersionList(language);
+    }
+
+    function closeTab2(e) {
+      e.stopPropagation();
+      document.getElementById('tab2-tab').style.display    = 'none';
+      document.getElementById('tab-divider').style.display = 'none';
+
+      document.querySelectorAll('.source-card[id^="src-"]').forEach(function(card) {
+        if (card.dataset.tab1 !== undefined) {
+          card.textContent = card.dataset.tab1;
+          delete card.dataset.tab1;
+        }
+      });
+      switchSourceTab(1);
+      const closedLang     = currentBibleLanguage;
+      currentBibleLanguage = null;
+      currentBibleVersion  = null;
+      const curLang = getResSelectValue('bible-language-select');
+      if (curLang && curLang === closedLang) renderBibleVersionList(curLang);
+    }
+
+    // ── TN / TQ / TW / OSN data (1 John 5) ───────────────────────────────────
+
+    const CHEVRON_SVG = '<svg class="note-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>';
+    const TQ_CHEV_SVG = '<svg class="tq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>';
+
+    const TN_NOTES = [
+      { ref: '1 John 5:1', key: 'born of God', body: '"Born of God" describes spiritual regeneration. Everyone who trusts that Jesus is the Messiah has been spiritually reborn through God. This sonship creates a family bond with other believers.' },
+      { ref: '1 John 5:4', key: 'overcomes the world', body: '"The world" here refers to the system of values and powers that oppose God. Faith is the means by which believers gain the victory that Christ has already won. Alternate translation: "conquers the world."' },
+      { ref: '1 John 5:6', key: 'water and blood', body: 'Most interpreters understand "water" as Jesus\' baptism and "blood" as his crucifixion, emphasizing that Jesus came as a fully human savior who both began his ministry and died a real death.' },
+      { ref: '1 John 5:11-12', key: 'this life is in his Son', body: 'John states plainly that eternal life is not an abstract quality but is found in a person, God\'s Son. To have the Son, meaning to trust and be united to him, is to have this life; to reject the Son is to be without it.' },
+      { ref: '1 John 5:16', key: 'sin leading to death', body: 'This is a difficult passage. The "sin leading to death" has been interpreted as deliberate apostasy or willful rejection of Christ. John does not define it precisely. The passage encourages intercession for fellow believers.' },
+    ];
+
+    const TQ_DATA = [
+      { ref: '1 John 5:4', question: 'What gives the believer victory over the world?', answer: 'Everyone born of God overcomes the world, and the victory that has overcome the world is our faith in Jesus.' },
+      { ref: '1 John 5:6-8', question: 'What three witnesses does John list, and what do they testify to?', answer: 'The Spirit, the water, and the blood testify together, and these three agree, that Jesus Christ came in the flesh and is God\'s Son.' },
+      { ref: '1 John 5:11', question: 'Where does eternal life reside, according to John?', answer: 'Eternal life is in God\'s Son; whoever has the Son has life, and whoever does not have the Son does not have life.' },
+      { ref: '1 John 5:16', question: 'What does John instruct believers to do when they see a fellow believer sinning?', answer: 'He instructs them to pray for that brother or sister, so that God may give them life, provided the sin is not the "sin that leads to death."' },
+      { ref: '1 John 5:21', question: 'What is John\'s final exhortation to believers?', answer: '"Little children, keep yourselves from idols."' },
+    ];
+
+    const TW_DATA = [
+      { term: 'Testimony, Witness', verses: ['5:6', '5:7', '5:8', '5:9', '5:10', '5:11'],
+        html: '<h1>Testimony, Witness</h1><h2>Definition</h2><p>A "testimony" or "witness" is evidence given to establish that something is true. In this chapter, John describes a threefold testimony, the Spirit, the water, and the blood, that agrees about who Jesus is, and contrasts it with God\'s own testimony about his Son.</p><p>See also: Believe, Truth</p>' },
+      { term: 'Eternal Life', verses: ['5:11', '5:12', '5:13', '5:20'],
+        html: '<h1>Eternal Life</h1><h2>Facts</h2><p>"Eternal life" is the unending spiritual life that God gives to those who believe in his Son. John says this life is not something separate from Jesus but is found "in" him.</p><p>See also: Believe, Born of God</p>' },
+      { term: 'Born of God', verses: ['5:1', '5:4', '5:18'],
+        html: '<h1>Born of God</h1><h2>Facts</h2><p>To be "born of God" means to be spiritually reborn as God\'s child through faith in Jesus. It marks a new identity and a new capacity to resist sin and love other believers.</p><p>See also: Eternal Life, Faith, Believe</p>' },
+      { term: 'Overcome the World', verses: ['5:4', '5:5'],
+        html: '<h1>Overcome the World</h1><h2>Definition</h2><p>To "overcome the world" means to gain victory over the values, temptations, and opposition of a world system set against God. John identifies faith in Jesus as the means of that victory.</p><p>See also: Born of God, Faith, Believe</p>' },
+      { term: 'Faith, Believe', verses: ['5:1', '5:4', '5:5', '5:10', '5:13'],
+        html: '<h1>Faith, Believe</h1><h2>Definition</h2><p>To "believe" is to trust that something is true and to act on that trust. In this chapter, believing that Jesus is the Christ, the Son of God, is what unites a person to God and gives them victory and eternal life.</p><p>See also: Testimony, Witness, Eternal Life</p>' },
+    ];
+
+    const OSN_DATA = [
+      { title: '1 John 5:1-5', html: '<p><strong>Overcoming the World Through Faith.</strong> John connects three ideas: believing that Jesus is the Christ, being born of God, and loving both God and his children. He then explains that obeying God\'s commands is not a burden, because everyone born of God has already overcome the world, and the means of that victory is faith in Jesus as God\'s Son.</p>' },
+      { title: '1 John 5:6-12', html: '<p><strong>The Threefold Witness.</strong> John presents three witnesses, the Spirit, the water, and the blood, that agree in testifying to who Jesus is. He argues that if human testimony is accepted, God\'s own testimony about his Son is far greater. Whoever has the Son has this testimony within them and has eternal life; whoever rejects the Son makes God out to be a liar.</p>' },
+      { title: '1 John 5:13-21', html: '<p><strong>Confidence and Assurance.</strong> John closes the letter by explaining why he wrote: so that believers may know they have eternal life. He describes confident prayer according to God\'s will, intercession for a sinning believer, and the settled assurance that those born of God are kept safe from the evil one. He ends with a warning to guard against idols.</p>' },
+    ];
+
+    function renderNotes() {
+      const container = document.getElementById('notes-list');
+      container.innerHTML = TN_NOTES.map(function(note, i) {
+        const open = i === 0;
+        return '<button class="note-toggle' + (open ? ' open' : '') + '" onclick="toggleNote(this)">'
+          + '<span>' + note.ref + ' — ' + note.key + '</span>' + CHEVRON_SVG
+          + '</button>'
+          + '<div class="note-body' + (open ? ' open' : '') + '">'
+          + '<div class="note-verse-label">' + note.ref + '</div>'
+          + note.body
+          + notePBHTML('n' + i)
+          + '</div>';
+      }).join('');
+    }
+
+    function renderQuestions() {
+      const container = document.getElementById('questions-list');
+      container.innerHTML = TQ_DATA.map(function(q, i) {
+        return '<div class="tq-item">'
+          + '<div class="tq-toggle" role="button" tabindex="0" onclick="toggleTQ(this)" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();toggleTQ(this);}">'
+          + '<span class="tq-inner"><span class="tq-ref">' + q.ref + '</span>'
+          + '<div class="tq-q-outer">' + tqPBGroupHTML('q' + i) + '<span class="tq-question">' + q.question + '</span></div>'
+          + '</span>'
+          + TQ_CHEV_SVG
+          + '</div>'
+          + '<div class="tq-body"><div class="tq-a-outer">' + tqPBGroupHTML('a' + i) + q.answer + '</div></div>'
+          + '</div>';
+      }).join('');
+    }
+
+    function renderWords() {
+      const container = document.getElementById('words-list');
+      container.innerHTML = TW_DATA.map(function(w, i) {
+        const open = i === 0;
+        return '<div class="tw-item">'
+          + '<button class="tw-toggle' + (open ? ' open' : '') + '" onclick="toggleTW(this)">' + w.term + CHEVRON_SVG.replace('note-chevron', 'tw-chev') + '</button>'
+          + '<div class="tw-body' + (open ? ' open' : '') + '" data-art-title="' + w.term + '">'
+          + '<div id="art-player-tw-' + i + '"></div>'
+          + '<div class="tw-verses-label">Used in These Verses</div>'
+          + '<div class="tw-verse-tags">' + w.verses.map(function(v) { return '<span class="tw-verse-tag">' + v + '</span>'; }).join('') + '</div>'
+          + '<div class="tw-article">' + w.html + '</div>'
+          + '</div></div>';
+      }).join('');
+    }
+
+    function renderOSN() {
+      const container = document.getElementById('osn-list');
+      container.innerHTML = OSN_DATA.map(function(o, i) {
+        const open = i === 0;
+        return '<div class="tw-item">'
+          + '<button class="tw-toggle' + (open ? ' open' : '') + '" onclick="toggleTW(this)">' + o.title + CHEVRON_SVG.replace('note-chevron', 'tw-chev') + '</button>'
+          + '<div class="tw-body' + (open ? ' open' : '') + '" data-art-title="' + o.title + '">'
+          + '<div id="art-player-osn-' + i + '"></div>'
+          + '<div class="tw-article">' + o.html + '</div>'
+          + '</div></div>';
+      }).join('');
+    }
+
+    // ── AI Assistant (1 John 5) ───────────────────────────────────────────────
+
+    const AI_CONTENT = {
+      summary: 'John closes his letter by tying together belief, love, and obedience: everyone who believes Jesus is the Christ is born of God, and that new birth is what gives believers victory over the world (1–5). He then points to a threefold testimony, the Spirit, the water, and the blood, that agrees in affirming who Jesus is, and argues that God\'s testimony about his Son is greater than any human witness (6–12). John explains that he wrote so believers could know with confidence that they have eternal life, describes prayer offered according to God\'s will, and instructs believers to intercede for a brother caught in sin (13–17). He ends with three confident affirmations about what "we know" as God\'s children, and a final warning to guard against idols (18–21).',
+      questions: [
+        'What does it mean that "the victory that has overcome the world is our faith"?',
+        'Who are the three witnesses in verses 6-8, and what are they testifying to?',
+        'What is the "sin that leads to death" that John mentions in verse 16?',
+      ],
+    };
+
+    const AI_RESPONSES = {
+      'What does it mean that "the victory that has overcome the world is our faith"?':
+        'John is saying that faith itself, trusting that Jesus is the Son of God, is the means by which believers share in the victory Christ has already won over the world\'s opposing values and powers. It is not that believers overcome the world through their own effort or willpower; the victory is Christ\'s, and faith is how a person is united to that victory. Translators should make sure "faith" here is understood as ongoing trust, not a one-time event.',
+      'Who are the three witnesses in verses 6-8, and what are they testifying to?':
+        'The three witnesses are the Spirit, the water, and the blood. Most interpreters connect "water" to Jesus\' baptism and "blood" to his death on the cross, with the Spirit as the ongoing witness of God confirming both. Together they testify that Jesus Christ came as a real, full human being (not merely in appearance) and that he is God\'s Son. John is countering a view that denied Jesus\' full humanity.',
+      'What is the "sin that leads to death" that John mentions in verse 16?':
+        'John does not define this sin precisely, and interpreters disagree. Common views include deliberate, unrepentant rejection of Christ (apostasy) or a sin so serious that God chooses to end that person\'s earthly life. What is clear is the contrast John draws: for sin that does not lead to death, believers should pray, trusting God to give life; John does not instruct believers to pray in the same way about this specific, undefined sin.',
+    };
+
+    function getAIResponse(question) {
+      return AI_RESPONSES[question] ||
+        'That is a good question for this passage. The Translation Notes and Translation Words articles above will have specific guidance on how to handle this concept in your target language.';
+    }
+
+    var aiThread        = [];
+    var aiCurrentQuestions = AI_CONTENT.questions;
+    var aiLoadTimer      = null;
+    var aiResponseTimer  = null;
+
+    function renderAIPane() {
+      clearTimeout(aiLoadTimer);
+      clearTimeout(aiResponseTimer);
+      var body = document.getElementById('ai-pane-body');
+      if (!body) return;
+      body.innerHTML = '<div class="ai-loading"><div class="ai-loading-spinner"></div>Loading passage context…</div>';
+      aiLoadTimer = setTimeout(renderAIBody, 1100);
+    }
+
+    function renderAIBody() {
+      var body = document.getElementById('ai-pane-body');
+      if (!body) return;
+
+      var html = '';
+      var INFO_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+      var X_SVG = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+      html += '<div class="ai-notice" id="ai-notice">'
+        + '<span class="ai-notice-icon">' + INFO_SVG + '</span>'
+        + '<div class="ai-notice-text"><strong>AI Assistant uses biblical resources and passage references — not your draft translation.</strong>'
+        + ' Conversations clear when you navigate or reload.</div>'
+        + '<button class="ai-notice-dismiss" onclick="document.getElementById(\'ai-notice\').remove()" aria-label="Dismiss">' + X_SVG + '</button>'
+        + '</div>';
+
+      html += '<div class="ai-summary">' + AI_CONTENT.summary + '</div>';
+
+      html += '<div class="ai-questions"><div class="ai-questions-label">Suggested questions</div>';
+      aiCurrentQuestions.forEach(function(q, i) {
+        html += '<button class="ai-question-btn" onclick="submitAIQuestion(aiCurrentQuestions[' + i + '])">' + esc(q) + '</button>';
+      });
+      html += '</div>';
+
+      html += '<div class="ai-thread" id="ai-thread">';
+      aiThread.forEach(function(turn) {
+        html += '<div class="ai-thread-turn ai-turn-' + turn.role + '">'
+          + '<div class="ai-turn-label ' + turn.role + '">' + (turn.role === 'user' ? 'You' : 'AI Assistant') + '</div>'
+          + '<div class="ai-turn-text">' + turn.text + '</div>'
+          + '</div>';
+      });
+      html += '</div>';
+
+      body.innerHTML = html;
+      if (aiThread.length > 0) body.scrollTop = body.scrollHeight;
+    }
+
+    var RETRY_SVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>';
+
+    function submitAIQuestion(prefill, forceSuccess) {
+      var inputEl = document.getElementById('ai-input');
+      var q = prefill || (inputEl ? inputEl.value.trim() : '');
+      if (!q) return;
+
+      if (inputEl) { inputEl.value = ''; autoResizeAIInput(inputEl); }
+
+      aiThread.push({ role: 'user', text: q });
+      renderAIBody();
+
+      var thread = document.getElementById('ai-thread');
+      if (thread) {
+        var loadTurn = document.createElement('div');
+        loadTurn.className = 'ai-thread-turn';
+        loadTurn.id = 'ai-asst-loading';
+        loadTurn.innerHTML = '<div class="ai-turn-label asst">AI Assistant</div>'
+          + '<div class="ai-loading" style="padding:4px 0 0;"><div class="ai-loading-spinner"></div></div>';
+        thread.appendChild(loadTurn);
+        var body = document.getElementById('ai-pane-body');
+        if (body) body.scrollTop = body.scrollHeight;
+      }
+
+      document.querySelectorAll('.ai-question-btn').forEach(function(b) { b.disabled = true; });
+
+      var isLastQuestion = !forceSuccess && aiCurrentQuestions.length > 0
+        && q === aiCurrentQuestions[aiCurrentQuestions.length - 1];
+
+      clearTimeout(aiResponseTimer);
+      aiResponseTimer = setTimeout(function() {
+        var loadEl = document.getElementById('ai-asst-loading');
+        if (isLastQuestion) {
+          if (loadEl) {
+            loadEl.innerHTML = '<div class="ai-turn-label asst">AI Assistant</div>'
+              + '<div class="ai-turn-error">'
+              + '<span>Something went wrong.</span>'
+              + '<button class="ai-retry-btn" onclick="retryAIQuestion(' + JSON.stringify(q) + ')">'
+              + RETRY_SVG + 'Retry</button>'
+              + '</div>';
+          }
+          document.querySelectorAll('.ai-question-btn').forEach(function(b) { b.disabled = false; });
+        } else {
+          aiThread.push({ role: 'asst', text: getAIResponse(q) });
+          renderAIBody();
+        }
+      }, 1800);
+    }
+
+    function retryAIQuestion(q) {
+      if (aiThread.length > 0) {
+        var last = aiThread[aiThread.length - 1];
+        if (last.role === 'user' && last.text === q) aiThread.pop();
+      }
+      submitAIQuestion(q, true);
+    }
+
+    function autoResizeAIInput(el) {
+      if (!el) return;
+      el.style.height = 'auto';
+      el.style.height = Math.min(120, el.scrollHeight) + 'px';
+    }
+
+    // ── Resize handle ─────────────────────────────────────────────────────────
+
     (function() {
       const handle = document.getElementById('resize-handle');
       let dragging = false, startX = 0, startW = 0;
@@ -495,7 +2185,16 @@
       }
     }
 
-    window.addEventListener('load', renderVerses);
+    window.addEventListener('load', function() {
+      renderVerses();
+      renderNotes();
+      renderQuestions();
+      renderWords();
+      renderOSN();
+      artPBInject();
+      updateChipScrollArrows();
+      document.getElementById('chip-row-scroll').addEventListener('scroll', updateChipScrollArrows);
+    });
   </script>
 </body>
 </html>
