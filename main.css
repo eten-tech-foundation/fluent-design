@@ -20,7 +20,7 @@
   --error-foreground: #ffffff;
   --text-disabled: #a0a0a0;
   --popover: #dde3ed;
-  --list-hover: #0a3e9e;
+  --popover-hover: #d4dbe7;
   --border: #c4cad6;
   --radius: 0.75rem;
   --radius-sm: calc(var(--radius) - 4px);
@@ -39,8 +39,8 @@
   --muted: #202630;
   --muted-foreground: #9da6b5;
   --popover: #2a3240;
+  --popover-hover: #333c4c;
   --border: #3d4552;
-  --list-hover: #0007e0;
 }
 
 /* ── Base Reset ── */

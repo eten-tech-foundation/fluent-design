@@ -65,7 +65,7 @@ const CUSTOM_SELECT_CSS = `
     cursor: pointer;
     white-space: nowrap;
   }
-  .cs-item:hover { background: var(--list-hover); }
+  .cs-item:hover { background: var(--popover-hover); }
   .cs-item.selected { font-weight: 600; color: var(--primary); }
   .cs-item.cs-item-disabled { color: var(--muted-foreground); cursor: not-allowed; }
 `;
