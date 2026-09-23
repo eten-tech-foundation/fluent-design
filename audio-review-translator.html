@@ -46,56 +46,7 @@
       overflow: hidden;
     }
 
-    /* ── Unit selector bar ── */
-    .unit-selector-bar {
-      display: flex;
-      align-items: center;
-      gap: 0;
-      padding: 0 24px;
-      flex-shrink: 0;
-      background: var(--background);
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-    .unit-selector-bar::-webkit-scrollbar { display: none; }
-
-    .unit-tab {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      padding: 12px 16px 11px;
-      border: none;
-      border-bottom: 2px solid transparent;
-      background: none;
-      font-size: 14px;
-      font-weight: 500;
-      font-family: var(--font);
-      color: var(--muted-foreground);
-      cursor: pointer;
-      white-space: nowrap;
-      margin-bottom: -1px;
-      transition: color 0.15s;
-    }
-    .unit-tab:hover { color: var(--foreground); }
-    .unit-tab.active {
-      color: var(--foreground);
-      font-weight: 600;
-      border-bottom-color: var(--primary);
-    }
-    .unit-tab.settled {
-      color: #16a34a;
-    }
-    .unit-tab.settled .unit-dot { background: #16a34a; }
-
-    .unit-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: #D97706;
-      flex-shrink: 0;
-    }
-    .unit-tab.active .unit-dot { background: var(--primary); }
-
-    /* ── Resolution content ── */
+    /* ── Resolution content (three columns) ── */
     .resolution-content {
       flex: 1;
       display: flex;
@@ -103,13 +54,79 @@
       overflow: hidden;
     }
 
-    /* ── Takes panel ── */
+    /* ── Unit list panel (left column) ── */
+    .unit-list-panel {
+      width: 220px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-right: 1px solid var(--border);
+    }
+
+    .unit-list-header {
+      padding: 16px 16px 12px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--foreground);
+      flex-shrink: 0;
+    }
+
+    .unit-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 8px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .unit-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 9px 10px;
+      border: none;
+      border-radius: var(--radius);
+      background: none;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: var(--font);
+      color: var(--muted-foreground);
+      cursor: pointer;
+      text-align: left;
+      white-space: nowrap;
+      transition: color 0.15s, background 0.15s;
+    }
+    .unit-row:hover { background: var(--muted); color: var(--foreground); }
+    .unit-row.active {
+      background: var(--card);
+      color: var(--foreground);
+      font-weight: 600;
+    }
+    .unit-row.settled {
+      color: #16a34a;
+    }
+    .unit-row.settled .unit-dot { background: #16a34a; }
+
+    .unit-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #D97706;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+    .unit-row.active .unit-dot { background: var(--primary); }
+
+    /* ── Takes panel (middle column) ── */
     .takes-panel {
       width: 380px;
       flex-shrink: 0;
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      border-right: 1px solid var(--border);
     }
 
     .takes-header {
@@ -299,8 +316,8 @@
     }
     .take-card.selected-take .select-draft-btn:hover { background: none; color: #16a34a; }
 
-    /* ── Preview panel ── */
-    .preview-panel {
+    /* ── Draft text panel (right column) ── */
+    .draft-panel {
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -308,7 +325,7 @@
       overflow: hidden;
     }
 
-    .preview-header {
+    .draft-header {
       padding: 16px 24px 12px;
       font-size: 15px;
       font-weight: 600;
@@ -316,27 +333,27 @@
       flex-shrink: 0;
     }
 
-    .preview-header p {
+    .draft-header p {
       font-size: 13px;
       font-weight: 400;
       color: var(--muted-foreground);
       margin-top: 4px;
     }
 
-    .preview-verse-area {
+    .draft-verse-area {
       flex: 1;
       overflow-y: auto;
       padding: 16px 24px;
     }
 
-    .preview-verse-row {
+    .draft-verse-row {
       display: flex;
       align-items: flex-start;
       gap: 8px;
       padding: 12px 0;
     }
 
-    .preview-verse-num {
+    .draft-verse-num {
       font-size: 0.875rem;
       font-weight: 500;
       color: var(--muted-foreground);
@@ -345,13 +362,13 @@
       flex-shrink: 0;
     }
 
-    .preview-source-text {
+    .draft-verse-text {
       font-size: 0.9375rem;
       line-height: 1.6;
       color: var(--foreground);
     }
 
-    .preview-unit-label {
+    .draft-unit-label {
       display: inline-block;
       font-size: 11px;
       font-weight: 700;
@@ -359,6 +376,12 @@
       letter-spacing: 0.05em;
       color: var(--primary);
       margin-bottom: 10px;
+    }
+
+    .draft-empty-state {
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+      padding: 12px 0;
     }
 
   </style>
@@ -384,11 +407,14 @@
   <!-- Page body -->
   <div class="page-body">
 
-    <!-- Unit selector -->
-    <div class="unit-selector-bar" id="unit-selector-bar"></div>
-
-    <!-- Resolution content -->
+    <!-- Resolution content: three columns -->
     <div class="resolution-content">
+
+      <!-- Unit list panel -->
+      <div class="unit-list-panel">
+        <div class="unit-list-header">Units</div>
+        <div class="unit-list" id="unit-list"></div>
+      </div>
 
       <!-- Takes panel -->
       <div class="takes-panel">
@@ -400,13 +426,13 @@
         <div class="takes-list" id="takes-list"></div>
       </div>
 
-      <!-- Preview panel -->
-      <div class="preview-panel">
-        <div class="preview-header">
-          Source Text
-          <p>IRV Gujarati reference for this unit</p>
+      <!-- Draft text panel -->
+      <div class="draft-panel">
+        <div class="draft-header">
+          Draft Text
+          <p>Target-language draft for this unit</p>
         </div>
-        <div class="preview-verse-area" id="preview-verse-area"></div>
+        <div class="draft-verse-area" id="draft-verse-area"></div>
       </div>
 
     </div>
@@ -419,8 +445,10 @@
     // and the owning translator can switch it to any other take of their own.
     // For this mockup the signed-in translator ("Roslin T") owns every non-conflict
     // unit shown, so the switch control is always available on those units.
+    // Pericope mode: each unit is a multi-verse range recorded as one continuous take.
+    // Verse mode: each unit is a single verse, recorded and reviewed independently.
 
-    const units = [
+    const pericopeUnits = [
       {
         id: 0,
         label: 'Verses 1–5',
@@ -471,12 +499,66 @@
       },
     ];
 
-    const sourceText = {
+    // Per-verse takes for verse mode. Most verses carry a single take (owned by
+    // the signed-in translator); a few are seeded with conflicting takes so the
+    // resolution UI has something to show.
+    const VERSE_TAKE_OVERRIDES = {
+      2: {
+        conflict: true, resolved: false, activeTake: null,
+        takes: [
+          { id: 'take-v2a', contributor: 'Roslin T', date: 'Jul 22, 2026', duration: '0:14' },
+          { id: 'take-v2b', contributor: 'Priya M',  date: 'Jul 23, 2026', duration: '0:16' },
+        ],
+      },
+      8: {
+        conflict: true, resolved: true, activeTake: 'take-v8b',
+        takes: [
+          { id: 'take-v8a', contributor: 'Priya M',  date: 'Jul 20, 2026', duration: '0:11' },
+          { id: 'take-v8b', contributor: 'Roslin T', date: 'Jul 21, 2026', duration: '0:12' },
+        ],
+      },
+      13: {
+        conflict: true, resolved: false, activeTake: null,
+        takes: [
+          { id: 'take-v13a', contributor: 'Roslin T', date: 'Jul 22, 2026', duration: '0:19' },
+          { id: 'take-v13b', contributor: 'Seema K',  date: 'Jul 24, 2026', duration: '0:21' },
+        ],
+      },
+    };
+
+    function buildVerseUnits() {
+      const result = [];
+      for (let n = 1; n <= 15; n++) {
+        const override = VERSE_TAKE_OVERRIDES[n];
+        if (override) {
+          result.push(Object.assign({ id: 'v' + n, label: 'Verse ' + n, verses: [n] }, override));
+        } else {
+          result.push({
+            id: 'v' + n,
+            label: 'Verse ' + n,
+            conflict: false,
+            resolved: false,
+            activeTake: 'take-v' + n,
+            verses: [n],
+            takes: [
+              { id: 'take-v' + n, contributor: 'Roslin T', date: 'Jul 20, 2026', duration: '0:1' + (n % 8) },
+            ],
+          });
+        }
+      }
+      return result;
+    }
+
+    const verseUnits = buildVerseUnits();
+
+    // Target-language draft text for the right column. Verses 13-15 are left
+    // out to demonstrate the empty-draft state on that still-unresolved unit.
+    const draftText = {
       1:  'જે કોઈ વિશ્વાસ કરે છે કે ઈસુ ખ્રિસ્ત છે, તે ઈશ્વર થકી જન્મ્યો છે; અને જે ઈશ્વરને ચાહે છે, તે ઈશ્વર થકી જન્મેલાને પણ ચાહે છે.',
       2:  'આ પ્રકારે આપણે ઓળખીએ છીએ કે આપણે ઈશ્વરનાં બાળકોને ચાહીએ છીએ, જ્યારે આપણે ઈશ્વરને ચાહીએ છીએ અને ઈશ્વરની આજ્ઞા પ્રમાણે ચાલીએ છીએ.',
       3:  'ઈશ્વર પ્રત્યેનો પ્રેમ એ છે કે આપણે તેની આજ્ઞાઓ પ્રમાણે ચાલીએ; અને તેની આજ્ઞાઓ ભારે નથી.',
-      4:  'કારણ કે ઈશ્વર થકી જન્મેલ દરેક જગतને જીتे છे; અને જે વિજ जगत ने जीत्यो, ते आ छे, एटले आपणो विश्वास.',
-      5:  'ઈसु ईश्वरना पुत्र छे, ए विश्वास कोण करे छे, ए सिवाय जगतने जीतनारो बीजो कोण छे?',
+      4:  'કારણ કે ઈશ્વર થકી જન્મેલ દરેક જગતને જીતે છે; અને જે વિજય જગતને જીત્યો, તે આ છે, એટલે આપણો વિશ્વાસ.',
+      5:  'ઈસુ ઈશ્વરના પુત્ર છે, એ જ વિશ્વાસ કરે છે, એ સિવાય જગતને જીતનારો બીજો કોણ છે?',
       6:  'જગત તેને ઓળખતું નથી, કારણ કે તેમણે તેને ઓળખ્યો નથી.',
       7:  'વ્હાલાંઓ, હવે આપણે ઈશ્વરનાં બાળકો છીએ, અને પછી શું થશે તે હજી પ્રગટ થયું નથી.',
       8:  'આપણે જાણીએ છીએ કે તે પ્રગટ થશે ત્યારે આપણે તેમના જેવા થઈશું.',
@@ -484,14 +566,16 @@
       10: 'જે કોઈ પાપ કરે છે તે નિયમનું ઉલ્લંઘન કરે છે; પાપ એ નિયમનું ઉલ્લંઘન છે.',
       11: 'અને તમે જાણો છો કે તે પાપોને દૂર કરવા માટે પ્રગટ થયા હતા.',
       12: 'જે કોઈ તેમનામાં રહે છે તે પાપ કરતો નથી.',
-      13: 'ઈश्वरना पुत्रना नाम पर विश्वास करनारा, तमने आ वात मे एटला सारू लख्या छे, के तमे जाणो के तमने अनंत जीवन छे.',
-      14: 'ईश्वर आगळ आ आपणो भरोसो छे, के जो आपणे तेनी इच्छा प्रमाणे कंई मागीए, तो ते आपणुं सांभळे छे.',
-      15: 'अने जो आपणे जाणीए छीए के आपणे जे कोई मागीए ते ते सांभळे छे, तो आपणे जाणीए छीए के जे कोई आपणे माग्युं, ते फळ आपणने मळ्युं छे.',
     };
 
+    let viewMode = 'verse';
     let activeUnit = 0;
     let playingTakeId = null;
     let playTimers = {};
+
+    function getUnits() {
+      return viewMode === 'pericope' ? pericopeUnits : verseUnits;
+    }
 
     function contributorCount(unit) {
       return new Set(unit.takes.map(function(t) { return t.contributor; })).size;
@@ -499,13 +583,15 @@
 
     // ── Rendering ─────────────────────────────────────────────────────────────
 
-    function renderUnitTabs() {
-      const bar = document.getElementById('unit-selector-bar');
-      bar.innerHTML = '';
-      units.forEach(function(unit, idx) {
+    function renderUnitList() {
+      const list = document.getElementById('unit-list');
+      list.innerHTML = '';
+      getUnits().forEach(function(unit, idx) {
+        if (unit.takes.length === 0) return; // units with no recorded takes are omitted
+
         const btn = document.createElement('button');
         const settled = unit.conflict ? unit.resolved : unit.activeTake !== null;
-        btn.className = 'unit-tab' + (idx === activeUnit ? ' active' : '') + (settled ? ' settled' : '');
+        btn.className = 'unit-row' + (idx === activeUnit ? ' active' : '') + (settled ? ' settled' : '');
         btn.dataset.unit = idx;
         btn.onclick = function() { selectUnit(idx); };
         let dotHtml = '';
@@ -513,17 +599,17 @@
           const dotColor = unit.resolved ? '#16a34a' : (idx === activeUnit ? '' : '#D97706');
           dotHtml = '<span class="unit-dot" style="' + (dotColor ? 'background:' + dotColor + ';' : '') + '"></span>';
         }
-        btn.innerHTML = dotHtml + unit.label;
-        bar.appendChild(btn);
+        btn.innerHTML = '<span>' + unit.label + '</span>' + dotHtml;
+        list.appendChild(btn);
       });
 
-      const anyConflicts = units.some(function(u) { return u.conflict; });
-      const allResolved = anyConflicts && units.filter(function(u) { return u.conflict; }).every(function(u) { return u.resolved; });
+      const anyConflicts = getUnits().some(function(u) { return u.conflict; });
+      const allResolved = anyConflicts && getUnits().filter(function(u) { return u.conflict; }).every(function(u) { return u.resolved; });
       document.getElementById('all-resolved-chip').style.display = allResolved ? 'inline-flex' : 'none';
     }
 
     function renderTakesHeader() {
-      const unit = units[activeUnit];
+      const unit = getUnits()[activeUnit];
       const header = document.getElementById('takes-header');
       const banner = document.getElementById('conflict-banner');
 
@@ -540,12 +626,12 @@
     }
 
     function renderTakes() {
-      const unit = units[activeUnit];
+      const unit = getUnits()[activeUnit];
       const list = document.getElementById('takes-list');
       list.innerHTML = '';
       const showNames = contributorCount(unit) > 1;
 
-      unit.takes.forEach(function(take, i) {
+      unit.takes.slice(0, 5).forEach(function(take, i) {
         const isSelected = unit.activeTake === take.id;
         const isPlaying  = playingTakeId === take.id;
         // Translators can only switch the active take on their own non-conflict units.
@@ -597,26 +683,32 @@
       });
     }
 
-    function renderPreview() {
-      const unit = units[activeUnit];
-      const area = document.getElementById('preview-verse-area');
-      area.innerHTML = '<div class="preview-unit-label">' + unit.label + '</div>';
+    function renderDraft() {
+      const unit = getUnits()[activeUnit];
+      const area = document.getElementById('draft-verse-area');
+      area.innerHTML = '<div class="draft-unit-label">' + unit.label + '</div>';
+
+      const hasDraft = unit.verses.some(function(n) { return draftText[n]; });
+      if (!hasDraft) {
+        area.innerHTML += '<div class="draft-empty-state">No draft text yet for this passage.</div>';
+        return;
+      }
 
       unit.verses.forEach(function(n) {
         const row = document.createElement('div');
-        row.className = 'preview-verse-row';
+        row.className = 'draft-verse-row';
         row.innerHTML =
-          '<span class="preview-verse-num">' + n + '</span>' +
-          '<span class="preview-source-text">' + esc(sourceText[n] || '') + '</span>';
+          '<span class="draft-verse-num">' + n + '</span>' +
+          '<span class="draft-verse-text">' + esc(draftText[n] || '') + '</span>';
         area.appendChild(row);
       });
     }
 
     function render() {
-      renderUnitTabs();
+      renderUnitList();
       renderTakesHeader();
       renderTakes();
-      renderPreview();
+      renderDraft();
     }
 
     // ── Interactions ──────────────────────────────────────────────────────────
@@ -627,6 +719,29 @@
       render();
     }
 
+    // ── Mode switching ────────────────────────────────────────────────────────
+    // Any display mode other than 'pericope' (verse, or chapter as a fallback)
+    // reviews takes one verse at a time.
+
+    function setViewMode(mode) {
+      const newMode = mode === 'pericope' ? 'pericope' : 'verse';
+      if (newMode === viewMode) return;
+      stopCurrentPlayback();
+
+      if (newMode === 'pericope') {
+        const currentVerse = verseUnits[activeUnit].verses[0];
+        const idx = pericopeUnits.findIndex(function(u) { return u.verses.indexOf(currentVerse) !== -1; });
+        activeUnit = idx === -1 ? 0 : idx;
+      } else {
+        const firstVerse = pericopeUnits[activeUnit].verses[0];
+        const idx = verseUnits.findIndex(function(u) { return u.verses[0] === firstVerse; });
+        activeUnit = idx === -1 ? 0 : idx;
+      }
+
+      viewMode = newMode;
+      render();
+    }
+
     function togglePlay(takeId) {
       if (playingTakeId === takeId) {
         stopCurrentPlayback();
@@ -634,7 +749,7 @@
         stopCurrentPlayback();
         playingTakeId = takeId;
         renderTakes();
-        const unit = units[activeUnit];
+        const unit = getUnits()[activeUnit];
         const take = unit.takes.find(function(t) { return t.id === takeId; });
         if (take) {
           const parts = take.duration.split(':');
@@ -659,7 +774,7 @@
 
     function selectDraft(takeId) {
       stopCurrentPlayback();
-      const unit = units[activeUnit];
+      const unit = getUnits()[activeUnit];
       unit.activeTake = takeId;
       render();
     }
@@ -671,7 +786,22 @@
 
     // ── Init ─────────────────────────────────────────────────────────────────
 
-    window.addEventListener('load', render);
+    window.addEventListener('load', function() {
+      const savedMode = localStorage.getItem('fluent-display-mode');
+      if (savedMode) {
+        // Sync the settings dialog button before rendering
+        const seg = document.getElementById('scripture-seg');
+        if (seg) {
+          seg.querySelectorAll('button').forEach(function(b) {
+            b.classList.toggle('active', b.textContent.toLowerCase() === savedMode);
+          });
+        }
+        // activeUnit is still 0 (the start of the passage) in either array,
+        // so no position mapping is needed on first render.
+        viewMode = savedMode === 'pericope' ? 'pericope' : 'verse';
+      }
+      render();
+    });
   </script>
 </body>
 </html>
