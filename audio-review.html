@@ -388,6 +388,20 @@
       padding: 12px 0;
     }
 
+    .draft-pericope-para {
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: var(--foreground);
+    }
+
+    .draft-pericope-para .draft-verse-num {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: var(--primary);
+      min-width: 0;
+      padding-top: 0;
+    }
+
   </style>
 </head>
 <body data-role="manager">
@@ -400,7 +414,7 @@
       <button class="back-btn" onclick="history.back()" aria-label="Back">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
-      <span class="page-title">1 John 5 — Audio Review</span>
+      <span class="page-title">Audio Review - 1 John 5</span>
       <span class="all-resolved-chip" id="all-resolved-chip" style="display:none;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         All Resolved
@@ -590,14 +604,14 @@
         if (unit.takes.length === 0) return; // units with no recorded takes are omitted
 
         const btn = document.createElement('button');
-        const settled = unit.conflict ? unit.resolved : unit.activeTake !== null;
+        const settled = unit.conflict && unit.resolved;
         btn.className = 'unit-row' + (idx === activeUnit ? ' active' : '') + (settled ? ' settled' : '');
         btn.dataset.unit = idx;
         btn.onclick = function() { selectUnit(idx); };
         let dot = '';
         if (unit.conflict) {
-          const dotColor = unit.resolved ? 'var(--success-border)' : (idx === activeUnit ? '' : 'var(--warning-border)');
-          dot = '<span class="unit-dot" style="' + (dotColor ? 'background:' + dotColor + ';' : '') + '"></span>';
+          const dotColor = unit.resolved ? 'var(--success-border)' : 'var(--warning-border)';
+          dot = '<span class="unit-dot" style="background:' + dotColor + ';"></span>';
         }
         btn.innerHTML = '<span class="unit-dot-slot">' + dot + '</span><span>' + unit.label + '</span>';
         list.appendChild(btn);
@@ -635,9 +649,10 @@
         const isSelected = unit.activeTake === take.id;
         const isPlaying  = playingTakeId === take.id;
         const showSelectButton = unit.conflict && !unit.resolved;
+        const showSettled = isSelected && unit.conflict && unit.resolved;
 
         const card = document.createElement('div');
-        card.className = 'take-card' + (isPlaying ? ' playing' : '') + (isSelected ? ' selected-take' : '');
+        card.className = 'take-card' + (isPlaying ? ' playing' : '') + (showSettled ? ' selected-take' : '');
         card.id = 'card-' + take.id;
 
         const barHeights = [30,55,45,70,40,85,60,50,75,45,65,80,35,55,70,45,60,50,40,65,55,75,45,60,70,50,40,65,55,45];
@@ -690,6 +705,16 @@
       const hasDraft = unit.verses.some(function(n) { return draftText[n]; });
       if (!hasDraft) {
         area.innerHTML += '<div class="draft-empty-state">No draft text yet for this passage.</div>';
+        return;
+      }
+
+      if (viewMode === 'pericope') {
+        const para = document.createElement('div');
+        para.className = 'draft-pericope-para';
+        para.innerHTML = unit.verses.map(function(n) {
+          return '<span class="draft-verse-num">' + n + '</span> ' + esc(draftText[n] || '');
+        }).join(' ');
+        area.appendChild(para);
         return;
       }
 
