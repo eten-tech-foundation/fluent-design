@@ -69,7 +69,7 @@
 
     
 
-    /* Project Users */
+    /* Project Team */
     .users-section {
       border: 1px solid var(--border);
       border-radius: var(--radius);
@@ -88,19 +88,6 @@
       flex-shrink: 0;
     }
 
-    .btn-icon-add {
-      width: 28px; height: 28px;
-      background: var(--primary);
-      border: none;
-      border-radius: 6px;
-      color: white;
-      font-size: 18px;
-      line-height: 1;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      font-family: var(--font);
-    }
-
     .users-table-wrap { height: 172px; overflow-y: auto; }
 
     
@@ -109,86 +96,6 @@
 
     
 
-    .users-table .td-action { text-align: right; width: 36px; }
-
-    
-
-    /* Role editing styles */
-    .role-cell {
-      position: relative;
-      cursor: pointer;
-      padding: 4px 8px;
-      border-radius: 4px;
-      transition: background 0.15s;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .role-cell:hover {
-      background: var(--muted);
-    }
-    
-    .role-cell.editable {
-      cursor: pointer;
-    }
-
-    .role-dropdown {
-      position: fixed;
-      background: var(--popover);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      z-index: 100;
-      min-width: 160px;
-      padding: 4px 0;
-      display: none;
-      font-size: 14px;
-    }
-    
-    .role-dropdown.open {
-      display: block;
-    }
-    
-    .role-option {
-      padding: 6px 12px;
-      cursor: pointer;
-      color: var(--foreground);
-      display: flex;
-      align-items: center;
-    }
-    
-    .role-option:hover {
-      background: var(--muted);
-    }
-
-    .role-cell.read-only {
-      cursor: default;
-    }
-    
-    /* Remove dropdown indicator for read-only (Project Manager) cells */
-    .role-cell.read-only .role-caret {
-      display: none;
-    }
-    
-    /* Role indicator */
-    .role-indicator {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    
-    .role-caret {
-      width: 12px;
-      height: 12px;
-      display: inline-block;
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat center;
-      opacity: 0.5;
-      transition: transform 0.15s;
-    }
-    
-    .role-cell.open .role-caret {
-      transform: rotate(180deg);
-    }
     /* ── Right panel ── */
 
     .right-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-shrink: 0; }
@@ -219,7 +126,7 @@
     }
 
     /* ── Narrow layout: stack left panel above chapter table, ── */
-    /* ── metadata card and Project Users side by side          ── */
+    /* ── metadata card and Project Team side by side            ── */
     @media (max-width: 1024px) {
       .body-columns { flex-direction: column; }
 
@@ -495,62 +402,37 @@
           </div>
         </div>
 
-        <!-- Project Users -->
-        <!--div class="users-section">
+        <!-- Project Team (view-only: translators cannot change roles or remove members) -->
+        <div class="users-section">
           <div class="users-header">
-            Project Users
-            <button class="btn-icon-add" onclick="openAddUserModal()">+</button>
+            Project Team
           </div>
           <div class="users-table-wrap">
             <table class="users-table">
               <thead>
-                <tr><th>Name</th><th>Role</th><th></th></tr>
+                <tr><th>Name</th><th>Role</th></tr>
               </thead>
               <tbody>
                 <tr>
                   <td>qa.manager</td>
-                  <td class="role-cell read-only" data-user-id="1">
-                    <div class="role-indicator">
-                      <span>Project Manager</span>
-                      <span class="role-caret"></span>
-                    </div>
-                  </td>
-                  <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
+                  <td>Project Manager</td>
                 </tr>
                 <tr>
                   <td>Roslin P</td>
-                  <td class="role-cell editable" data-user-id="2">
-                    <div class="role-indicator">
-                      <span>Translator</span>
-                      <span class="role-caret"></span>
-                    </div>
-                  </td>
-                  <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
+                  <td>Peer Checker</td>
                 </tr>
                 <tr>
                   <td>Roslin T</td>
-                  <td class="role-cell editable" data-user-id="3">
-                    <div class="role-indicator">
-                      <span>Translator</span>
-                      <span class="role-caret"></span>
-                    </div>
-                  </td>
-                  <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
+                  <td>Translator</td>
                 </tr>
                 <tr>
                   <td>Chad W</td>
-                  <td class="role-cell editable" data-user-id="4">
-                    <div class="-indicator">
-                      <span>Observer</span>
-                      <span class="role-caret"></span>
-                    </div>
-                  </td>
-                  <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
+                  <td>Observer</td>
                 </tr>
               </tbody>
             </table>
           </div>
-        </div-->
+        </div>
 
       </div><!-- /left-panel -->
 
@@ -713,70 +595,6 @@
     </div>
   </div>
 
-  <!-- Add Project User Modal -->
-  <div class="modal-backdrop" id="add-user-modal" onclick="closeAddUserModal(event)">
-    <div class="modal modal--form" onclick="event.stopPropagation()">
-      <div class="modal-header">
-        <span class="modal-title">Add Project User</span>
-        <button class="modal-close" onclick="closeAddUserModal()">&times;</button>
-      </div>
-      <div class="modal-body">
-        <!-- Tabs -->
-        <div class="tab-bar">
-          <button class="tab active" id="existing-user-tab" onclick="switchToAddUserTab('existing')">Existing User</button>
-          <button class="tab" id="invite-email-tab" onclick="switchToAddUserTab('invite')">Invite by Email</button>
-        </div>
-
-        <!-- Existing User Tab Content -->
-        <div id="existing-user-content">
-          <div class="form-field" style="padding-bottom: 18px;">
-            <label class="form-label">Select User(s)</label>
-            <div class="multiselect" id="add-user-multiselect">
-              <button class="multiselect-trigger" id="add-user-trigger" onclick="toggleAddUserDropdown(event)">
-                Select user(s)
-              </button>
-              <div class="multiselect-panel" id="add-user-panel">
-                <label class="multiselect-option"><input type="checkbox" class="add-user-cb" value="Anna Rivera" onchange="onAddUserCheck()"> Anna Rivera</label>
-                <label class="multiselect-option"><input type="checkbox" class="add-user-cb" value="Ben Okafor" onchange="onAddUserCheck()"> Ben Okafor</label>
-                <label class="multiselect-option"><input type="checkbox" class="add-user-cb" value="Diana Chen" onchange="onAddUserCheck()"> Diana Chen</label>
-                <label class="multiselect-option"><input type="checkbox" class="add-user-cb" value="Marcus Webb" onchange="onAddUserCheck()"> Marcus Webb</label>
-                <label class="multiselect-option"><input type="checkbox" class="add-user-cb" value="Priya Sharma" onchange="onAddUserCheck()"> Priya Sharma</label>
-                <label class="multiselect-option"><input type="checkbox" class="add-user-cb" value="Tom Nakamura" onchange="onAddUserCheck()"> Tom Nakamura</label>
-              </div>
-            </div>
-          </div>
-          <div class="form-field">
-            <label class="form-label">Role</label>
-            <select class="form-select" id="add-user-role">
-              <option value="Project Manager">Project Manager</option>
-              <option value="Translator">Translator</option>
-              <option value="Observer">Observer</option>
-            </select>
-          </div>
-        </div>
-        
-        <!-- Invite by Email Tab Content -->
-        <div id="invite-email-content" style="display: none;">
-          <div class="form-field">
-            <label class="form-label"><span class="req">*</span>Email Address</label>
-            <input type="email" class="form-input" id="invite-email-address" placeholder="user@example.com">
-          </div>
-          <div class="form-field">
-            <label class="form-label"><span class="req">*</span>Role</label>
-            <select class="form-select" id="invite-user-role">
-              <option value="Project Manager">Project Manager</option>
-              <option value="Translator" selected>Translator</option>
-              <option value="Observer">Observer</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-primary" id="save-users-btn" disabled onclick="saveUsers()">Save Users</button>
-      </div>
-    </div>
-  </div>
-
   <script>
     // ── Export modal (WNPD-06: format selection + USFM data-loss warning) ──
     // This mockup's project was created via the import path, so it has
@@ -851,121 +669,6 @@
       document.getElementById('assign-drafter').selectedIndex = 0;
       document.getElementById('assign-peer').selectedIndex = 0;
     }
-
-    // ── Add Project User modal ──
-    function openAddUserModal() {
-      document.querySelectorAll('.add-user-cb').forEach(cb => cb.checked = false);
-      const trigger = document.getElementById('add-user-trigger');
-      trigger.textContent = 'Select user(s)';
-      trigger.classList.remove('has-value');
-      document.getElementById('add-user-panel').classList.remove('open');
-      document.getElementById('save-users-btn').disabled = true;
-      document.getElementById('add-user-modal').classList.add('open');
-      // Reset role selection
-      document.getElementById('add-user-role').selectedIndex = 0;
-      
-      // Switch to the first tab (Existing User)
-      switchToAddUserTab('existing');
-    }
-
-    function closeAddUserModal(e) {
-      if (!e || e.target === document.getElementById('add-user-modal')) {
-        document.getElementById('add-user-panel').classList.remove('open');
-        document.getElementById('add-user-modal').classList.remove('open');
-      }
-    }
-
-    function switchToAddUserTab(tab) {
-      const existingContent = document.getElementById('existing-user-content');
-      const inviteContent = document.getElementById('invite-email-content');
-      const existingTab = document.getElementById('existing-user-tab');
-      const inviteTab = document.getElementById('invite-email-tab');
-      
-      if (tab === 'existing') {
-        existingContent.style.display = 'block';
-        inviteContent.style.display = 'none';
-        existingTab.classList.add('active');
-        inviteTab.classList.remove('active');
-      } else {
-        existingContent.style.display = 'none';
-        inviteContent.style.display = 'block';
-        existingTab.classList.remove('active');
-        inviteTab.classList.add('active');
-      }
-    }
-
-    function toggleAddUserDropdown(e) {
-      e.stopPropagation();
-      const panel = document.getElementById('add-user-panel');
-      const rect = document.getElementById('add-user-trigger').getBoundingClientRect();
-      panel.style.top   = (rect.bottom + 4) + 'px';
-      panel.style.left  = rect.left + 'px';
-      panel.style.width = rect.width + 'px';
-      panel.classList.toggle('open');
-    }
-
-    function onAddUserCheck() {
-      const checked = [...document.querySelectorAll('.add-user-cb:checked')];
-      const trigger = document.getElementById('add-user-trigger');
-      if (checked.length === 0) {
-        trigger.textContent = 'Select user(s)';
-        trigger.classList.remove('has-value');
-      } else if (checked.length === 1) {
-        trigger.textContent = checked[0].value;
-        trigger.classList.add('has-value');
-      } else {
-        trigger.textContent = `${checked.length} users selected`;
-        trigger.classList.add('has-value');
-      }
-      document.getElementById('save-users-btn').disabled = checked.length === 0;
-    }
-
-    function saveUsers() {
-      const existingTabActive = document.getElementById('existing-user-content').style.display !== 'none';
-      
-      if (existingTabActive) {
-        const checked = [...document.querySelectorAll('.add-user-cb:checked')];
-        const role = document.getElementById('add-user-role').value;
-        
-        // In a real implementation, this would add the users to the project
-        // For now, we just close the modal
-        closeAddUserModal();
-        
-        // Add a new row to the users table for each selected user
-        const usersTable = document.querySelector('.users-table tbody');
-        checked.forEach(user => {
-          const newRow = document.createElement('tr');
-          newRow.innerHTML = `
-            <td>${user.value}</td>
-            <td>${role}</td>
-            <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
-          `;
-          usersTable.appendChild(newRow);
-        });
-      } else {
-        // Handle invite by email
-        const email = document.getElementById('invite-email-address').value;
-        const role = document.getElementById('invite-user-role').value;
-
-        // Basic validation
-        if (!email || !role) {
-          alert('Please fill in all required fields.');
-          return;
-        }
-
-        // In a real implementation, this would send an email invitation
-        // For now, we just close the modal and show a success message
-        closeAddUserModal();
-        alert(`Invitation sent to ${email} for role: ${role}. They will be prompted to set a display name when they accept.`);
-      }
-    }
-
-    document.addEventListener('click', e => {
-      const panel = document.getElementById('add-user-panel');
-      if (panel && !document.getElementById('add-user-multiselect').contains(e.target)) {
-        panel.classList.remove('open');
-      }
-    });
 
     // ── Progress bar tooltip ──
     function showProgressTooltip(e) {
@@ -1057,97 +760,6 @@
       }
     });
 
-    // ── Role editing functionality ──
-    const ROLE_OPTIONS = ['Project Manager', 'Translator', 'Observer'];
-
-    // Current user (signed-in Project Manager) - in a real app this would come from session data
-    const CURRENT_USER = 'qa.manager';
-
-    let openDropdown = null;
-
-    function isSelfRow(cell) {
-      const userName = cell.closest('tr').querySelector('td:first-child').textContent.trim();
-      return userName === CURRENT_USER;
-    }
-
-    // A Project Manager cannot change their own role.
-    function isRoleCellEditable(cell) {
-      return !isSelfRow(cell);
-    }
-
-    function closeRoleDropdown() {
-      if (openDropdown) {
-        openDropdown.closest('.role-cell').classList.remove('open');
-        openDropdown.remove();
-        openDropdown = null;
-      }
-    }
-
-    function refreshRoleCellStates() {
-      closeRoleDropdown();
-      document.querySelectorAll('.role-cell').forEach(cell => {
-        const editable = isRoleCellEditable(cell);
-        cell.classList.toggle('editable', editable);
-        cell.classList.toggle('read-only', !editable);
-      });
-    }
-
-    function openRoleDropdown(cell) {
-      const dropdown = document.createElement('div');
-      dropdown.className = 'role-dropdown open';
-
-      ROLE_OPTIONS.forEach(role => {
-        const option = document.createElement('div');
-        option.className = 'role-option';
-        option.textContent = role;
-
-        option.addEventListener('click', function(e) {
-          e.stopPropagation();
-
-          // Apply optimistic update - immediately show the new role, no separate save step
-          cell.querySelector('.role-indicator span').textContent = role;
-          console.log(`Role updated to ${role} for user ${cell.closest('tr').querySelector('td:first-child').textContent.trim()}`);
-
-          closeRoleDropdown();
-        });
-
-        dropdown.appendChild(option);
-      });
-
-      cell.appendChild(dropdown);
-
-      // Position relative to the viewport, matching the fixed-position dropdown pattern
-      // used by the multiselect panel elsewhere on this page.
-      const rect = cell.getBoundingClientRect();
-      dropdown.style.top = (rect.bottom + 4) + 'px';
-      dropdown.style.left = rect.left + 'px';
-      dropdown.style.minWidth = rect.width + 'px';
-
-      cell.classList.add('open');
-      openDropdown = dropdown;
-    }
-
-    function initRoleEditing() {
-      refreshRoleCellStates();
-
-      document.querySelector('.users-table tbody').addEventListener('click', function(e) {
-        const cell = e.target.closest('.role-cell');
-        if (!cell) return;
-        e.stopPropagation();
-
-        if (!isRoleCellEditable(cell)) return;
-
-        const alreadyOpenOnThisCell = openDropdown && openDropdown.closest('.role-cell') === cell;
-        closeRoleDropdown();
-        if (!alreadyOpenOnThisCell) openRoleDropdown(cell);
-      });
-    }
-
-    // Close dropdown when clicking elsewhere
-    document.addEventListener('click', function(e) {
-      if (!e.target.closest('.role-cell')) closeRoleDropdown();
-    });
-
     // ── Chapter row click ──
     function openChapter(e, book, chapter) {
       if (e.target.closest('input[type="checkbox"]')) return;
@@ -1165,11 +777,6 @@
       });
       onChapterCheck();
     }
-
-    // Initialize role editing when the page loads
-    document.addEventListener('DOMContentLoaded', function() {
-      initRoleEditing();
-    });
   </script>
 
 </body>

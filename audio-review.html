@@ -106,9 +106,9 @@
       font-weight: 600;
     }
     .unit-row.settled {
-      color: #16a34a;
+      color: var(--success-foreground);
     }
-    .unit-row.settled .unit-dot { background: #16a34a; }
+    .unit-row.settled .unit-dot { background: var(--success-border); }
 
     .unit-dot-slot {
       width: 8px; height: 8px;
@@ -118,7 +118,7 @@
     .unit-dot {
       width: 8px; height: 8px;
       border-radius: 50%;
-      background: #D97706;
+      background: var(--warning-border);
       flex-shrink: 0;
     }
     .unit-row.active .unit-dot { background: var(--primary); }
@@ -155,10 +155,10 @@
       gap: 8px;
       margin: 0 12px 10px;
       padding: 10px 12px;
-      border: 1.5px solid #D97706;
+      border: 1.5px solid var(--warning-border);
       border-radius: var(--radius);
-      background: #FEF3C7;
-      color: #92400E;
+      background: var(--warning);
+      color: var(--warning-foreground);
       font-size: 13px;
       font-weight: 500;
       flex-shrink: 0;
@@ -596,7 +596,7 @@
         btn.onclick = function() { selectUnit(idx); };
         let dot = '';
         if (unit.conflict) {
-          const dotColor = unit.resolved ? '#16a34a' : (idx === activeUnit ? '' : '#D97706');
+          const dotColor = unit.resolved ? 'var(--success-border)' : (idx === activeUnit ? '' : 'var(--warning-border)');
           dot = '<span class="unit-dot" style="' + (dotColor ? 'background:' + dotColor + ';' : '') + '"></span>';
         }
         btn.innerHTML = '<span class="unit-dot-slot">' + dot + '</span><span>' + unit.label + '</span>';

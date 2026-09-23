@@ -117,18 +117,75 @@
 
     
 
-    .role-badge {
-      display: inline-flex;
+    /* Role editing styles */
+    .role-cell {
+      position: relative;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: background 0.15s;
+      display: flex;
       align-items: center;
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 500;
-      background: var(--muted);
-      color: var(--muted-foreground);
-      border: 1px solid var(--border);
+      justify-content: space-between;
     }
-    .role-badge.manager { background: #e8effc; color: var(--primary); border-color: #b8cffa; }
+    .role-cell:hover { background: var(--muted); }
+    .role-cell.editable { cursor: pointer; }
+    .role-cell.read-only { cursor: default; }
+    .role-cell.read-only .role-caret { display: none; }
+
+    .role-dropdown {
+      position: fixed;
+      background: var(--popover);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 100;
+      min-width: 160px;
+      padding: 4px 0;
+      display: none;
+      font-size: 14px;
+    }
+    .role-dropdown.open { display: block; }
+
+    .role-option { padding: 6px 12px; cursor: pointer; color: var(--foreground); display: flex; align-items: center; }
+    .role-option:hover { background: var(--muted); }
+
+    .role-indicator { display: flex; align-items: center; gap: 4px; }
+    .role-caret {
+      width: 12px;
+      height: 12px;
+      display: inline-block;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat center;
+      opacity: 0.5;
+      transition: transform 0.15s;
+    }
+    .role-cell.open .role-caret { transform: rotate(180deg); }
+
+    /* Remove/role-change confirmation banner */
+    .team-banner {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 10px 12px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      line-height: 1.5;
+      background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;
+    }
+    .dark .team-banner { background: #3a2f10; border-color: #6b5522; color: #fbd97a; }
+    .team-banner.open { display: flex; }
+    .team-banner-actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+    .team-banner-confirm {
+      background: var(--destructive); color: var(--destructive-foreground);
+      border: none; border-radius: 6px; padding: 6px 14px;
+      font-size: 13px; font-weight: 600; cursor: pointer; font-family: var(--font);
+    }
+    .team-banner-cancel {
+      background: white; border: 1px solid var(--border); border-radius: 6px;
+      padding: 6px 14px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: var(--font);
+    }
 
     /* ── Add Milestone button ── */
     .btn-add-milestone {
@@ -463,36 +520,53 @@
             Project Team
             <button class="btn-icon-add" onclick="openAddUserModal()">+</button>
           </div>
+          <div class="team-banner" id="team-banner">
+            <span id="team-banner-text"></span>
+            <div class="team-banner-actions">
+              <button class="team-banner-confirm" id="team-banner-confirm-btn" onclick="confirmTeamBannerAction()"></button>
+              <button class="team-banner-cancel" onclick="cancelTeamBanner()">Cancel</button>
+            </div>
+          </div>
           <div class="users-table-wrap">
             <table class="users-table">
               <thead>
                 <tr><th>Name</th><th>Role</th><th></th></tr>
               </thead>
               <tbody>
-                <tr>
+                <tr data-assignments="0">
                   <td>qa.manager</td>
-                  <td><span class="role-badge manager">Project Manager</span></td>
-                  <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
+                  <td class="role-cell read-only" data-user-id="1">
+                    <div class="role-indicator"><span>Project Manager</span><span class="role-caret"></span></div>
+                  </td>
+                  <td class="td-action"></td>
                 </tr>
-                <tr>
+                <tr data-assignments="4">
                   <td>Roslin T</td>
-                  <td><span class="role-badge">Translator</span></td>
-                  <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
+                  <td class="role-cell editable" data-user-id="2">
+                    <div class="role-indicator"><span>Translator</span><span class="role-caret"></span></div>
+                  </td>
+                  <td class="td-action"><button class="trash-btn" onclick="requestRemoveUser(this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
                 </tr>
-                <tr>
+                <tr data-assignments="0">
                   <td>Roslin P</td>
-                  <td><span class="role-badge">Peer Checker</span></td>
-                  <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
+                  <td class="role-cell editable" data-user-id="3">
+                    <div class="role-indicator"><span>Peer Checker</span><span class="role-caret"></span></div>
+                  </td>
+                  <td class="td-action"><button class="trash-btn" onclick="requestRemoveUser(this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
                 </tr>
-                <tr>
+                <tr data-assignments="2">
                   <td>Seema T</td>
-                  <td><span class="role-badge">Translator</span></td>
-                  <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
+                  <td class="role-cell editable" data-user-id="4">
+                    <div class="role-indicator"><span>Translator</span><span class="role-caret"></span></div>
+                  </td>
+                  <td class="td-action"><button class="trash-btn" onclick="requestRemoveUser(this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
                 </tr>
-                <tr>
+                <tr data-assignments="0">
                   <td>Chad W</td>
-                  <td><span class="role-badge">Observer</span></td>
-                  <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
+                  <td class="role-cell editable" data-user-id="5">
+                    <div class="role-indicator"><span>Observer</span><span class="role-caret"></span></div>
+                  </td>
+                  <td class="td-action"><button class="trash-btn" onclick="requestRemoveUser(this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
                 </tr>
               </tbody>
             </table>
@@ -931,10 +1005,6 @@
       document.getElementById('save-users-btn').disabled = checked.length === 0;
     }
 
-    function roleBadgeClass(role) {
-      return role === 'Project Manager' ? 'role-badge manager' : 'role-badge';
-    }
-
     function saveUsers() {
       const existingTabActive = document.getElementById('existing-user-content').style.display !== 'none';
 
@@ -945,11 +1015,15 @@
 
         const usersTable = document.querySelector('.users-table tbody');
         checked.forEach(user => {
+          nextUserId += 1;
           const newRow = document.createElement('tr');
+          newRow.dataset.assignments = '0';
           newRow.innerHTML = `
             <td>${user.value}</td>
-            <td><span class="${roleBadgeClass(role)}">${role}</span></td>
-            <td class="td-action"><button class="trash-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
+            <td class="role-cell editable" data-user-id="${nextUserId}">
+              <div class="role-indicator"><span>${role}</span><span class="role-caret"></span></div>
+            </td>
+            <td class="td-action"><button class="trash-btn" onclick="requestRemoveUser(this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></td>
           `;
           usersTable.appendChild(newRow);
         });
@@ -973,6 +1047,116 @@
         panel.classList.remove('open');
       }
     });
+
+    // ── Role editing ──
+    const ROLE_OPTIONS = ['Project Manager', 'Translator', 'Peer Checker', 'Observer'];
+    let nextUserId = 5;
+    let openDropdown = null;
+
+    function closeRoleDropdown() {
+      if (openDropdown) {
+        openDropdown.closest('.role-cell').classList.remove('open');
+        openDropdown.remove();
+        openDropdown = null;
+      }
+    }
+
+    function openRoleDropdown(cell) {
+      const dropdown = document.createElement('div');
+      dropdown.className = 'role-dropdown open';
+
+      ROLE_OPTIONS.forEach(role => {
+        const option = document.createElement('div');
+        option.className = 'role-option';
+        option.textContent = role;
+        option.addEventListener('click', function(e) {
+          e.stopPropagation();
+          applyRoleChange(cell, role);
+          closeRoleDropdown();
+        });
+        dropdown.appendChild(option);
+      });
+
+      cell.appendChild(dropdown);
+      const rect = cell.getBoundingClientRect();
+      dropdown.style.top = (rect.bottom + 4) + 'px';
+      dropdown.style.left = rect.left + 'px';
+      dropdown.style.minWidth = rect.width + 'px';
+
+      cell.classList.add('open');
+      openDropdown = dropdown;
+    }
+
+    document.querySelector('.users-table').addEventListener('click', function(e) {
+      const cell = e.target.closest('.role-cell');
+      if (!cell || !cell.classList.contains('editable')) return;
+      e.stopPropagation();
+      const alreadyOpenOnThisCell = openDropdown && openDropdown.closest('.role-cell') === cell;
+      closeRoleDropdown();
+      if (!alreadyOpenOnThisCell) openRoleDropdown(cell);
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.role-cell')) closeRoleDropdown();
+    });
+
+    function applyRoleChange(cell, newRole) {
+      const row = cell.closest('tr');
+      const nameCell = row.querySelector('td:first-child');
+      const roleSpan = cell.querySelector('.role-indicator span');
+      const currentRole = roleSpan.textContent.trim();
+      const assignments = parseInt(row.dataset.assignments || '0', 10);
+
+      if (newRole === 'Observer' && currentRole !== 'Observer' && assignments > 0) {
+        openTeamBanner({
+          type: 'roleChange',
+          row, cell, newRole,
+          text: `Change ${nameCell.textContent.trim()}'s role to Observer? Their current chapter assignments will be removed.`,
+          confirmLabel: 'Change Role'
+        });
+        return;
+      }
+
+      roleSpan.textContent = newRole;
+      if (newRole === 'Observer') row.dataset.assignments = '0';
+    }
+
+    // ── Remove / role-change confirmation banner ──
+    let pendingTeamAction = null;
+
+    function openTeamBanner({ type, row, cell, newRole, text, confirmLabel }) {
+      pendingTeamAction = { type, row, cell, newRole };
+      document.getElementById('team-banner-text').textContent = text;
+      const confirmBtn = document.getElementById('team-banner-confirm-btn');
+      confirmBtn.textContent = confirmLabel;
+      document.getElementById('team-banner').classList.add('open');
+    }
+
+    function cancelTeamBanner() {
+      pendingTeamAction = null;
+      document.getElementById('team-banner').classList.remove('open');
+    }
+
+    function confirmTeamBannerAction() {
+      if (!pendingTeamAction) return;
+      if (pendingTeamAction.type === 'remove') {
+        pendingTeamAction.row.remove();
+      } else if (pendingTeamAction.type === 'roleChange') {
+        pendingTeamAction.cell.querySelector('.role-indicator span').textContent = pendingTeamAction.newRole;
+        pendingTeamAction.row.dataset.assignments = '0';
+      }
+      cancelTeamBanner();
+    }
+
+    function requestRemoveUser(button) {
+      const row = button.closest('tr');
+      const name = row.querySelector('td:first-child').textContent.trim();
+      const assignments = parseInt(row.dataset.assignments || '0', 10);
+      const text = assignments > 0
+        ? `Remove ${name} from this project? Their chapter assignments will be removed.`
+        : `Remove ${name} from this project?`;
+      openTeamBanner({ type: 'remove', row, text, confirmLabel: 'Remove' });
+    }
   </script>
 
 </body>
