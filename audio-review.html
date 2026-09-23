@@ -110,12 +110,16 @@
     }
     .unit-row.settled .unit-dot { background: #16a34a; }
 
+    .unit-dot-slot {
+      width: 8px; height: 8px;
+      flex-shrink: 0;
+      display: flex;
+    }
     .unit-dot {
       width: 8px; height: 8px;
       border-radius: 50%;
       background: #D97706;
       flex-shrink: 0;
-      margin-left: auto;
     }
     .unit-row.active .unit-dot { background: var(--primary); }
 
@@ -590,12 +594,12 @@
         btn.className = 'unit-row' + (idx === activeUnit ? ' active' : '') + (settled ? ' settled' : '');
         btn.dataset.unit = idx;
         btn.onclick = function() { selectUnit(idx); };
-        let dotHtml = '';
+        let dot = '';
         if (unit.conflict) {
           const dotColor = unit.resolved ? '#16a34a' : (idx === activeUnit ? '' : '#D97706');
-          dotHtml = '<span class="unit-dot" style="' + (dotColor ? 'background:' + dotColor + ';' : '') + '"></span>';
+          dot = '<span class="unit-dot" style="' + (dotColor ? 'background:' + dotColor + ';' : '') + '"></span>';
         }
-        btn.innerHTML = '<span>' + unit.label + '</span>' + dotHtml;
+        btn.innerHTML = '<span class="unit-dot-slot">' + dot + '</span><span>' + unit.label + '</span>';
         list.appendChild(btn);
       });
 
