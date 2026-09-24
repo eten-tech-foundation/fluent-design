@@ -573,16 +573,18 @@ function renderUserMenuOrgSwitcher() {
 
   const state     = getOrgState();
   const activeOrg = state.orgs.find(o => o.id === state.activeOrgId) || state.orgs[0];
+  const isSuperUser = currentRole === 'super-user';
+  const triggerName = isSuperUser ? 'Platform' : activeOrg.name;
   const orgIcon   = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
   const chevronSvg = `<svg class="um-org-chevron" id="um-org-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>`;
 
   // Super User has no org, so it renders as its own unaffiliated row below
   // the org groups rather than as a chip nested under one.
   const SuperUserSection = `
-    <div class="org-dropdown-group">
+    <div class="org-dropdown-group ${isSuperUser ? 'active' : ''}">
       <div class="org-dropdown-org-name"><span>Platform</span></div>
       <div class="org-role-chips">
-        <button class="org-role-chip ${currentRole === 'super-user' ? 'active' : ''}"
+        <button class="org-role-chip ${isSuperUser ? 'active' : ''}"
                 onclick="selectSuperUser()">${SUPER_USER_LABEL}</button>
       </div>
     </div>
@@ -590,8 +592,8 @@ function renderUserMenuOrgSwitcher() {
 
   if (state.orgs.length <= 1) {
     section.innerHTML = `
-      <div class="um-org-trigger" style="cursor:default;" title="${activeOrg.name}">
-        <div class="um-org-trigger-left">${orgIcon} <span class="um-org-name">${activeOrg.name}</span></div>
+      <div class="um-org-trigger" style="cursor:default;" title="${triggerName}">
+        <div class="um-org-trigger-left">${orgIcon} <span class="um-org-name">${triggerName}</span></div>
       </div>
       <div class="um-org-dropdown-body open" id="um-org-dropdown-body">
         ${SuperUserSection}
@@ -615,8 +617,8 @@ function renderUserMenuOrgSwitcher() {
   }).join('');
 
   section.innerHTML = `
-    <button class="um-org-trigger" onclick="toggleUserMenuOrgDropdown(event)" title="${activeOrg.name}">
-      <div class="um-org-trigger-left">${orgIcon} <span class="um-org-name">${activeOrg.name}</span></div>
+    <button class="um-org-trigger" onclick="toggleUserMenuOrgDropdown(event)" title="${triggerName}">
+      <div class="um-org-trigger-left">${orgIcon} <span class="um-org-name">${triggerName}</span></div>
       ${chevronSvg}
     </button>
     <div class="um-org-dropdown-body" id="um-org-dropdown-body">
