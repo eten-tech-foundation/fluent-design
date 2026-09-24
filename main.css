@@ -48,8 +48,12 @@
   --popover: #2a3240;
   --popover-hover: #333c4c;
   --border: #3d4552;
-  --success: #17b26a;
-  --warning: #e48f06;
+  --success: #123526;
+  --success-foreground: #17b26a;
+  --success-border: #17b26a;
+  --warning: #3a2f10;
+  --warning-foreground: #e48f06;
+  --warning-border: #e48f06;
 }
 
 /* ── Base Reset ── */

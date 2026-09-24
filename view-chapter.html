@@ -1473,12 +1473,13 @@
     }
 
     // ── Target (translation) audio playback (hover-revealed, verse view) ─────
+    // Target audio is always a human-recorded take, never AI/TTS-generated,
+    // so this group never carries the sparkle badge the source group can show.
     var tgtBiblePlayStates = {};
     function getTargetPlayState(n) { return (tgtBiblePlayStates[n] || {}).state || 'idle'; }
     function getTargetRestartEnabled(n) { return !!(tgtBiblePlayStates[n] || {}).restartEnabled; }
-    function isTargetTts(n) { return true; }
 
-    function tgtAudioGroupHTML(n, isTts) {
+    function tgtAudioGroupHTML(n) {
       var state          = getTargetPlayState(n);
       var restartEnabled = getTargetRestartEnabled(n);
       var isPlaying  = (state === 'playing');
@@ -1486,9 +1487,6 @@
 
       var playBtnClass = 'play-btn' + (isLoading ? ' loading' : '');
       var playTitle = isPlaying ? 'Stop' : 'Play verse ' + n;
-      var sparkle = (isTts && !isLoading)
-        ? '<span class="src-play-sparkle" title="AI-generated audio">' + SRC_SPARKLE_SVG + '</span>'
-        : '';
 
       var restartBtnClass = 'play-btn' + (restartEnabled ? '' : ' disabled');
       var groupClass = 'src-audio-group' + (isPlaying ? ' playing' : '');
@@ -1498,7 +1496,6 @@
         + '<button class="' + playBtnClass + ' tgt-pb-play" onclick="playTargetVerse(' + n + ', event)"'
         + ' title="' + playTitle + '" aria-label="' + playTitle + '">'
         + srcPlayIcon(state) + '</button>'
-        + sparkle
         + '</span>'
         + '<button class="' + restartBtnClass + ' tgt-pb-restart"'
         + (restartEnabled ? '' : ' disabled')
@@ -1574,14 +1571,6 @@
       var playTitle = isPlaying ? 'Stop' : 'Play verse ' + n;
       playBtn.title = playTitle;
       playBtn.setAttribute('aria-label', playTitle);
-
-      var sparkleEl   = group.querySelector('.src-play-sparkle');
-      var showSparkle = isTargetTts(n) && !isLoading;
-      if (showSparkle && !sparkleEl) {
-        group.querySelector('.src-play-wrap').insertAdjacentHTML('beforeend', '<span class="src-play-sparkle" title="AI-generated audio">' + SRC_SPARKLE_SVG + '</span>');
-      } else if (!showSparkle && sparkleEl) {
-        sparkleEl.remove();
-      }
 
       var restartBtn = group.querySelector('.tgt-pb-restart');
       restartBtn.disabled = !restartEnabled;
@@ -1716,7 +1705,7 @@
 
     function getTgtPericopePBState(pi) {
       if (!tgtPericopePBStates[pi]) {
-        tgtPericopePBStates[pi] = { playing: false, hasLoaded: false, restartEnabled: false, pos: 0, duration: 90, timer: null, isTts: true };
+        tgtPericopePBStates[pi] = { playing: false, hasLoaded: false, restartEnabled: false, pos: 0, duration: 90, timer: null };
       }
       return tgtPericopePBStates[pi];
     }
@@ -1829,8 +1818,6 @@
         restartBtn.disabled = !s.restartEnabled;
         restartBtn.classList.toggle('disabled', !s.restartEnabled);
       }
-      var sparkle = document.getElementById('tgt-pericope-pb-sparkle-' + pi);
-      if (sparkle) sparkle.style.display = s.isTts ? '' : 'none';
       tgtPericopePlayerUpdateProgress(pi);
     }
 
@@ -1846,7 +1833,7 @@
             '<span class="verse-num">' + n + '</span>' +
             '<div class="source-card" id="src-' + n + '">' + srcAudioGroupHTML(n, isSourceTts(n)) + '<span class="src-verse-text" id="src-text-' + n + '">' + esc(sourceText[n] || '') + '</span></div>' +
           '</div>' +
-          '<div><div class="translation-card" id="tgt-' + n + '">' + tgtAudioGroupHTML(n, isTargetTts(n)) + '<span class="tgt-verse-text" id="tgt-text-' + n + '">' + esc(translationText[n] || '') + '</span></div></div>';
+          '<div><div class="translation-card" id="tgt-' + n + '">' + tgtAudioGroupHTML(n) + '<span class="tgt-verse-text" id="tgt-text-' + n + '">' + esc(translationText[n] || '') + '</span></div></div>';
         container.appendChild(row);
       }
     }
@@ -1890,7 +1877,6 @@
             + '<button class="play-btn" id="tgt-pericope-pb-play-' + pi + '" onclick="tgtPericopePlayerPlay(' + pi + ')" title="Play">'
             + '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'
             + '</button>'
-            + '<span class="src-play-sparkle" id="tgt-pericope-pb-sparkle-' + pi + '" title="AI-generated audio">' + SRC_SPARKLE_SVG + '</span>'
             + '</span>'
             + '<button class="play-btn disabled" id="tgt-pericope-pb-restart-' + pi + '" disabled onclick="tgtPericopePlayerRestart(' + pi + ')" title="Restart">' + SRC_RESTART_SVG + '</button>'
             + '<div class="pericope-pb-scrub-wrap" onclick="tgtPericopePlayerScrub(this,event,' + pi + ')">'

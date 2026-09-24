@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fluent — Audio Review</title>
+  <title>Fluent — Audio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
@@ -33,8 +33,8 @@
       border-radius: 999px;
       font-size: 13px;
       font-weight: 600;
-      color: #166534;
-      background: #f0fdf4;
+      color: var(--success-foreground);
+      background: var(--success);
     }
 
     /* ── Body layout ── */
@@ -190,8 +190,9 @@
       box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
     }
     .take-card.selected-take {
-      border-color: #16a34a;
-      background: #f0fdf4;
+      border-color: var(--success-border);
+      background: var(--success);
+      color: var(--success-foreground);
     }
 
     .take-meta {
@@ -232,7 +233,7 @@
       gap: 5px;
       font-size: 12px;
       font-weight: 600;
-      color: #16a34a;
+      color: var(--success-foreground);
     }
     .take-card.selected-take .take-selected-badge { display: flex; }
 
@@ -255,7 +256,7 @@
       transition: background 0.15s;
     }
     .play-btn:hover { background: var(--primary-hover); }
-    .take-card.selected-take .play-btn { background: #16a34a; }
+    .take-card.selected-take .play-btn { background: var(--success-foreground); }
     .take-card.selected-take .play-btn:hover { background: #15803d; }
 
     .waveform {
@@ -283,8 +284,8 @@
       transition: background 0.15s;
     }
     .take-card.playing .waveform-bar { background: var(--primary); }
-    .take-card.selected-take .waveform-bar { background: #86efac; }
-    .take-card.selected-take.playing .waveform-bar { background: #16a34a; }
+    .take-card.selected-take .waveform-bar { background: var(--success-foreground); }
+    .take-card.selected-take.playing .waveform-bar { background: var(--success-foreground); }
 
     .take-duration {
       font-size: 12px;
@@ -414,7 +415,7 @@
       <button class="back-btn" onclick="history.back()" aria-label="Back">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
-      <span class="page-title">Audio Review - 1 John 5</span>
+      <span class="page-title">Audio - 1 John 5</span>
       <span class="all-resolved-chip" id="all-resolved-chip" style="display:none;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         All Resolved
@@ -812,19 +813,28 @@
     // ── Init ─────────────────────────────────────────────────────────────────
 
     window.addEventListener('load', function() {
-      const savedMode = localStorage.getItem('fluent-display-mode');
-      if (savedMode) {
+      const params = new URLSearchParams(window.location.search);
+      // A query-string mode (e.g. from the Pericope View Takes badge) takes
+      // priority over the last-saved display mode.
+      const mode = params.get('mode') || localStorage.getItem('fluent-display-mode');
+      if (mode) {
         // Sync the settings dialog button before rendering
         const seg = document.getElementById('scripture-seg');
         if (seg) {
           seg.querySelectorAll('button').forEach(function(b) {
-            b.classList.toggle('active', b.textContent.toLowerCase() === savedMode);
+            b.classList.toggle('active', b.textContent.toLowerCase() === mode);
           });
         }
-        // activeUnit is still 0 (the start of the passage) in either array,
-        // so no position mapping is needed on first render.
-        viewMode = savedMode === 'pericope' ? 'pericope' : 'verse';
+        viewMode = mode === 'pericope' ? 'pericope' : 'verse';
       }
+
+      // A query-string unit (e.g. "?unit=2") pre-scopes the view to that
+      // pericope/verse unit, same index the Takes badge was clicked from.
+      const queryUnit = parseInt(params.get('unit'), 10);
+      if (!isNaN(queryUnit) && queryUnit >= 0 && queryUnit < getUnits().length) {
+        activeUnit = queryUnit;
+      }
+
       render();
     });
   </script>

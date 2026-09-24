@@ -371,9 +371,8 @@ const CREATE_PROJECT_CSS = `
     border-radius: var(--radius-sm);
     font-size: 13px;
     line-height: 1.5;
-    background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;
+    background: var(--warning); color: var(--warning-foreground); border: 1px solid var(--warning-border);
   }
-  .dark .cp-imp-duplicate-banner { background: #3a2f10; border-color: #6b5522; color: #fbd97a; }
 
   /* ── Audio availability (source Bible search + chip) ── */
   .cp-search-badges { display: flex; gap: 4px; flex-shrink: 0; align-items: center; }

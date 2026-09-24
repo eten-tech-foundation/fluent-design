@@ -1040,9 +1040,28 @@
     .source-card:hover .src-audio-group,
     .src-audio-group.playing { opacity: 1; pointer-events: auto; }
 
+    /* ── Verse-level target take group (hover-revealed, mirrors source) ── */
+    .translation-wrap { position: relative; }
+    .take-audio-group {
+      position: absolute;
+      top: 8px; right: 12px;
+      display: flex; align-items: center; gap: 4px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.15s;
+      z-index: 2;
+      background: var(--background);
+      border-radius: 999px;
+      padding: 3px 6px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    }
+    .translation-wrap:hover .take-audio-group,
+    .take-audio-group.playing { opacity: 1; pointer-events: auto; }
+
     /* ── Respect the Settings > Show/Hide Audio toggle (html.audio-off) ── */
     html.audio-off .src-audio-group,
+    html.audio-off .take-audio-group,
     html.audio-off .pericope-player,
+    html.audio-off .pericope-takes-badge,
     html.audio-off .tq-play-group,
     html.audio-off .note-play-bar,
     html.audio-off .art-pb-btn-wrap,
@@ -1133,6 +1152,32 @@
       padding-right: 12px;
       min-width: 0;
     }
+    .pericope-range-target {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+    .pericope-takes-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 999px;
+      background: var(--background);
+      color: var(--foreground);
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      flex-shrink: 0;
+      white-space: nowrap;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .pericope-takes-badge:hover { background: var(--muted); border-color: #9fa8bb; }
+    .pericope-takes-badge svg { flex-shrink: 0; }
     .pericope-player {
       display: flex;
       align-items: center;
@@ -1870,6 +1915,29 @@
     var pericopeTitles = {};
     var aiSuggestionsEnabled = true;
 
+    // ── Recorded takes (target-language audio from mobile OBT) ────────────────
+    // Verses/pericopes with no entry here have nothing recorded and show no
+    // playback control. pericopeTakes indices must stay within audio-review.html's
+    // pericopeUnits bounds (0–3) since the Takes badge links straight into that view.
+    const verseTakes = {
+      2:  [{ id: 'v2-t1',  date: 'Sep 18' }],
+      3:  [{ id: 'v3-t1',  date: 'Sep 17' }, { id: 'v3-t2', date: 'Sep 19' }],
+      6:  [{ id: 'v6-t1',  date: 'Sep 18' }],
+      9:  [{ id: 'v9-t1',  date: 'Sep 20' }],
+      14: [{ id: 'v14-t1', date: 'Sep 18' }, { id: 'v14-t2', date: 'Sep 19' }, { id: 'v14-t3', date: 'Sep 20' }],
+    };
+    const verseActiveTake = { 2: 'v2-t1', 3: 'v3-t2', 6: 'v6-t1', 9: 'v9-t1', 14: 'v14-t3' };
+
+    const pericopeTakes = {
+      0: [{ id: 'p0-t1', date: 'Sep 18' }],
+      2: [{ id: 'p2-t1', date: 'Sep 17' }, { id: 'p2-t2', date: 'Sep 19' }, { id: 'p2-t3', date: 'Sep 20' }],
+    };
+    const pericopeActiveTake = { 0: 'p0-t1', 2: 'p2-t3' };
+
+    function hasVerseTake(n)       { return !!(verseTakes[n] && verseTakes[n].length); }
+    function hasPericopeTake(pi)   { return !!(pericopeTakes[pi] && pericopeTakes[pi].length); }
+    function pericopeTakeCount(pi) { return (pericopeTakes[pi] || []).length; }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     function esc(str) {
@@ -1888,6 +1956,7 @@
 
     var SRC_SPARKLE_SVG = '<svg width="7" height="7" viewBox="0 0 24 24" fill="white"><path d="M12 2c0 0 1 5.5 3.5 8S24 12 24 12s-5.5 1-8 3.5S12 24 12 24s-1-5.5-3.5-8S0 12 0 12s5.5-1 8-3.5S12 2 12 2z"/></svg>';
     var SRC_RESTART_SVG = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>';
+    var LAYERS_SVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>';
 
     // ── Source Bible playback state ───────────────────────────────────────────
     // State per verse: { state: 'idle'|'playing'|'loading'|'disabled', restartEnabled: bool }
@@ -1961,6 +2030,11 @@
           if (parseInt(k) !== n) updateSrcPlayBtn(parseInt(k));
         }
       });
+      // Stop this verse's recorded take, if playing
+      if (getTakePlayState(n) === 'playing') {
+        takePlayStates[n] = { state: 'idle', restartEnabled: getTakeRestartEnabled(n) };
+        updateTakePlayBtn(n);
+      }
 
       if (state === 'playing') {
         srcBiblePlayStates[n] = { state: 'idle', restartEnabled: getSourceRestartEnabled(n) };
@@ -2018,6 +2092,105 @@
       }
     }
 
+    // ── Verse-level recorded-take playback (hover-revealed, target side) ──────
+    var takePlayStates = {};
+
+    function getTakePlayState(n)     { return (takePlayStates[n] || {}).state || 'idle'; }
+    function getTakeRestartEnabled(n) { return !!(takePlayStates[n] || {}).restartEnabled; }
+
+    function takeAudioGroupHTML(n) {
+      var state       = getTakePlayState(n);
+      var isPlaying   = (state === 'playing');
+      var restartEnabled = getTakeRestartEnabled(n);
+      var playIcon = isPlaying
+        ? '<svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>'
+        : '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+      var playTitle = isPlaying ? 'Stop' : 'Play recorded take';
+      var restartBtnClass = 'play-btn' + (restartEnabled ? '' : ' disabled');
+      var groupClass = 'take-audio-group' + (isPlaying ? ' playing' : '');
+
+      return '<div class="' + groupClass + '" id="take-audio-' + n + '" onclick="event.stopPropagation()">'
+        + '<button class="play-btn" onclick="playVerseTake(' + n + ', event)" title="' + playTitle + '" aria-label="' + playTitle + '">' + playIcon + '</button>'
+        + '<button class="' + restartBtnClass + '"' + (restartEnabled ? '' : ' disabled')
+        + ' onclick="restartVerseTake(' + n + ', event)" title="Restart">' + SRC_RESTART_SVG + '</button>'
+        + '</div>';
+    }
+
+    function playVerseTake(n, event) {
+      if (event) event.stopPropagation();
+      var state = getTakePlayState(n);
+
+      // Stop any other playing take
+      Object.keys(takePlayStates).forEach(function(k) {
+        if ((takePlayStates[k] || {}).state === 'playing' && parseInt(k) !== n) {
+          takePlayStates[k] = { state: 'idle', restartEnabled: (takePlayStates[k] || {}).restartEnabled };
+          updateTakePlayBtn(parseInt(k));
+        }
+      });
+      // Stop this verse's source TTS/DBL playback, if playing
+      if (getSourcePlayState(n) === 'playing') {
+        srcBiblePlayStates[n] = { state: 'idle', restartEnabled: getSourceRestartEnabled(n) };
+        updateSrcPlayBtn(n);
+      }
+
+      if (state === 'playing') {
+        takePlayStates[n] = { state: 'idle', restartEnabled: getTakeRestartEnabled(n) };
+      } else {
+        takePlayStates[n] = { state: 'playing', restartEnabled: false };
+        setTimeout(function() {
+          if (getTakePlayState(n) === 'playing') {
+            takePlayStates[n] = { state: 'playing', restartEnabled: true };
+            updateTakePlayBtn(n);
+          }
+        }, 1000);
+        setTimeout(function() {
+          if (getTakePlayState(n) === 'playing') {
+            takePlayStates[n] = { state: 'idle', restartEnabled: false };
+            updateTakePlayBtn(n);
+          }
+        }, 4000);
+      }
+      updateTakePlayBtn(n);
+    }
+
+    function restartVerseTake(n, event) {
+      if (event) event.stopPropagation();
+      takePlayStates[n] = { state: 'playing', restartEnabled: false };
+      updateTakePlayBtn(n);
+      setTimeout(function() {
+        if (getTakePlayState(n) === 'playing') {
+          takePlayStates[n] = { state: 'playing', restartEnabled: true };
+          updateTakePlayBtn(n);
+        }
+      }, 1000);
+      setTimeout(function() {
+        if (getTakePlayState(n) === 'playing') {
+          takePlayStates[n] = { state: 'idle', restartEnabled: false };
+          updateTakePlayBtn(n);
+        }
+      }, 4000);
+    }
+
+    // Mutates the existing button/icon nodes in place rather than swapping the
+    // group's outerHTML, so the group's own :hover state survives every tick.
+    function updateTakePlayBtn(n) {
+      var group = document.getElementById('take-audio-' + n);
+      if (!group) return;
+      var isPlaying = getTakePlayState(n) === 'playing';
+      var restartEnabled = getTakeRestartEnabled(n);
+      var playBtn = group.children[0];
+      var restartBtn = group.children[1];
+
+      group.classList.toggle('playing', isPlaying);
+      playBtn.innerHTML = isPlaying
+        ? '<svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>'
+        : '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+      playBtn.title = isPlaying ? 'Stop' : 'Play recorded take';
+
+      restartBtn.disabled = !restartEnabled;
+      restartBtn.classList.toggle('disabled', !restartEnabled);
+    }
+
     // ── Pericope persistent player (per-pericope, indexed by pi) ─────────────
     var pericopePBStates = {};
 
@@ -2057,6 +2230,13 @@
           pericopePlayerUpdateUI(ki);
         }
       });
+      // Stop this pericope's recorded-take player, if playing
+      var ts = takePBStates[pi];
+      if (ts && ts.playing) {
+        if (ts.timer) { clearInterval(ts.timer); ts.timer = null; }
+        ts.playing = false;
+        takePlayerUpdateUI(pi);
+      }
       if (s.playing) {
         if (s.timer) { clearInterval(s.timer); s.timer = null; }
         s.playing = false;
@@ -2159,6 +2339,164 @@
       pericopePlayerUpdateProgress(pi);
     }
 
+    // ── Pericope-level recorded-take playback (persistent, target side) ───────
+    // Mirrors the source Bible TTS pericope player above; separate state so the
+    // two players can coexist and mutually pause each other.
+    var takePBStates = {};
+
+    function getTakePBState(pi) {
+      if (!takePBStates[pi]) {
+        takePBStates[pi] = { playing: false, hasLoaded: false, restartEnabled: false, pos: 0, duration: 60, timer: null };
+      }
+      return takePBStates[pi];
+    }
+
+    function pericopeTakePlayerHTML(pi) {
+      return '<div class="pericope-player" id="take-player-' + pi + '">'
+        + '<span class="src-play-wrap">'
+        + '<button class="play-btn" id="take-pb-play-' + pi + '" onclick="takePlayerPlay(' + pi + ')" title="Play">'
+        + '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'
+        + '</button>'
+        + '</span>'
+        + '<button class="play-btn disabled" id="take-pb-restart-' + pi + '" disabled onclick="takePlayerRestart(' + pi + ')" title="Restart">' + SRC_RESTART_SVG + '</button>'
+        + '<div class="pericope-pb-scrub-wrap" onclick="takePlayerScrub(this,event,' + pi + ')">'
+        + '<div class="pericope-pb-track">'
+        + '<div class="pericope-pb-fill" id="take-pb-fill-' + pi + '"></div>'
+        + '<div class="pericope-pb-thumb" id="take-pb-thumb-' + pi + '" style="left:0%"></div>'
+        + '</div></div>'
+        + '<span class="pericope-pb-time" id="take-pb-time-' + pi + '">0:00</span>'
+        + '</div>';
+    }
+
+    function pericopeTakesBadgeHTML(pi) {
+      return '<button class="pericope-takes-badge" onclick="event.stopPropagation(); openTakesReview(' + pi + ')" title="Compare all takes for this passage">'
+        + LAYERS_SVG + '<span>Takes (' + pericopeTakeCount(pi) + ')</span>'
+        + '</button>';
+    }
+
+    function openTakesReview(pi) {
+      window.location.href = 'audio-review.html?mode=pericope&unit=' + pi;
+    }
+
+    function takePlayerPlay(pi) {
+      var s = getTakePBState(pi);
+      // Stop any other playing take-player
+      Object.keys(takePBStates).forEach(function(k) {
+        var ki = parseInt(k);
+        if (ki !== pi && takePBStates[k].playing) {
+          var other = takePBStates[k];
+          if (other.timer) { clearInterval(other.timer); other.timer = null; }
+          other.playing = false;
+          takePlayerUpdateUI(ki);
+        }
+      });
+      // Stop the source TTS pericope player for this same pericope, if playing
+      var ttsState = pericopePBStates[pi];
+      if (ttsState && ttsState.playing) {
+        if (ttsState.timer) { clearInterval(ttsState.timer); ttsState.timer = null; }
+        ttsState.playing = false;
+        pericopePlayerUpdateUI(pi);
+      }
+      if (s.playing) {
+        if (s.timer) { clearInterval(s.timer); s.timer = null; }
+        s.playing = false;
+        takePlayerUpdateUI(pi);
+        return;
+      }
+      if (!s.hasLoaded) {
+        s.playing = true;
+        takePlayerSetPlayIcon(pi, 'loading');
+        setTimeout(function() {
+          s.hasLoaded = true;
+          takePlayerBegin(pi);
+        }, 900);
+        return;
+      }
+      takePlayerBegin(pi);
+    }
+
+    function takePlayerBegin(pi) {
+      var s = getTakePBState(pi);
+      s.playing = true;
+      takePlayerUpdateUI(pi);
+      s.timer = setInterval(function() {
+        s.pos = Math.min(s.pos + 0.5, s.duration);
+        if (!s.restartEnabled && s.pos > 0) {
+          s.restartEnabled = true;
+          takePlayerUpdateUI(pi);
+        }
+        takePlayerUpdateProgress(pi);
+        if (s.pos >= s.duration) {
+          if (s.timer) { clearInterval(s.timer); s.timer = null; }
+          s.playing = false;
+          takePlayerUpdateUI(pi);
+        }
+      }, 500);
+    }
+
+    function takePlayerRestart(pi) {
+      var s = getTakePBState(pi);
+      s.pos = 0;
+      s.restartEnabled = false;
+      takePlayerUpdateProgress(pi);
+      takePlayerBegin(pi);
+    }
+
+    function takePlayerScrub(el, event, pi) {
+      var track = el.querySelector('.pericope-pb-track');
+      if (!track) return;
+      var rect = track.getBoundingClientRect();
+      var pct = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+      var s = getTakePBState(pi);
+      s.pos = pct * s.duration;
+      s.restartEnabled = (s.pos > 0);
+      takePlayerUpdateProgress(pi);
+      takePlayerUpdateUI(pi);
+      if (!s.playing) takePlayerBegin(pi);
+    }
+
+    function takePlayerUpdateProgress(pi) {
+      var s = getTakePBState(pi);
+      var pct = s.duration > 0 ? (s.pos / s.duration) * 100 : 0;
+      var fill = document.getElementById('take-pb-fill-' + pi);
+      var thumb = document.getElementById('take-pb-thumb-' + pi);
+      var time = document.getElementById('take-pb-time-' + pi);
+      if (fill) fill.style.width = pct + '%';
+      if (thumb) thumb.style.left = pct + '%';
+      if (time) {
+        var sec = Math.floor(s.pos);
+        time.textContent = Math.floor(sec / 60) + ':' + (sec % 60 < 10 ? '0' : '') + (sec % 60);
+      }
+    }
+
+    function takePlayerSetPlayIcon(pi, state) {
+      var btn = document.getElementById('take-pb-play-' + pi);
+      if (!btn) return;
+      var icon;
+      if (state === 'loading') {
+        btn.classList.add('loading');
+        icon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>';
+      } else if (state === 'playing') {
+        btn.classList.remove('loading');
+        icon = '<svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>';
+      } else {
+        btn.classList.remove('loading');
+        icon = '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+      }
+      btn.innerHTML = icon;
+    }
+
+    function takePlayerUpdateUI(pi) {
+      var s = getTakePBState(pi);
+      takePlayerSetPlayIcon(pi, s.playing ? 'playing' : 'idle');
+      var restartBtn = document.getElementById('take-pb-restart-' + pi);
+      if (restartBtn) {
+        restartBtn.disabled = !s.restartEnabled;
+        restartBtn.classList.toggle('disabled', !s.restartEnabled);
+      }
+      takePlayerUpdateProgress(pi);
+    }
+
     // ── Verse rendering ───────────────────────────────────────────────────────
 
     function renderVerses() {
@@ -2196,6 +2534,7 @@
             '</div>' +
           '</div>' +
           '<div class="translation-wrap" id="wrap-' + n + '">' +
+            (hasVerseTake(n) ? takeAudioGroupHTML(n) : '') +
             '<textarea' +
               ' class="' + inputClass + '"' +
               ' id="input-' + n + '"' +
@@ -2311,8 +2650,12 @@
             + '<span class="pericope-pb-time" id="pericope-pb-time-' + pi + '">0:00</span>'
             + '</div>'
             + '</div>';
-        rangeRow.innerHTML = srcRangeCell
-          + '<div class="pericope-range-label">' + p.label + '</div>';
+        var targetRangeCell = '<div class="pericope-range-label pericope-range-target">'
+            + '<span style="flex-shrink:0">' + p.label + '</span>'
+            + (hasPericopeTake(pi) ? pericopeTakePlayerHTML(pi) : '')
+            + (pericopeTakeCount(pi) > 1 ? pericopeTakesBadgeHTML(pi) : '')
+            + '</div>';
+        rangeRow.innerHTML = srcRangeCell + targetRangeCell;
         block.appendChild(rangeRow);
 
         // ── Title row (when pericope has a title) ──
