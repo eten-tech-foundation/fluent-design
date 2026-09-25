@@ -186,6 +186,8 @@
       padding: 6px 14px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: var(--font);
     }
 
+    .page-header-actions { display: flex; align-items: center; gap: 8px; }
+
     /* ── Add Milestone button ── */
     .btn-add-milestone {
       background: transparent;
@@ -204,6 +206,60 @@
       gap: 6px;
     }
     .btn-add-milestone:hover { background: #e8effc; }
+
+    /* ── Manage Workflow modal ── */
+    .workflow-stage-list {
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .workflow-stage-card {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px; border: 1px solid var(--border);
+      border-radius: var(--radius-sm); background: var(--card);
+    }
+    .workflow-stage-card.bookend {
+      justify-content: center; background: var(--muted);
+      color: var(--muted-foreground); font-weight: 600; font-size: 14px;
+      padding: 10px 14px;
+    }
+    .workflow-drag-handle {
+      display: flex; align-items: center; flex-shrink: 0;
+      color: var(--muted-foreground); cursor: grab;
+    }
+    .workflow-stage-card.dragging { opacity: 0.5; }
+    .workflow-stage-card.drag-over { border-color: var(--primary); background: #e8effc; }
+    .workflow-stage-card.locked { padding-left: 26px; }
+    .workflow-stage-name {
+      flex: 1; font-size: 14px; font-weight: 600; cursor: text;
+      padding: 4px 6px; margin: -4px -6px; border-radius: 6px;
+      transition: background 0.1s;
+    }
+    .workflow-stage-name:hover { background: var(--muted); }
+    .workflow-stage-name-input {
+      flex: 1; font-size: 14px; font-weight: 600; font-family: var(--font);
+      color: var(--foreground); background: var(--background);
+      border: 1px solid var(--primary); border-radius: 6px;
+      padding: 3px 5px; outline: none;
+    }
+    .workflow-stage-delete {
+      background: none; border: none; cursor: pointer;
+      color: var(--muted-foreground); padding: 4px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.1s, color 0.1s;
+    }
+    .workflow-stage-delete:hover { background: var(--muted); color: #dc2626; }
+
+    /* ── Add Stage control ── */
+    .workflow-add-stage {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 10px 14px; border: 1px dashed var(--border); border-radius: var(--radius-sm);
+      background: none; color: var(--primary); font-size: 14px; font-weight: 600;
+      font-family: var(--font); cursor: pointer; width: 100%; transition: background 0.1s;
+    }
+    .workflow-add-stage:hover { background: #e8effc; }
+    .workflow-add-stage:disabled {
+      color: var(--muted-foreground); border-color: var(--border);
+      cursor: not-allowed; background: none;
+    }
 
     /* ── Right panel ── */
 
@@ -456,6 +512,9 @@
         <button class="btn-add-milestone" onclick="openAddMilestone()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Add Milestone
+        </button>
+        <button class="btn-add-milestone" onclick="openManageWorkflow()">
+          Manage Workflow
         </button>
       </div>
     </div>
@@ -732,6 +791,35 @@
     </div>
   </div>
 
+  <!-- Manage Workflow modal -->
+  <div class="modal-backdrop" id="manage-workflow-modal" onclick="closeManageWorkflow(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+
+      <div class="modal-header">
+        <span class="modal-title">Manage Workflow</span>
+        <button class="modal-close" onclick="closeManageWorkflow()" title="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="team-banner" id="workflow-delete-banner">
+          <span id="workflow-delete-banner-text"></span>
+          <div class="team-banner-actions">
+            <button class="team-banner-confirm" onclick="confirmWorkflowStageDelete()">Delete</button>
+            <button class="team-banner-cancel" onclick="cancelWorkflowStageDelete()">Cancel</button>
+          </div>
+        </div>
+        <div class="workflow-stage-list" id="workflow-stage-list"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-primary" onclick="closeManageWorkflow()">Done</button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- Add Project User modal -->
   <div class="modal-backdrop" id="add-user-modal" onclick="closeAddUserModal(event)">
     <div class="modal modal--form" onclick="event.stopPropagation()">
@@ -934,6 +1022,224 @@
     function closeAddMilestone(e) {
       if (!e || e.target === document.getElementById('add-milestone-modal')) {
         document.getElementById('add-milestone-modal').classList.remove('open');
+      }
+    }
+
+    // ── Manage Workflow modal ──
+    // Default new-project stage set: today's fixed seven-stage model. `key` is the stage's
+    // permanent identity (e.g. peer-checker assignability) and never changes on rename.
+    const WORKFLOW_STAGES = [
+      { key: 'unstarted', name: 'Unstarted', bookend: true },
+      { key: 'drafting', name: 'Drafting' },
+      { key: 'peer-check', name: 'Peer Check' },
+      { key: 'community-review', name: 'Community Review', hasActivity: true },
+      { key: 'linguist-check', name: 'Linguist Check', assignmentCount: 3 },
+      { key: 'theological-check', name: 'Theological Check' },
+      { key: 'consultant-check', name: 'Consultant Check' },
+      { key: 'complete', name: 'Complete', bookend: true },
+    ];
+    const WORKFLOW_STAGE_LIMIT = 10;
+    let nextWorkflowStageId = 1;
+    let draggingStageKey = null;
+
+    function configurableStages() {
+      return WORKFLOW_STAGES.filter(s => !s.bookend);
+    }
+
+    function configurableStageCount() {
+      return configurableStages().length;
+    }
+
+    // Content flows Drafting -> ... -> Complete, so the highest-position stage with
+    // activity means every stage at or before it in sequence has already been reached too.
+    function lockThroughIndex() {
+      const stages = configurableStages();
+      let idx = -1;
+      stages.forEach((s, i) => { if (s.hasActivity) idx = i; });
+      return idx;
+    }
+
+    function isPositionLocked(stage, index, throughIndex) {
+      if (stage.key === 'drafting' || stage.key === 'peer-check') return true;
+      return index <= throughIndex;
+    }
+
+    function isDeleteLocked(stage, index, throughIndex) {
+      if (stage.key === 'drafting') return true;
+      return index <= throughIndex;
+    }
+
+    function buildWorkflowStageList() {
+      const container = document.getElementById('workflow-stage-list');
+      container.innerHTML = '';
+      const stages = configurableStages();
+      const throughIndex = lockThroughIndex();
+
+      WORKFLOW_STAGES.forEach(stage => {
+        if (stage.bookend) {
+          if (stage.key === 'complete') container.appendChild(buildAddStageControl());
+          const card = document.createElement('div');
+          card.className = 'workflow-stage-card bookend';
+          card.textContent = stage.name;
+          container.appendChild(card);
+          return;
+        }
+
+        const index = stages.indexOf(stage);
+        const positionLocked = isPositionLocked(stage, index, throughIndex);
+        const deleteLocked = isDeleteLocked(stage, index, throughIndex);
+
+        const card = document.createElement('div');
+        card.className = 'workflow-stage-card' + (positionLocked ? ' locked' : '');
+        card.dataset.stageKey = stage.key;
+
+        const handleHtml = positionLocked ? '' : `
+          <span class="workflow-drag-handle">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="9" cy="6" r="1.2" fill="currentColor"/><circle cx="9" cy="12" r="1.2" fill="currentColor"/><circle cx="9" cy="18" r="1.2" fill="currentColor"/><circle cx="15" cy="6" r="1.2" fill="currentColor"/><circle cx="15" cy="12" r="1.2" fill="currentColor"/><circle cx="15" cy="18" r="1.2" fill="currentColor"/></svg>
+          </span>`;
+        const deleteHtml = deleteLocked ? '' : `
+          <button class="workflow-stage-delete" title="Delete stage" onclick="deleteWorkflowStage('${stage.key}')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>`;
+
+        card.innerHTML = `
+          ${handleHtml}
+          <span class="workflow-stage-name" onclick="startEditWorkflowStageName(this, '${stage.key}')">${stage.name}</span>
+          ${deleteHtml}
+        `;
+
+        if (!positionLocked) {
+          card.draggable = true;
+          card.addEventListener('dragstart', () => {
+            draggingStageKey = stage.key;
+            card.classList.add('dragging');
+          });
+          card.addEventListener('dragend', () => {
+            draggingStageKey = null;
+            card.classList.remove('dragging', 'drag-over');
+          });
+          card.addEventListener('dragover', e => {
+            if (!draggingStageKey || draggingStageKey === stage.key) return;
+            e.preventDefault();
+            card.classList.add('drag-over');
+          });
+          card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+          card.addEventListener('drop', e => {
+            e.preventDefault();
+            card.classList.remove('drag-over');
+            reorderWorkflowStage(draggingStageKey, stage.key);
+          });
+        }
+
+        container.appendChild(card);
+      });
+    }
+
+    function reorderWorkflowStage(draggedKey, targetKey) {
+      if (!draggedKey || draggedKey === targetKey) return;
+      const throughIndex = lockThroughIndex();
+      const stages = configurableStages();
+      const draggedStage = stages.find(s => s.key === draggedKey);
+      const targetStage = stages.find(s => s.key === targetKey);
+      const draggedIndex = stages.indexOf(draggedStage);
+      const targetIndex = stages.indexOf(targetStage);
+      if (isPositionLocked(draggedStage, draggedIndex, throughIndex)) return;
+      if (isPositionLocked(targetStage, targetIndex, throughIndex)) return;
+
+      const fromIndex = WORKFLOW_STAGES.indexOf(draggedStage);
+      WORKFLOW_STAGES.splice(fromIndex, 1);
+      const toIndex = WORKFLOW_STAGES.indexOf(targetStage);
+      WORKFLOW_STAGES.splice(toIndex, 0, draggedStage);
+      buildWorkflowStageList();
+    }
+
+    let pendingWorkflowDeleteKey = null;
+
+    function deleteWorkflowStage(key) {
+      const stage = WORKFLOW_STAGES.find(s => s.key === key);
+      if (!stage) return;
+      if (stage.assignmentCount > 0) {
+        pendingWorkflowDeleteKey = key;
+        document.getElementById('workflow-delete-banner-text').textContent =
+          `${stage.assignmentCount} items are assigned to this stage — deleting it will unassign them.`;
+        document.getElementById('workflow-delete-banner').classList.add('open');
+        return;
+      }
+      removeWorkflowStage(key);
+    }
+
+    function cancelWorkflowStageDelete() {
+      pendingWorkflowDeleteKey = null;
+      document.getElementById('workflow-delete-banner').classList.remove('open');
+    }
+
+    function confirmWorkflowStageDelete() {
+      if (!pendingWorkflowDeleteKey) return;
+      // Deleting the stage carrying Peer Check's assignability removes the
+      // project's peer-checker assignment along with it, via the same flow.
+      removeWorkflowStage(pendingWorkflowDeleteKey);
+      cancelWorkflowStageDelete();
+    }
+
+    function removeWorkflowStage(key) {
+      const index = WORKFLOW_STAGES.findIndex(s => s.key === key);
+      if (index === -1) return;
+      WORKFLOW_STAGES.splice(index, 1);
+      buildWorkflowStageList();
+    }
+
+    function buildAddStageControl() {
+      const atLimit = configurableStageCount() >= WORKFLOW_STAGE_LIMIT;
+      const btn = document.createElement('button');
+      btn.className = 'workflow-add-stage';
+      btn.textContent = '+ Add Stage';
+      btn.disabled = atLimit;
+      btn.title = atLimit ? `Workflows are limited to ${WORKFLOW_STAGE_LIMIT} stages.` : '';
+      btn.onclick = addWorkflowStage;
+      return btn;
+    }
+
+    function addWorkflowStage() {
+      if (configurableStageCount() >= WORKFLOW_STAGE_LIMIT) return;
+      const completeIndex = WORKFLOW_STAGES.findIndex(s => s.key === 'complete');
+      const key = `stage-${nextWorkflowStageId++}`;
+      WORKFLOW_STAGES.splice(completeIndex, 0, { key, name: 'New Stage' });
+      buildWorkflowStageList();
+      const newCard = document.querySelector(`.workflow-stage-card[data-stage-key="${key}"] .workflow-stage-name`);
+      if (newCard) startEditWorkflowStageName(newCard, key);
+    }
+
+    function startEditWorkflowStageName(span, key) {
+      if (span.querySelector('input')) return;
+      const stage = WORKFLOW_STAGES.find(s => s.key === key);
+      const input = document.createElement('input');
+      input.className = 'workflow-stage-name-input';
+      input.value = stage.name;
+      input.onclick = e => e.stopPropagation();
+      input.onkeydown = e => {
+        if (e.key === 'Enter') input.blur();
+        if (e.key === 'Escape') { input.value = stage.name; input.blur(); }
+      };
+      input.onblur = () => {
+        stage.name = input.value.trim() || stage.name;
+        span.textContent = stage.name;
+      };
+      span.textContent = '';
+      span.appendChild(input);
+      input.focus();
+      input.select();
+    }
+
+    function openManageWorkflow() {
+      cancelWorkflowStageDelete();
+      buildWorkflowStageList();
+      document.getElementById('manage-workflow-modal').classList.add('open');
+    }
+
+    function closeManageWorkflow(e) {
+      if (!e || e.target === document.getElementById('manage-workflow-modal')) {
+        cancelWorkflowStageDelete();
+        document.getElementById('manage-workflow-modal').classList.remove('open');
       }
     }
 
