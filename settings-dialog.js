@@ -237,9 +237,9 @@ const SETTINGS_HTML = `
     <div class="settings-row">
       <span class="settings-row-label">Display</span>
       <div class="seg-control" id="scripture-seg">
-        <button class="active" onclick="setScripture('verse', this)">Verse</button>
-        <button onclick="setScripture('pericope', this)">Pericope</button>
-        <button onclick="setScripture('chapter', this)">Chapter</button>
+        <button class="active" data-mode="verse" onclick="setScripture('verse', this)">Verse</button>
+        <button data-mode="pericope" onclick="setScripture('pericope', this)">Pericope</button>
+        <button data-mode="chapter" onclick="setScripture('chapter', this)">Chapter</button>
       </div>
     </div>
 
@@ -294,7 +294,15 @@ const SETTINGS_HTML = `
 // ── Settings dialog logic ─────────────────────────────────────────────────────
 function openSettings() {
   document.getElementById('user-menu').classList.remove('open');
+  syncScriptureSeg();
   document.getElementById('settings-overlay').classList.add('open');
+}
+
+function syncScriptureSeg() {
+  const mode = (typeof viewMode !== 'undefined' && viewMode) ? viewMode : (localStorage.getItem('fluent-display-mode') || 'verse');
+  document.querySelectorAll('#scripture-seg button').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
 }
 
 function closeSettings() {
