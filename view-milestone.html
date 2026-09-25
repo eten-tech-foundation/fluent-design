@@ -187,7 +187,7 @@
     /* ── Modals ── */
 
     .modal {
-      background: #fff;
+      background: var(--card);
       border-radius: var(--radius);
       box-shadow: 0 8px 32px rgba(0,0,0,0.22);
       width: 450px;
@@ -203,6 +203,13 @@
     
     .field { display: flex; flex-direction: column; gap: 6px; }
     .field-label { font-size: 13px; font-weight: 600; }
+    .field-input {
+      height: 38px; padding: 0 12px; border: 1px solid var(--border);
+      border-radius: var(--radius-sm); font-size: 14px; font-family: var(--font);
+      color: var(--foreground); background: var(--background);
+      outline: none; transition: border-color 0.15s;
+    }
+    .field-input:focus { border-color: var(--primary); }
 
     
 
@@ -227,7 +234,38 @@
       border-radius: var(--radius-sm); padding: 0 20px; height: 36px;
       font-size: 14px; font-weight: 600; font-family: var(--font); cursor: pointer;
     }
-    
+
+    /* ── Book Metadata ── */
+    .book-accordion { border-radius: var(--radius-sm); overflow: hidden; }
+    .book-accordion-item { border-bottom: 1px solid var(--border); }
+    .book-accordion-item:last-child { border-bottom: none; }
+    .book-accordion-item summary {
+      list-style: none; cursor: pointer; user-select: none;
+      padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      font-size: 14px; font-weight: 500; transition: background 0.1s;
+    }
+    .book-accordion-item summary::-webkit-details-marker { display: none; }
+    .accordion-title { display: flex; align-items: baseline; gap: 8px; }
+    .accordion-chevron { display: flex; flex-shrink: 0; color: var(--muted-foreground); transition: transform 0.15s; }
+    .book-accordion-item[open] .accordion-chevron { transform: rotate(180deg); }
+    .book-code { font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
+    .book-accordion-content { padding: 2px 14px 16px 34px; display: grid; grid-template-columns: 1fr 140px 100px; gap: 12px; }
+
+    .toc-field-label {
+      display: inline-flex; align-items: center; gap: 4px; width: fit-content;
+      font-size: 14px; font-weight: 500; position: relative;
+    }
+    .toc-field-label .tooltip-bubble {
+      display: none; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+      background: var(--popover); color: var(--popover-foreground); font-size: 14px; font-weight: 400; white-space: nowrap;
+      padding: 5px 9px; border-radius: 6px; z-index: 20;
+    }
+    .toc-field-label:hover .tooltip-bubble { display: block; }
+    #book-metadata-modal .modal-title { font-size: 18px; }
+
+    @media (max-width: 700px) {
+      .book-accordion-content { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -249,6 +287,7 @@
           </button>
           <div class="dropdown-menu" id="milestone-actions-menu">
             <div class="dropdown-item" onclick="openManageBooksModal()">Manage Books</div>
+            <div class="dropdown-item" onclick="openBookMetadataModal()">Edit Book Metadata</div>
           </div>
         </div>
       </div>
@@ -521,6 +560,28 @@
     </div>
   </div>
 
+  <!-- Book Metadata -->
+  <div class="modal-backdrop" id="book-metadata-modal" onclick="closeBookMetadataModal(event)">
+    <div class="modal" style="width: 640px;" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <span class="modal-title">Edit Book Metadata</span>
+        <button class="modal-close" onclick="closeBookMetadataModal()" title="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body" style="overflow-y: auto;">
+        <div class="book-accordion" id="book-metadata-accordion">
+          <!-- Books populated here -->
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeBookMetadataModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     function onChapterCheck() {
       const checked = document.querySelectorAll('.chapter-cb:checked');
@@ -688,6 +749,73 @@
     function moveBookToMilestone(bookId) {
       milestoneBooks = milestoneBooks.filter(b => b.id !== bookId);
       renderMilestoneBooks();
+    }
+
+    // ── Book Metadata ──
+    const TOC_FIELDS = [
+      { key: 'tocLongName', marker: '\\toc1', label: 'Long Name', placeholder: 'Full book name' },
+      { key: 'tocShortName', marker: '\\toc2', label: 'Short Name', placeholder: 'Short book name' },
+      { key: 'tocAbbreviation', marker: '\\toc3', label: 'Abbreviation', placeholder: 'Book abbreviation' },
+    ];
+
+    // Short Name falls back to the imported \mt1 title until a \toc2 is saved; Long Name and
+    // Abbreviation are never seeded since \mt2/\mt3 usage in imported USFM is inconsistent.
+    let bookMetadata = [
+      { id: 'mat', name: 'Matthew', code: 'MAT', tocLongName: 'The Gospel According to Matthew', tocShortName: 'Matthew', tocAbbreviation: 'Mat' },
+      { id: 'mrk', name: 'Mark', code: 'MRK', tocLongName: '', tocShortName: 'Mark', tocAbbreviation: '' },
+      { id: 'luk', name: 'Luke', code: 'LUK', tocLongName: '', tocShortName: '', tocAbbreviation: '' },
+      { id: 'jhn', name: 'John', code: 'JHN', tocLongName: '', tocShortName: '', tocAbbreviation: '' },
+    ];
+
+    function openBookMetadataModal() {
+      renderBookMetadataAccordion();
+      document.getElementById('book-metadata-modal').classList.add('open');
+    }
+
+    function closeBookMetadataModal(e) {
+      if (!e || e.target === document.getElementById('book-metadata-modal')) {
+        document.getElementById('book-metadata-modal').classList.remove('open');
+      }
+    }
+
+    function renderBookMetadataAccordion() {
+      const container = document.getElementById('book-metadata-accordion');
+      container.innerHTML = '';
+      bookMetadata.forEach(book => {
+        const item = document.createElement('details');
+        item.className = 'book-accordion-item';
+
+        const summary = document.createElement('summary');
+        summary.innerHTML = `
+          <span class="accordion-title">${book.name} <span class="book-code">${book.code}</span></span>
+          <span class="accordion-chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        `;
+        item.appendChild(summary);
+
+        const content = document.createElement('div');
+        content.className = 'book-accordion-content';
+        content.innerHTML = TOC_FIELDS.map(field => {
+          const inputId = `book-${book.id}-${field.key}`;
+          return `
+            <div class="field">
+              <label class="toc-field-label" for="${inputId}">
+                ${field.label}
+                <span class="tooltip-bubble">Stored as ${field.marker}</span>
+              </label>
+              <input class="field-input" id="${inputId}" maxlength="200"
+                placeholder="${field.placeholder}" value="${book[field.key]}"
+                onblur="saveBookMetadataField('${book.id}', '${field.key}', this.value)">
+            </div>`;
+        }).join('');
+        item.appendChild(content);
+
+        container.appendChild(item);
+      });
+    }
+
+    function saveBookMetadataField(bookId, field, value) {
+      const book = bookMetadata.find(b => b.id === bookId);
+      if (book) book[field] = value.trim();
     }
 
     // ── Milestone actions dropdown ──

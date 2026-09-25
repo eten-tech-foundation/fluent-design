@@ -11,6 +11,8 @@
   --background: #ffffff;
   --foreground: #1a1a1a;
   --card: #eaeef5;
+  --card-hover: #0940a8;
+  --card-foreground: #1a1a1a;
   --primary: #0b50d0;
   --primary-hover: #0940a8;
   --muted: #f2f4f8;
@@ -27,6 +29,7 @@
   --warning-border: #e48f06;
   --text-disabled: #a0a0a0;
   --popover: #dde3ed;
+  --popover-foreground: #1a1a1a;
   --popover-hover: #d4dbe7;
   --border: #c4cad6;
   --radius: 0.75rem;
@@ -34,18 +37,25 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --font: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font:
+    'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-serif: 'Inter', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
 }
 
 .dark {
   --background: #0d1117;
   --foreground: #e6e6e6;
   --card: #1c222d;
+  --card-hover: #242c39;
+  --card-foreground: #e6e6e6;
   --primary: #3d7cf2;
   --primary-hover: #336ad6;
   --muted: #202630;
   --muted-foreground: #9da6b5;
   --popover: #2a3240;
+  --popover-foreground: #e6e6e6;
   --popover-hover: #333c4c;
   --border: #3d4552;
   --success: #123526;
@@ -128,9 +138,9 @@ tbody td { padding: 12px 16px; font-size: 14px; }
 /* ── Modals ── */
 .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 300; align-items: center; justify-content: center; }
 .modal-backdrop.open { display: flex; }
-.modal { background: #fff; border-radius: var(--radius); box-shadow: 0 8px 32px rgba(0,0,0,0.22); width: 360px; display: flex; flex-direction: column; max-height: 80vh; overflow: hidden; }
+.modal { background: var(--card); border-radius: var(--radius); box-shadow: 0 8px 32px rgba(0,0,0,0.22); width: 360px; display: flex; flex-direction: column; max-height: 80vh; overflow: hidden; }
 .modal.modal--form { background: var(--popover); }
-.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px 12px; flex-shrink: 0; }
 .modal-title { font-size: 15px; font-weight: 600; }
 .modal-close { background: none; border: none; cursor: pointer; font-size: 20px; line-height: 1; color: var(--muted-foreground); padding: 0 2px; font-family: var(--font); }
 .modal-close:hover { color: var(--foreground); }
