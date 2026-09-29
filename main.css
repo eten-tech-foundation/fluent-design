@@ -27,6 +27,7 @@
   --warning: #fff6d6;
   --warning-foreground: #e48f06;
   --warning-border: #e48f06;
+  --warning-banner-foreground: #7c2d12;
   --text-disabled: #a0a0a0;
   --popover: #dde3ed;
   --popover-foreground: #1a1a1a;
@@ -64,6 +65,7 @@
   --warning: #3a2f10;
   --warning-foreground: #e48f06;
   --warning-border: #e48f06;
+  --warning-banner-foreground: #e48f06;
 }
 
 /* ── Base Reset ── */

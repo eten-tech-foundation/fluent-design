@@ -371,7 +371,7 @@ const CREATE_PROJECT_CSS = `
     border-radius: var(--radius-sm);
     font-size: 13px;
     line-height: 1.5;
-    background: var(--warning); color: var(--warning-foreground); border: 1px solid var(--warning-border);
+    background: var(--warning); color: var(--warning-banner-foreground); border: 1px solid var(--warning-border);
   }
 
   /* ── Audio availability (source Bible search + chip) ── */
