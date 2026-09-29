@@ -501,7 +501,9 @@
 
     // Per-verse takes for verse mode. Most verses carry a single take (owned by
     // the signed-in translator); a few are seeded with conflicting takes so the
-    // resolution UI has something to show.
+    // resolution UI has something to show. A few more non-conflict verses carry
+    // multiple takes from the same translator, so the "select a different active
+    // take" control has something to demonstrate outside of conflict resolution.
     const VERSE_TAKE_OVERRIDES = {
       2: {
         conflict: true, resolved: false, activeTake: null,
@@ -510,11 +512,33 @@
           { id: 'take-v2b', contributor: 'Priya M',  date: 'Jul 23, 2026', duration: '0:16' },
         ],
       },
+      4: {
+        conflict: false, resolved: false, activeTake: 'take-v4b',
+        takes: [
+          { id: 'take-v4a', contributor: 'Roslin T', date: 'Jul 19, 2026', duration: '0:12' },
+          { id: 'take-v4b', contributor: 'Roslin T', date: 'Jul 20, 2026', duration: '0:11' },
+        ],
+      },
+      6: {
+        conflict: false, resolved: false, activeTake: 'take-v6c',
+        takes: [
+          { id: 'take-v6a', contributor: 'Roslin T', date: 'Jul 18, 2026', duration: '0:17' },
+          { id: 'take-v6b', contributor: 'Roslin T', date: 'Jul 19, 2026', duration: '0:15' },
+          { id: 'take-v6c', contributor: 'Roslin T', date: 'Jul 20, 2026', duration: '0:16' },
+        ],
+      },
       8: {
         conflict: true, resolved: true, activeTake: 'take-v8b',
         takes: [
           { id: 'take-v8a', contributor: 'Priya M',  date: 'Jul 20, 2026', duration: '0:11' },
           { id: 'take-v8b', contributor: 'Roslin T', date: 'Jul 21, 2026', duration: '0:12' },
+        ],
+      },
+      11: {
+        conflict: false, resolved: false, activeTake: 'take-v11a',
+        takes: [
+          { id: 'take-v11a', contributor: 'Roslin T', date: 'Jul 19, 2026', duration: '0:13' },
+          { id: 'take-v11b', contributor: 'Roslin T', date: 'Jul 21, 2026', duration: '0:14' },
         ],
       },
       13: {
@@ -676,7 +700,7 @@
           (showSelectButton
             ? (isSelected
                 ? '<button class="select-draft-btn">' + checkIcon + ' Current Draft</button>'
-                : '<button class="select-draft-btn" onclick="selectDraft(\'' + take.id + '\')">' + checkIcon + ' Set as Active Take</button>')
+                : '<button class="select-draft-btn" onclick="selectDraft(\'' + take.id + '\')">' + checkIcon + ' Set as Draft</button>')
             : '');
 
         list.appendChild(card);
