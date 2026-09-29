@@ -207,6 +207,24 @@
     }
     .btn-add-milestone:hover { background: #e8effc; }
 
+    /* ── Header actions menu (Manage Workflow) ── */
+    .header-menu-wrap { position: relative; }
+    .header-menu-trigger {
+      background: none; border: 1px solid var(--border); border-radius: var(--radius);
+      width: 36px; height: 36px; cursor: pointer; color: var(--foreground);
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.15s;
+    }
+    .header-menu-trigger:hover { border-color: var(--primary); }
+    .header-menu-dropdown {
+      display: none; position: absolute; top: calc(100% + 4px); right: 0;
+      min-width: 180px; background: var(--popover); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); box-shadow: 0 4px 16px rgba(0,0,0,0.12); z-index: 20;
+    }
+    .header-menu-dropdown.open { display: block; }
+    .header-menu-item { padding: 8px 12px; font-size: 14px; cursor: pointer; color: var(--foreground); }
+    .header-menu-item:hover { background: var(--popover-hover); }
+
     /* ── Manage Workflow modal ── */
     .workflow-stage-list {
       display: flex; flex-direction: column; gap: 10px;
@@ -234,12 +252,17 @@
       transition: background 0.1s;
     }
     .workflow-stage-name:hover { background: var(--muted); }
+    .workflow-stage-name-edit {
+      flex: 1; display: flex; flex-direction: column; gap: 3px;
+    }
     .workflow-stage-name-input {
-      flex: 1; font-size: 14px; font-weight: 600; font-family: var(--font);
+      width: 100%; min-width: 240px; box-sizing: border-box;
+      font-size: 14px; font-weight: 600; font-family: var(--font);
       color: var(--foreground); background: var(--background);
       border: 1px solid var(--primary); border-radius: 6px;
       padding: 3px 5px; outline: none;
     }
+    .form-error { font-size: 12px; color: var(--destructive); }
     .workflow-stage-delete {
       background: none; border: none; cursor: pointer;
       color: var(--muted-foreground); padding: 4px; border-radius: 6px;
@@ -513,9 +536,14 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Add Milestone
         </button>
-        <button class="btn-add-milestone" onclick="openManageWorkflow()">
-          Manage Workflow
-        </button>
+        <div class="header-menu-wrap" id="project-header-menu-wrap">
+          <button class="header-menu-trigger" onclick="toggleProjectHeaderMenu(event)" title="More actions">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+          </button>
+          <div class="header-menu-dropdown" id="project-header-menu-dropdown">
+            <div class="header-menu-item" onclick="openManageWorkflow()">Manage Workflow</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1009,6 +1037,18 @@
       }
     });
 
+    function toggleProjectHeaderMenu(e) {
+      e.stopPropagation();
+      document.getElementById('project-header-menu-dropdown').classList.toggle('open');
+    }
+
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('project-header-menu-dropdown');
+      if (menu && !menu.closest('.header-menu-wrap').contains(e.target)) {
+        menu.classList.remove('open');
+      }
+    });
+
     function openAddMilestone() {
       buildBookList();
       document.getElementById('milestone-name').value = '';
@@ -1029,7 +1069,7 @@
     // Default new-project stage set: today's fixed seven-stage model. `key` is the stage's
     // permanent identity (e.g. peer-checker assignability) and never changes on rename.
     const WORKFLOW_STAGES = [
-      { key: 'unstarted', name: 'Unstarted', bookend: true },
+      { key: 'not-started', name: 'Not Started', bookend: true },
       { key: 'drafting', name: 'Drafting' },
       { key: 'peer-check', name: 'Peer Check' },
       { key: 'community-review', name: 'Community Review', hasActivity: true },
@@ -1209,13 +1249,29 @@
       if (newCard) startEditWorkflowStageName(newCard, key);
     }
 
+    const WORKFLOW_STAGE_NAME_LIMIT = 30;
+
     function startEditWorkflowStageName(span, key) {
       if (span.querySelector('input')) return;
       const stage = WORKFLOW_STAGES.find(s => s.key === key);
+
+      const wrap = document.createElement('div');
+      wrap.className = 'workflow-stage-name-edit';
+
       const input = document.createElement('input');
       input.className = 'workflow-stage-name-input';
       input.value = stage.name;
+      input.maxLength = WORKFLOW_STAGE_NAME_LIMIT;
       input.onclick = e => e.stopPropagation();
+
+      const error = document.createElement('span');
+      error.className = 'form-error';
+      error.textContent = `Stage names are limited to ${WORKFLOW_STAGE_NAME_LIMIT} characters.`;
+      error.style.display = 'none';
+
+      input.oninput = () => {
+        error.style.display = input.value.length >= WORKFLOW_STAGE_NAME_LIMIT ? 'block' : 'none';
+      };
       input.onkeydown = e => {
         if (e.key === 'Enter') input.blur();
         if (e.key === 'Escape') { input.value = stage.name; input.blur(); }
@@ -1224,8 +1280,11 @@
         stage.name = input.value.trim() || stage.name;
         span.textContent = stage.name;
       };
+
+      wrap.appendChild(input);
+      wrap.appendChild(error);
       span.textContent = '';
-      span.appendChild(input);
+      span.appendChild(wrap);
       input.focus();
       input.select();
     }
