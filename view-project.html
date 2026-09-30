@@ -283,6 +283,23 @@
       color: var(--muted-foreground); border-color: var(--border);
       cursor: not-allowed; background: none;
     }
+    .workflow-add-stage-wrap { position: relative; width: 100%; }
+    .workflow-add-stage-tip {
+      display: none; position: absolute; bottom: calc(100% + 9px); left: 50%;
+      transform: translateX(-50%); background: var(--popover); color: var(--foreground);
+      border: 1px solid var(--border); border-radius: var(--radius); padding: 6px 10px;
+      font-size: 12px; font-weight: 450; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 30; pointer-events: none;
+    }
+    .workflow-add-stage-tip::before {
+      content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+      border-width: 6px; border-style: solid; border-color: var(--border) transparent transparent transparent;
+    }
+    .workflow-add-stage-tip::after {
+      content: ''; position: absolute; top: calc(100% - 1px); left: 50%; transform: translateX(-50%);
+      border-width: 5px; border-style: solid; border-color: var(--popover) transparent transparent transparent;
+    }
+    .workflow-add-stage-wrap:hover .workflow-add-stage-tip { display: block; }
 
     /* ── Right panel ── */
 
@@ -1230,13 +1247,21 @@
 
     function buildAddStageControl() {
       const atLimit = configurableStageCount() >= WORKFLOW_STAGE_LIMIT;
+      const wrap = document.createElement('div');
+      wrap.className = 'workflow-add-stage-wrap';
       const btn = document.createElement('button');
       btn.className = 'workflow-add-stage';
       btn.textContent = '+ Add Stage';
       btn.disabled = atLimit;
-      btn.title = atLimit ? `Workflows are limited to ${WORKFLOW_STAGE_LIMIT} stages.` : '';
       btn.onclick = addWorkflowStage;
-      return btn;
+      wrap.appendChild(btn);
+      if (atLimit) {
+        const tip = document.createElement('div');
+        tip.className = 'workflow-add-stage-tip';
+        tip.textContent = `Workflows are limited to ${WORKFLOW_STAGE_LIMIT} stages.`;
+        wrap.appendChild(tip);
+      }
+      return wrap;
     }
 
     function addWorkflowStage() {
