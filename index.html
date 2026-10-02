@@ -102,6 +102,7 @@
     .card-icon.manager   { background: rgba(99, 102, 241, 0.18); }
     .card-icon.translator { background: rgba(16, 185, 129, 0.18); }
     .card-icon.hierarchy { background: rgba(245, 158, 11, 0.18); }
+    .card-icon.prelogin { background: rgba(56, 189, 248, 0.18); }
 
     .card-label {
       font-size: 0.7rem;
@@ -138,6 +139,7 @@
 
     .card.translator .card-arrow { color: #10b981; }
     .card.hierarchy  .card-arrow { color: #f59e0b; }
+    .card.prelogin   .card-arrow { color: #38bdf8; }
 
     .card:hover .card-arrow { gap: 0.6rem; }
 
@@ -181,6 +183,14 @@
       <span class="card-label">Web · Current</span>
       <span class="card-title">Organizations (Super User)</span>
       <p class="card-desc">Platform-wide list of orgs; create new orgs and invite their first Org Manager.</p>
+      <span class="card-arrow">Open &rarr;</span>
+    </a>
+
+    <a href="login.html" class="card prelogin">
+      <div class="card-icon prelogin">🔐</div>
+      <span class="card-label">Web · Pre-login</span>
+      <span class="card-title">Login</span>
+      <p class="card-desc">Sign-in screen with the pre-login language dropdown (English, Hindi, Arabic, Spanish, Russian; RTL for Arabic).</p>
       <span class="card-arrow">Open &rarr;</span>
     </a>
 

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fluent — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@100..900&family=Noto+Sans+Devanagari:wght@100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="main.css">
+  <script src="login-language.js" defer></script>
+  <style>
+    /* ── Login Page ── */
+    :root {
+      --font:
+        'Inter', 'Noto Sans Arabic', 'Noto Sans Devanagari', ui-sans-serif, system-ui, -apple-system,
+        BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+    }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary);
+      font-family: var(--font);
+      font-weight: 450;
+      padding: 24px;
+    }
+
+    .login-card {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+      background: #fffffc;
+      border-radius: 6px;
+      padding: 48px 50px 72px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+      color: #1e2a4a;
+    }
+
+    .login-logo { display: flex; justify-content: center; margin: 24px 0 0; }
+    .login-logo img { height: 100px; width: auto; }
+
+    .login-title { font-size: 24px; font-weight: 450; text-align: center; margin: 0 0 14px; }
+    .login-subtitle { font-size: 14px; color: #4b5877; text-align: center; margin: 0 0 32px; }
+
+    .field { position: relative; margin-bottom: 24px; }
+    .field input {
+      width: 100%;
+      height: 48px;
+      box-sizing: border-box;
+      border: 1px solid #dfe3ee;
+      border-radius: 4px;
+      background: #f8f9ff;
+      padding-block: 0;
+      padding-inline: 14px;
+      font-family: var(--font);
+      font-size: 15px;
+      color: #1e2a4a;
+    }
+    .field input:focus { border-color: var(--primary); outline: 2px solid var(--primary); outline-offset: -1px; background: #fff; }
+    .field label {
+      position: absolute;
+      top: -9px;
+      inset-inline-start: 10px;
+      padding: 0 5px;
+      background: #fffffc;
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.2;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.12s;
+    }
+    .field label::after { content: '*'; }
+    .field:focus-within label, .field.filled label { opacity: 1; }
+
+    .login-help {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      background: #fffbe6;
+      border-bottom: 1px solid #f0d98a;
+      color: #5c4a00;
+      font-size: 13px;
+      line-height: 1.5;
+      text-align: center;
+      padding: 8px 16px;
+    }
+    .field.has-toggle input { padding-inline-end: 44px; }
+
+    .pw-toggle {
+      position: absolute;
+      inset-inline-end: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      color: #7b869f;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .pw-toggle:hover { background: var(--muted); }
+
+    .login-link { color: var(--primary); font-weight: 600; font-size: 14px; text-decoration: none; }
+    .login-link:hover { text-decoration: underline; }
+    .forgot { display: inline-block; margin-bottom: 24px; }
+
+    .btn-continue {
+      width: 100%;
+      height: 48px;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      font-family: var(--font);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-continue:hover { background: var(--primary-hover); }
+
+    .login-legal { font-size: 12px; color: #4b5877; text-align: center; line-height: 1.6; margin: 28px 0 0; }
+    .login-legal a { color: var(--primary); font-weight: 600; text-decoration: none; }
+    .login-legal a:hover { text-decoration: underline; }
+
+    /* ── Language Dropdown ── */
+    .lang-picker { position: absolute; top: 14px; inset-inline-end: 14px; }
+    .lang-trigger {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      height: 32px;
+      padding: 0 10px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      color: #4b5877;
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .lang-trigger:hover, .lang-trigger[aria-expanded="true"] { background: var(--muted); border-color: var(--border); }
+    .lang-menu {
+      display: none;
+      position: absolute;
+      top: 38px;
+      inset-inline-end: 0;
+      min-width: 160px;
+      background: var(--popover);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 4px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+      z-index: 10;
+    }
+    .lang-menu.open { display: block; }
+    .lang-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 8px 10px;
+      background: none;
+      border: none;
+      border-radius: 6px;
+      font-family: var(--font);
+      font-size: 14px;
+      color: var(--popover-foreground);
+      text-align: start;
+      cursor: pointer;
+    }
+    .lang-option:hover { background: var(--popover-hover); }
+    .lang-option[aria-selected="true"] { font-weight: 700; }
+    .lang-option svg { visibility: hidden; color: var(--primary); }
+    .lang-option[aria-selected="true"] svg { visibility: visible; }
+
+    [dir="rtl"] .pw-toggle { transform: translateY(-50%); }
+  </style>
+</head>
+<body>
+
+  <!-- Mockup Help Banner -->
+<p class="login-help" data-i18n="help">Click Continue to sign in. No email or password is needed.</p>
+
+  <main class="login-card">
+
+    <!-- Language Dropdown -->
+    <div class="lang-picker" id="lang-picker">
+      <button type="button" class="lang-trigger" id="lang-trigger" aria-haspopup="listbox" aria-expanded="false">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <span id="lang-current">English</span>
+      </button>
+      <div class="lang-menu" id="lang-menu" role="listbox"></div>
+    </div>
+
+    <!-- Logo -->
+    <div class="login-logo">
+      <img src="images/Fluent-Blue-Icon.svg" alt="Fluent">
+    </div>
+
+    <h1 class="login-title" data-i18n="welcome">Welcome</h1>
+    <p class="login-subtitle" data-i18n="subtitle">Log in to continue to Fluent.</p>
+
+    <form id="login-form" novalidate>
+      <div class="field">
+        <label for="email" data-i18n="email">Email address</label>
+        <input type="email" id="email" autocomplete="username">
+      </div>
+      <div class="field has-toggle">
+        <label for="password" data-i18n="password">Password</label>
+        <input type="password" id="password" autocomplete="current-password">
+        <button type="button" class="pw-toggle" id="pw-toggle" aria-label="Show password">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+
+      <a href="#" class="login-link forgot" data-i18n="forgot">Forgot password?</a>
+
+      <button type="submit" class="btn-continue" data-i18n="continue">Continue</button>
+    </form>
+
+    <p class="login-legal">
+      <span data-i18n="legalPrefix">By continuing, you agree to the</span>
+      <a href="#" data-i18n="privacy">Privacy Policy</a>
+      <span data-i18n="legalAnd">and</span>
+      <a href="#" data-i18n="terms">Terms</a>.
+    </p>
+  </main>
+
+  <script>
+    document.getElementById('login-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      window.location.href = 'manager-dashboard.html';
+    });
+
+    document.querySelectorAll('.field input').forEach(function (input) {
+      input.addEventListener('input', function () {
+        input.parentElement.classList.toggle('filled', input.value !== '');
+      });
+    });
+
+    document.getElementById('pw-toggle').addEventListener('click', function () {
+      var pw = document.getElementById('password');
+      pw.type = pw.type === 'password' ? 'text' : 'password';
+    });
+  </script>
+</body>
+</html>
