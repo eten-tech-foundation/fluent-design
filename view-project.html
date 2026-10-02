@@ -70,7 +70,6 @@
 
     
 
-    .p-empty     { background: #C4CAD6; height: 100%; }
 
     
 
@@ -350,13 +349,13 @@
     .progress-mini {
       width: 100px;
       height: 8px;
-      background: #C4CAD6;
+      background: var(--workflow-not-started);
       border-radius: 99px;
       overflow: hidden;
       display: flex;
       flex-shrink: 0;
     }
-    .progress-mini-fill { background: #16A34A; height: 100%; }
+    .progress-mini-fill { background: var(--workflow-complete); height: 100%; }
     .progress-pct { font-size: 13px; color: var(--muted-foreground); }
 
     /* ── Status badges ── */
@@ -598,21 +597,9 @@
           <div class="progress-section">
             <div class="progress-label">Project Progress</div>
             <div class="progress-bar" id="project-progress-bar">
-              <div class="progress-segment p-complete"  style="width:16%" data-label="Complete"         data-percentage="16"></div>
-              <div class="progress-segment p-advanced"  style="width:2%"  data-label="Advanced Check"   data-percentage="2"  data-breakdown='[{"label":"Consultant Check","percentage":1},{"label":"Theologian Check","percentage":1}]'></div>
-              <div class="progress-segment p-community" style="width:2%"  data-label="Community Review" data-percentage="2"></div>
-              <div class="progress-segment p-peer"      style="width:3%"  data-label="Peer Check"        data-percentage="3"></div>
-              <div class="progress-segment p-drafting"  style="width:3%"  data-label="Drafting"          data-percentage="3"></div>
-              <div class="progress-segment p-empty"     style="width:74%" data-label="Not Started"       data-percentage="74"></div>
             </div>
             <div class="progress-tooltip" id="progress-tooltip"></div>
-            <div class="legend">
-              <div class="legend-item"><div class="legend-dot" style="background:#16A34A"></div>Complete</div>
-              <div class="legend-item"><div class="legend-dot" style="background:#1D9BF0"></div>Advanced Checks</div>
-              <div class="legend-item"><div class="legend-dot" style="background:#9333EA"></div>Community Review</div>
-              <div class="legend-item"><div class="legend-dot" style="background:#EA580C"></div>Peer Check</div>
-              <div class="legend-item"><div class="legend-dot" style="background:#FDE047"></div>Drafting</div>
-              <div class="legend-item"><div class="legend-dot" style="background:#C4CAD6"></div>Not Started</div>
+            <div class="legend" id="project-progress-legend">
             </div>
           </div>
         </div>
@@ -940,11 +927,12 @@
             cum += parseFloat(segments[i].style.width);
             if (pct <= cum) {
               const seg = segments[i];
+              const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
               const breakdown = seg.dataset.breakdown;
               if (breakdown) {
-                tooltip.innerHTML = JSON.parse(breakdown).map(b => `${b.label}: ${b.percentage}%`).join('<br>');
+                tooltip.innerHTML = JSON.parse(breakdown).map(b => `${esc(b.label)}: ${b.percentage}%`).join('<br>');
               } else {
-                tooltip.innerHTML = `${seg.dataset.label}: ${seg.dataset.percentage}%`;
+                tooltip.innerHTML = `${esc(seg.dataset.label)}: ${seg.dataset.percentage}%`;
               }
               tooltip.style.display = 'block';
               const segRect = seg.getBoundingClientRect();
@@ -1088,8 +1076,8 @@
     const WORKFLOW_STAGES = [
       { key: 'not-started', name: 'Not Started', bookend: true },
       { key: 'drafting', name: 'Drafting' },
-      { key: 'peer-check', name: 'Peer Check' },
-      { key: 'community-review', name: 'Community Review', hasActivity: true },
+      { key: 'peer-check', name: 'Peer Check', assignmentCount: 2 },
+      { key: 'community-review', name: 'Community Review' },
       { key: 'linguist-check', name: 'Linguist Check', assignmentCount: 3 },
       { key: 'theological-check', name: 'Theological Check' },
       { key: 'consultant-check', name: 'Consultant Check' },
@@ -1190,6 +1178,7 @@
 
         container.appendChild(card);
       });
+      renderProgressBar();
     }
 
     function reorderWorkflowStage(draggedKey, targetKey) {
@@ -1241,6 +1230,7 @@
     function removeWorkflowStage(key) {
       const index = WORKFLOW_STAGES.findIndex(s => s.key === key);
       if (index === -1) return;
+      delete stagePct[key];
       WORKFLOW_STAGES.splice(index, 1);
       buildWorkflowStageList();
     }
@@ -1269,6 +1259,7 @@
       const completeIndex = WORKFLOW_STAGES.findIndex(s => s.key === 'complete');
       const key = `stage-${nextWorkflowStageId++}`;
       WORKFLOW_STAGES.splice(completeIndex, 0, { key, name: 'New Stage' });
+      stagePct[key] = NEW_STAGE_PCT;
       buildWorkflowStageList();
       const newCard = document.querySelector(`.workflow-stage-card[data-stage-key="${key}"] .workflow-stage-name`);
       if (newCard) startEditWorkflowStageName(newCard, key);
@@ -1304,6 +1295,7 @@
       input.onblur = () => {
         stage.name = input.value.trim() || stage.name;
         span.textContent = stage.name;
+        renderProgressBar();
       };
 
       wrap.appendChild(input);
@@ -1313,6 +1305,79 @@
       input.focus();
       input.select();
     }
+
+    // ── Project progress bar (driven by WORKFLOW_STAGES) ──
+    // Illustrative sample shares only; Not Started is whatever remains.
+    const COMPLETE_PCT = 16;
+    const NEW_STAGE_PCT = 5;
+    const stagePct = {
+      'drafting': 5, 'peer-check': 5, 'community-review': 4,
+      'linguist-check': 2, 'theological-check': 2, 'consultant-check': 2,
+    };
+    // Identity-keyed colors: these three keep their color through rename, reorder, or deletion of others.
+    const NAMED_STAGE_STYLE = {
+      'drafting':         { cls: 'p-drafting',  color: 'var(--workflow-drafting)' },
+      'peer-check':       { cls: 'p-peer',      color: 'var(--workflow-peer-check)' },
+      'community-review': { cls: 'p-community', color: 'var(--workflow-community-review)' },
+    };
+
+    function renderProgressBar() {
+      const bar = document.getElementById('project-progress-bar');
+      const legend = document.getElementById('project-progress-legend');
+      if (!bar || !legend) return;
+
+      const stages = configurableStages();
+      let lastNamed = -1;
+      stages.forEach((s, i) => { if (NAMED_STAGE_STYLE[s.key]) lastNamed = i; });
+
+      const segs = [];
+      const advanced = [];
+      stages.forEach((s, i) => {
+        const pct = stagePct[s.key] || 0;
+        if (i > lastNamed) {
+          advanced.push({ label: s.name, percentage: pct });
+          return;
+        }
+        const style = NAMED_STAGE_STYLE[s.key] || { cls: 'p-custom', color: 'var(--workflow-custom)' };
+        segs.push({ cls: style.cls, color: style.color, label: s.name, pct });
+      });
+      if (advanced.length) {
+        segs.push({
+          cls: 'p-advanced', color: 'var(--workflow-advanced-check)', label: 'Advanced Checks',
+          pct: advanced.reduce((n, a) => n + a.percentage, 0), breakdown: advanced,
+        });
+      }
+
+      const used = COMPLETE_PCT + segs.reduce((n, s) => n + s.pct, 0);
+      const ordered = [
+        { cls: 'p-complete', color: 'var(--workflow-complete)', label: 'Complete', pct: COMPLETE_PCT },
+        ...segs.reverse(),
+        { cls: 'p-empty', color: 'var(--workflow-not-started)', label: 'Not Started', pct: Math.max(0, 100 - used) },
+      ];
+
+      bar.innerHTML = '';
+      legend.innerHTML = '';
+      ordered.forEach(s => {
+        if (s.pct > 0) {
+          const el = document.createElement('div');
+          el.className = 'progress-segment ' + s.cls;
+          el.style.width = s.pct + '%';
+          el.dataset.label = s.label;
+          el.dataset.percentage = s.pct;
+          if (s.breakdown) el.dataset.breakdown = JSON.stringify(s.breakdown);
+          bar.appendChild(el);
+        }
+        const item = document.createElement('div');
+        item.className = 'legend-item';
+        const dot = document.createElement('div');
+        dot.className = 'legend-dot';
+        dot.style.background = s.color;
+        item.appendChild(dot);
+        item.appendChild(document.createTextNode(s.label));
+        legend.appendChild(item);
+      });
+    }
+    renderProgressBar();
 
     function openManageWorkflow() {
       cancelWorkflowStageDelete();

@@ -24,6 +24,8 @@ Design reference files for the Fluent web application. Source: `eten-tech-founda
 - `settings-dialog.js` — Settings dialog (opened from the header user menu); loaded on every page
 - `edit-profile.js` — Edit Profile dialog (opened from the header user menu); loaded on every page
 - `create-project.js` — Create Project dialog (new + import flows); only loaded on pages with a "Create Project" entry point (`manager-dashboard.html`, `project-list-translator.html`, `observer-dashboard.html`)
+- `login.html` — Pre-login sign-in screen (BetterAuth look, see `Attachments/FluentLogin.png`); no shared header; submit goes to `manager-dashboard.html`, and header Logout returns here
+- `login-language.js` — Pre-login language dropdown and string table for `login.html` (English, Hindi, Arabic, Spanish, Russian; Arabic flips to RTL; choice saved to `localStorage`)
 - `Fluent-White Logo Only.svg` — white wordmark asset used in the header
 
 ## Mockup Conventions
