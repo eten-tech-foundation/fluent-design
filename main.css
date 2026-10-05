@@ -73,6 +73,13 @@
   --warning-foreground: #e48f06;
   --warning-border: #e48f06;
   --warning-banner-foreground: #e48f06;
+  --workflow-not-started: #c4cad6;
+  --workflow-drafting: #fde047;
+  --workflow-peer-check: #ea580c;
+  --workflow-community-review: #9333ea;
+  --workflow-advanced-check: #1d9bf0;
+  --workflow-complete: #16a34a;
+  --workflow-custom: #84cc16;
 }
 
 /* ── Base Reset ── */
