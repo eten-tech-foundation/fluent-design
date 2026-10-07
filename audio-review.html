@@ -105,6 +105,17 @@
       color: var(--foreground);
       font-weight: 600;
     }
+    .unit-row-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .unit-row-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--warning-foreground);
+      white-space: normal;
+    }
+    .unit-row-note svg { flex-shrink: 0; margin-top: 2px; }
     .unit-row.settled {
       color: var(--success-foreground);
     }
@@ -226,6 +237,17 @@
       font-size: 12px;
       color: var(--muted-foreground);
     }
+
+    .stitched-skips { display: flex; flex-direction: column; gap: 6px; }
+    .stitched-skip {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--warning-foreground);
+    }
+    .stitched-skip svg { flex-shrink: 0; margin-top: 2px; }
 
     .take-selected-badge {
       display: none;
@@ -440,7 +462,7 @@
         <div class="takes-header" id="takes-header"></div>
         <div class="conflict-banner" id="conflict-banner">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>
-          <span>This passage has conflicting takes — select one to resolve.</span>
+          <span id="conflict-banner-text">This passage has conflicting takes, select one to resolve.</span>
         </div>
         <div class="takes-list" id="takes-list"></div>
       </div>
@@ -465,33 +487,12 @@
     // Verse mode: each unit is a single verse, recorded and reviewed independently.
 
     const pericopeUnits = [
-      {
-        id: 0,
-        label: 'Verses 1–5',
-        conflict: true,
-        resolved: false,
-        activeTake: null,
-        verses: [1, 2, 3, 4, 5],
-        takes: [
-          { id: 'take-a', contributor: 'Roslin T', date: 'Jul 22, 2026', duration: '1:47' },
-          { id: 'take-b', contributor: 'Priya M',  date: 'Jul 23, 2026', duration: '1:53' },
-          { id: 'take-c', contributor: 'Roslin T', date: 'Jul 25, 2026', duration: '1:44' },
-        ],
-      },
-      {
-        id: 1,
-        label: 'Verses 6–9',
-        conflict: false,
-        resolved: false,
-        activeTake: 'take-f',
-        verses: [6, 7, 8, 9],
-        takes: [
-          { id: 'take-f', contributor: 'Priya M', date: 'Jul 20, 2026', duration: '1:12' },
-        ],
-      },
+      { id: 0, label: 'Verses 1–5',   recordedBy: 'verse',    conflict: false, resolved: false, activeTake: null, verses: [1, 2, 3, 4, 5], takes: [] },
+      { id: 1, label: 'Verses 6–9',   recordedBy: 'verse',    conflict: false, resolved: false, activeTake: null, verses: [6, 7, 8, 9],    takes: [] },
       {
         id: 2,
         label: 'Verses 10–12',
+        recordedBy: 'pericope',
         conflict: false,
         resolved: false,
         activeTake: 'take-h',
@@ -504,6 +505,7 @@
       {
         id: 3,
         label: 'Verses 13–15',
+        recordedBy: 'pericope',
         conflict: true,
         resolved: false,
         activeTake: null,
@@ -518,6 +520,14 @@
     // Per-verse takes for verse mode. Most verses carry a single take; a few
     // are seeded with conflicting takes so the resolution UI has something to show.
     const VERSE_TAKE_OVERRIDES = {
+      6: {
+        conflict: true, resolved: false, activeTake: null,
+        takes: [
+          { id: 'take-v6a', contributor: 'Priya M',  date: 'Jul 20, 2026', duration: '0:12' },
+          { id: 'take-v6b', contributor: 'Roslin T', date: 'Jul 22, 2026', duration: '0:13' },
+        ],
+      },
+      7: { conflict: false, resolved: false, activeTake: null, takes: [] },
       2: {
         conflict: true, resolved: false, activeTake: null,
         takes: [
@@ -532,13 +542,6 @@
           { id: 'take-v8b', contributor: 'Roslin T', date: 'Jul 21, 2026', duration: '0:12' },
         ],
       },
-      13: {
-        conflict: true, resolved: false, activeTake: null,
-        takes: [
-          { id: 'take-v13a', contributor: 'Roslin T', date: 'Jul 22, 2026', duration: '0:19' },
-          { id: 'take-v13b', contributor: 'Seema K',  date: 'Jul 24, 2026', duration: '0:21' },
-        ],
-      },
     };
 
     function buildVerseUnits() {
@@ -546,11 +549,12 @@
       for (let n = 1; n <= 15; n++) {
         const override = VERSE_TAKE_OVERRIDES[n];
         if (override) {
-          result.push(Object.assign({ id: 'v' + n, label: 'Verse ' + n, verses: [n] }, override));
+          result.push(Object.assign({ id: 'v' + n, label: 'Verse ' + n, recordedBy: 'verse', verses: [n] }, override));
         } else {
           result.push({
             id: 'v' + n,
             label: 'Verse ' + n,
+            recordedBy: 'verse',
             conflict: false,
             resolved: false,
             activeTake: 'take-v' + n,
@@ -592,17 +596,79 @@
       return viewMode === 'pericope' ? pericopeUnits : verseUnits;
     }
 
+    function verseUnitFor(n) {
+      return verseUnits.find(function(u) { return u.verses[0] === n; });
+    }
+
+    function isVerseOnlyPericope(unit) {
+      return viewMode === 'pericope' && unit.recordedBy === 'verse';
+    }
+
+    function hasRecording(unit) {
+      if (unit.recordedBy === 'verse' && viewMode === 'pericope') {
+        return unit.verses.some(function(n) { return verseUnitFor(n).takes.length > 0; });
+      }
+      return unit.takes.length > 0;
+    }
+
+    function unresolvedConflict(u) { return u.conflict && !u.resolved; }
+
+    // Stitched playback: the active take of each verse in order; verses with no
+    // active take are skipped and reported with the reason.
+    function stitchedFor(unit) {
+      const included = [], skipped = [];
+      let secs = 0;
+      unit.verses.forEach(function(n) {
+        const vu = verseUnitFor(n);
+        if (vu.takes.length === 0) { skipped.push({ verse: n, reason: 'no recording' }); return; }
+        if (unresolvedConflict(vu)) { skipped.push({ verse: n, reason: 'conflict' }); return; }
+        const take = vu.takes.find(function(t) { return t.id === vu.activeTake; });
+        const parts = take.duration.split(':');
+        secs += parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+        included.push(n);
+      });
+      const duration = Math.floor(secs / 60) + ':' + ('0' + (secs % 60)).slice(-2);
+      return { id: 'stitched-' + unit.id, duration: duration, included: included, skipped: skipped };
+    }
+
+    function rangeText(unit) {
+      return unit.verses[0] + '-' + unit.verses[unit.verses.length - 1];
+    }
+
+    // A conflict recorded in the other display mode that overlaps this unit.
+    function crossConflict(unit) {
+      if (viewMode === 'pericope') {
+        if (unit.recordedBy !== 'verse') return null;
+        const vs = unit.verses.filter(function(n) { return unresolvedConflict(verseUnitFor(n)); });
+        if (!vs.length) return null;
+        return {
+          label: 'Conflict in verse' + (vs.length > 1 ? 's ' : ' ') + vs.join(', '),
+          banner: 'This conflict was recorded by verse. Switch to Verse view to resolve it.',
+        };
+      }
+      const pu = pericopeUnits.find(function(p) {
+        return p.recordedBy === 'pericope' && unresolvedConflict(p) && p.verses.indexOf(unit.verses[0]) !== -1;
+      });
+      if (!pu) return null;
+      return {
+        label: 'Conflict in pericope vv. ' + rangeText(pu),
+        banner: 'This conflict was recorded as a pericope. Switch to Pericope view to resolve it.',
+      };
+    }
+
     function contributorCount(unit) {
       return new Set(unit.takes.map(function(t) { return t.contributor; })).size;
     }
 
     // ── Rendering ─────────────────────────────────────────────────────────────
 
+    const ALERT_ICON = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>';
+
     function renderUnitList() {
       const list = document.getElementById('unit-list');
       list.innerHTML = '';
       getUnits().forEach(function(unit, idx) {
-        if (unit.takes.length === 0) return; // units with no recorded takes are omitted
+        if (!hasRecording(unit)) return; // units with no recorded takes are omitted
 
         const btn = document.createElement('button');
         const settled = unit.conflict && unit.resolved;
@@ -614,12 +680,17 @@
           const dotColor = unit.resolved ? 'var(--success-border)' : 'var(--warning-border)';
           dot = '<span class="unit-dot" style="background:' + dotColor + ';"></span>';
         }
-        btn.innerHTML = '<span class="unit-dot-slot">' + dot + '</span><span>' + unit.label + '</span>';
+        const cross = crossConflict(unit);
+        const note = cross
+          ? '<span class="unit-row-note">' + ALERT_ICON + '<span>' + cross.label + '</span></span>'
+          : '';
+        btn.innerHTML = '<span class="unit-dot-slot">' + dot + '</span><span class="unit-row-text"><span>' + unit.label + '</span>' + note + '</span>';
         list.appendChild(btn);
       });
 
-      const anyConflicts = getUnits().some(function(u) { return u.conflict; });
-      const allResolved = anyConflicts && getUnits().filter(function(u) { return u.conflict; }).every(function(u) { return u.resolved; });
+      const allConflicts = pericopeUnits.filter(function(u) { return u.recordedBy === 'pericope' && u.conflict; })
+        .concat(verseUnits.filter(function(u) { return u.conflict; }));
+      const allResolved = allConflicts.length > 0 && allConflicts.every(function(u) { return u.resolved; });
       document.getElementById('all-resolved-chip').style.display = allResolved ? 'inline-flex' : 'none';
     }
 
@@ -628,7 +699,20 @@
       const header = document.getElementById('takes-header');
       const banner = document.getElementById('conflict-banner');
 
-      if (unit.conflict && !unit.resolved) {
+      const cross = crossConflict(unit);
+      const bannerText = document.getElementById('conflict-banner-text');
+
+      if (cross) {
+        bannerText.textContent = cross.banner;
+        header.innerHTML = 'Recorded Takes<p>' + (isVerseOnlyPericope(unit)
+          ? 'Recorded by verse. Played as one recording.'
+          : 'Listen to every recorded take for this passage.') + '</p>';
+        banner.classList.add('visible');
+      } else if (isVerseOnlyPericope(unit)) {
+        header.innerHTML = 'Recorded Takes<p>Recorded by verse. Played as one recording.</p>';
+        banner.classList.remove('visible');
+      } else if (unit.conflict && !unit.resolved) {
+        bannerText.textContent = 'This passage has conflicting takes, select one to resolve.';
         header.innerHTML = 'Conflicting Takes<p>Select one take as the active draft. All recordings are retained.</p>';
         banner.classList.add('visible');
       } else if (unit.conflict && unit.resolved) {
@@ -640,16 +724,50 @@
       }
     }
 
+    const BAR_HEIGHTS = [30,55,45,70,40,85,60,50,75,45,65,80,35,55,70,45,60,50,40,65,55,75,45,60,70,50,40,65,55,45];
+
+    // ── Stitched playback ──
+    function renderStitched(unit, list) {
+      const st = stitchedFor(unit);
+      const isPlaying = playingTakeId === st.id;
+      const bars = BAR_HEIGHTS.map(function(h) {
+        return '<div class="waveform-bar" style="height:' + h + '%;"></div>';
+      }).join('');
+      const playIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+      const pauseIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="4" x2="6" y2="20"/><line x1="18" y1="4" x2="18" y2="20"/></svg>';
+      const skips = st.skipped.map(function(s) {
+        return '<div class="stitched-skip">' + ALERT_ICON + '<span>Verse ' + s.verse + ' not included: ' + s.reason + '</span></div>';
+      }).join('');
+
+      const card = document.createElement('div');
+      card.className = 'take-card' + (isPlaying ? ' playing' : '');
+      card.id = 'card-' + st.id;
+      card.innerHTML =
+        '<div class="take-label">Stitched from verse recordings, vv. ' + rangeText(unit) + '</div>' +
+        '<div class="take-player">' +
+          '<button class="play-btn" onclick="togglePlay(\'' + st.id + '\')">' + (isPlaying ? pauseIcon : playIcon) + '</button>' +
+          '<div class="waveform" onclick="togglePlay(\'' + st.id + '\')"><div class="waveform-bars">' + bars + '</div></div>' +
+          '<span class="take-duration">' + st.duration + '</span>' +
+        '</div>' +
+        (skips ? '<div class="stitched-skips">' + skips + '</div>' : '');
+      list.appendChild(card);
+    }
+
     function renderTakes() {
       const unit = getUnits()[activeUnit];
       const list = document.getElementById('takes-list');
       list.innerHTML = '';
       const showNames = contributorCount(unit) > 1;
 
+      if (isVerseOnlyPericope(unit)) {
+        renderStitched(unit, list);
+        return;
+      }
+
       unit.takes.slice(0, 5).forEach(function(take, i) {
         const isSelected = unit.activeTake === take.id;
         const isPlaying  = playingTakeId === take.id;
-        const showSelectButton = unit.conflict && !unit.resolved;
+        const showSelectButton = unit.conflict && !unit.resolved && unit.recordedBy === viewMode;
         const showSettled = isSelected && unit.conflict && unit.resolved;
 
         const card = document.createElement('div');
@@ -775,7 +893,9 @@
         playingTakeId = takeId;
         renderTakes();
         const unit = getUnits()[activeUnit];
-        const take = unit.takes.find(function(t) { return t.id === takeId; });
+        const take = takeId.indexOf('stitched-') === 0
+          ? stitchedFor(unit)
+          : unit.takes.find(function(t) { return t.id === takeId; });
         if (take) {
           const parts = take.duration.split(':');
           const secs = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);

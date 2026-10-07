@@ -1062,6 +1062,8 @@
     html.audio-off .take-audio-group,
     html.audio-off .pericope-player,
     html.audio-off .pericope-takes-badge,
+    html.audio-off .pericope-conflict-msg,
+    html.audio-off .pericope-stitched-note,
     html.audio-off .tq-play-group,
     html.audio-off .note-play-bar,
     html.audio-off .art-pb-btn-wrap,
@@ -1143,6 +1145,31 @@
       transition: background 0.15s;
     }
     .next-verse-btn:hover { background: var(--primary-hover); }
+
+    /* ── Pericope take conflict and stitched states ── */
+    .pericope-conflict-msg,
+    .pericope-skip-note {
+      display: inline-flex;
+      align-items: flex-start;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--warning-foreground);
+    }
+    .pericope-conflict-msg { flex: 1; min-width: 0; }
+    .pericope-conflict-msg svg,
+    .pericope-skip-note svg { flex-shrink: 0; margin-top: 2px; }
+    .pericope-stitched-note {
+      flex-basis: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .pericope-stitched-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted-foreground);
+    }
 
     /* ── Pericope persistent player ── */
     .pericope-range-src {
@@ -1927,6 +1954,7 @@
       2:  [{ id: 'v2-t1',  date: 'Sep 18' }],
       3:  [{ id: 'v3-t1',  date: 'Sep 17' }, { id: 'v3-t2', date: 'Sep 19' }],
       6:  [{ id: 'v6-t1',  date: 'Sep 18' }],
+      7:  [{ id: 'v7-t1',  date: 'Sep 18' }, { id: 'v7-t2', date: 'Sep 19' }],
       9:  [{ id: 'v9-t1',  date: 'Sep 20' }],
       14: [{ id: 'v14-t1', date: 'Sep 18' }, { id: 'v14-t2', date: 'Sep 19' }, { id: 'v14-t3', date: 'Sep 20' }],
     };
@@ -1935,11 +1963,25 @@
     const pericopeTakes = {
       0: [{ id: 'p0-t1', date: 'Sep 18' }],
       2: [{ id: 'p2-t1', date: 'Sep 17' }, { id: 'p2-t2', date: 'Sep 19' }, { id: 'p2-t3', date: 'Sep 20' }],
+      3: [{ id: 'p3-t1', date: 'Sep 18' }, { id: 'p3-t2', date: 'Sep 19' }],
     };
     const pericopeActiveTake = { 0: 'p0-t1', 2: 'p2-t3' };
 
     function hasVerseTake(n)       { return !!(verseTakes[n] && verseTakes[n].length); }
     function hasPericopeTake(pi)   { return !!(pericopeTakes[pi] && pericopeTakes[pi].length); }
+    function pericopeInConflict(pi) { return hasPericopeTake(pi) && !pericopeActiveTake[pi]; }
+    function pericopeVerseOnly(pi) {
+      return !hasPericopeTake(pi) && PERICOPES[pi].verses.some(hasVerseTake);
+    }
+    // Stitched playback plays each verse's active take in order; verses without one are skipped.
+    function stitchedInfo(pi) {
+      var vs = PERICOPES[pi].verses, included = [], skipped = [];
+      vs.forEach(function(n) {
+        if (hasVerseTake(n) && verseActiveTake[n]) included.push(n);
+        else skipped.push({ verse: n, reason: hasVerseTake(n) ? 'conflict' : 'no recording' });
+      });
+      return { range: vs[0] + '-' + vs[vs.length - 1], skipped: skipped };
+    }
     function pericopeTakeCount(pi) { return (pericopeTakes[pi] || []).length; }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
@@ -2372,6 +2414,27 @@
         + '</div>';
     }
 
+    // ── Pericope target audio states (active take, conflict, stitched) ────────
+    function pericopeTargetAudioHTML(pi) {
+      if (pericopeInConflict(pi)) {
+        return '<span class="pericope-conflict-msg">' + ALERT_SVG + 'Conflicting takes, not playable until resolved</span>';
+      }
+      if (hasPericopeTake(pi)) return pericopeTakePlayerHTML(pi);
+      if (pericopeVerseOnly(pi)) {
+        var info = stitchedInfo(pi);
+        var skips = info.skipped.map(function(sk) {
+          return '<div class="pericope-skip-note">' + ALERT_SVG + 'Verse ' + sk.verse + ' not included: ' + sk.reason + '</div>';
+        }).join('');
+        return pericopeTakePlayerHTML(pi)
+          + '<div class="pericope-stitched-note">'
+          + '<div class="pericope-stitched-label">Stitched from verse recordings, vv. ' + info.range + '</div>'
+          + skips + '</div>';
+      }
+      return '';
+    }
+
+    var ALERT_SVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>';
+
     function pericopeTakesBadgeHTML(pi) {
       return '<button class="pericope-takes-badge" onclick="event.stopPropagation(); openTakesReview(' + pi + ')" title="Compare all takes for this passage">'
         + LAYERS_SVG + '<span>Takes (' + pericopeTakeCount(pi) + ')</span>'
@@ -2656,7 +2719,7 @@
             + '</div>';
         var targetRangeCell = '<div class="pericope-range-label pericope-range-target">'
             + '<span style="flex-shrink:0">' + p.label + '</span>'
-            + (hasPericopeTake(pi) ? pericopeTakePlayerHTML(pi) : '')
+            + pericopeTargetAudioHTML(pi)
             + (pericopeTakeCount(pi) > 1 ? pericopeTakesBadgeHTML(pi) : '')
             + '</div>';
         rangeRow.innerHTML = srcRangeCell + targetRangeCell;
