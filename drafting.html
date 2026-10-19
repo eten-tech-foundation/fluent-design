@@ -1061,6 +1061,7 @@
     html.audio-off .src-audio-group,
     html.audio-off .take-audio-group,
     html.audio-off .pericope-player,
+    html.audio-off .chapter-player-row,
     html.audio-off .pericope-takes-badge,
     html.audio-off .pericope-conflict-msg,
     html.audio-off .pericope-stitched-note,
@@ -1407,6 +1408,8 @@
       color: var(--foreground); overflow-wrap: break-word;
     }
     .chapter-col-div { background: var(--border); align-self: stretch; }
+    /* ── Chapter view source audio player ── */
+    .chapter-player-row { margin-bottom: 12px; padding-right: 0; }
     .chapter-tgt-col { padding: 20px 24px 60px 16px; overflow-wrap: break-word; }
     .vnum {
       font-size: 1rem; font-weight: 700; color: var(--foreground);
@@ -2242,7 +2245,7 @@
 
     function getPericopePBState(pi) {
       if (!pericopePBStates[pi]) {
-        pericopePBStates[pi] = { playing: false, hasLoaded: false, restartEnabled: false, pos: 0, duration: 90, timer: null, isTts: true };
+        pericopePBStates[pi] = { playing: false, hasLoaded: false, restartEnabled: false, pos: 0, duration: pi === 'ch' ? 270 : 90, timer: null, isTts: true };
       }
       return pericopePBStates[pi];
     }
@@ -2268,7 +2271,7 @@
       var s = getPericopePBState(pi);
       // Stop any other playing pericope
       Object.keys(pericopePBStates).forEach(function(k) {
-        var ki = parseInt(k);
+        var ki = isNaN(k) ? k : parseInt(k);
         if (ki !== pi && pericopePBStates[k].playing) {
           var other = pericopePBStates[k];
           if (other.timer) { clearInterval(other.timer); other.timer = null; }
@@ -4351,6 +4354,29 @@
       if (!srcCol || !tgtCol) return;
       srcCol.innerHTML = '';
       tgtCol.innerHTML = '';
+
+      // Source audio player for the whole chapter (TTS, same control as the pericope player)
+      var chLabel = PERICOPES[0].label.split(':')[0] + ':1\u2013' + PERICOPES[PERICOPES.length - 1].verses.slice(-1)[0];
+      var playerRow = document.createElement('div');
+      playerRow.className = 'pericope-range-label pericope-range-src chapter-player-row';
+      playerRow.innerHTML =
+        '<span style="flex-shrink:0">' + chLabel + '</span>'
+        + '<div class="pericope-player" id="pericope-player-ch">'
+        + '<span class="src-play-wrap">'
+        + '<button class="play-btn" id="pericope-pb-play-ch" onclick="pericopePlayerPlay(\'ch\')" title="Play">'
+        + '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'
+        + '</button>'
+        + '<span class="src-play-sparkle" id="pericope-pb-sparkle-ch" title="AI-generated audio">' + SRC_SPARKLE_SVG + '</span>'
+        + '</span>'
+        + '<button class="play-btn disabled" id="pericope-pb-restart-ch" disabled onclick="pericopePlayerRestart(\'ch\')" title="Restart">' + SRC_RESTART_SVG + '</button>'
+        + '<div class="pericope-pb-scrub-wrap" onclick="pericopePlayerScrub(this,event,\'ch\')">'
+        + '<div class="pericope-pb-track">'
+        + '<div class="pericope-pb-fill" id="pericope-pb-fill-ch"></div>'
+        + '<div class="pericope-pb-thumb" id="pericope-pb-thumb-ch" style="left:0%"></div>'
+        + '</div></div>'
+        + '<span class="pericope-pb-time" id="pericope-pb-time-ch">0:00</span>'
+        + '</div>';
+      srcCol.appendChild(playerRow);
 
       CHAPTER_BLOCKS.forEach(function(block) {
         // Source side
