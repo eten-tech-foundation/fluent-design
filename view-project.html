@@ -406,7 +406,7 @@
       color: var(--muted-foreground);
     }
     .milestone-name { font-weight: 600; }
-    .milestone-books { font-size: 12px; color: var(--muted-foreground); margin-top: 1px; }
+    .milestone-books { font-size: 12px; color: var(--muted-foreground); margin-top: 1px; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     /* ── Add Milestone modal ── */
 
@@ -508,6 +508,74 @@
       border-radius: var(--radius-sm); padding: 0 20px; height: 36px;
       font-size: 14px; font-weight: 600; font-family: var(--font); cursor: pointer;
     }
+
+    /* ── Add Milestone tabs + Import tab (WNPD-08) ── */
+    .ms-tabs { display: flex; gap: 4px; padding: 0 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .ms-tab {
+      background: none; border: none; padding: 8px 4px 10px; margin-right: 20px;
+      font-size: 14px; font-weight: 600; font-family: var(--font);
+      color: var(--muted-foreground); cursor: pointer;
+      border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s;
+    }
+    .ms-tab:hover { color: var(--foreground); }
+    .ms-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    .ms-dropzone {
+      border: 2px dashed var(--border); border-radius: var(--radius-sm);
+      padding: 32px 20px; text-align: center; cursor: pointer; background: #fff;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .ms-dropzone:hover, .ms-dropzone.drag { border-color: var(--primary); background: var(--muted); }
+    .dark .ms-dropzone { background: #2a3240; }
+    .ms-dropzone svg { color: var(--muted-foreground); margin-bottom: 8px; }
+    .ms-upload-text { font-size: 14px; color: var(--foreground); line-height: 1.5; }
+    .ms-upload-text strong { font-weight: 600; }
+    .ms-upload-sub { font-size: 12px; color: var(--muted-foreground); margin-top: 10px; }
+    .ms-select-btn {
+      margin-top: 14px; padding: 7px 16px; border: 1px solid var(--border);
+      border-radius: var(--radius-sm); font-size: 13px; font-weight: 600;
+      font-family: var(--font); background: #fff; color: var(--foreground);
+      cursor: pointer; transition: border-color 0.15s, background 0.15s;
+    }
+    .ms-select-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .dark .ms-select-btn { background: #2a3240; }
+
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+    .ms-file-list { display: flex; flex-direction: column; gap: 6px; margin-top: -6px; }
+    .ms-file-item {
+      display: flex; align-items: center; gap: 8px; padding: 2px 0;
+      font-size: 13px; font-weight: 600; color: var(--success-foreground);
+    }
+    .ms-file-item > svg { flex-shrink: 0; }
+    .ms-file-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ms-file-remove {
+      background: none; border: none; cursor: pointer; padding: 2px; border-radius: 6px;
+      color: var(--muted-foreground); display: flex; align-items: center; justify-content: center;
+    }
+    .ms-file-remove:hover { background: var(--muted); color: var(--foreground); }
+    .ms-errors { display: flex; flex-direction: column; gap: 6px; margin-top: -6px; }
+    .ms-errors:empty { display: none; }
+    .ms-error {
+      display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px;
+      border-radius: var(--radius-sm); font-size: 13px; line-height: 1.5;
+      background: #fde8e8; color: #b91c1c; border: 1px solid #f5b5b5;
+    }
+    .dark .ms-error { background: #3a1f1f; border-color: #6b2b2b; color: #f5a3a3; }
+    .ms-error-text { flex: 1; }
+    .ms-error-dismiss { background: none; border: none; cursor: pointer; color: inherit; padding: 2px; display: flex; opacity: 0.8; }
+    .ms-error-dismiss:hover { opacity: 1; }
+    .ms-required { color: #dc2626; }
+    .ms-readonly {
+      padding: 8px 12px; min-height: 38px; border: 1px solid var(--border);
+      border-radius: var(--radius-sm); font-size: 14px; background: var(--muted);
+      color: var(--foreground); display: flex; align-items: center;
+    }
+    .ms-destination {
+      display: flex; flex-direction: column; gap: 6px; padding: 12px 14px;
+      border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px;
+    }
+    .ms-dest-row { display: flex; gap: 12px; }
+    .ms-dest-label { width: 130px; flex-shrink: 0; font-weight: 600; color: var(--muted-foreground); }
 
     /* ── Add Project User modal ── */
 
@@ -740,12 +808,12 @@
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V8"/><path d="m5 12-2-2 9-5 9 5-2 2"/><path d="M5 17l-2-2 9-5 9 5-2 2"/></svg>
                     </div-->
                     <div>
-                      <div class="milestone-name">Epistles</div>
-                      <div class="milestone-books">Romans, 1 Corinthians, 2 Corinthians, …</div>
+                      <div class="milestone-name">Select Epistles</div>
+                      <div class="milestone-books">Romans, Galatians, Ephesians, Philippians, Colossians</div>
                     </div>
                   </div>
                 </td>
-                <td>21 books · 145 chapters</td>
+                <td>5 books · 36 chapters</td>
                 <td>
                   <div class="progress-cell">
                     <div class="progress-mini">
@@ -803,7 +871,13 @@
         </button>
       </div>
 
-      <div class="modal-body">
+      <!-- Add Milestone tabs -->
+      <div class="ms-tabs">
+        <button type="button" class="ms-tab active" id="ms-tab-new" onclick="switchMilestoneTab('new')">New</button>
+        <button type="button" class="ms-tab" id="ms-tab-import" onclick="switchMilestoneTab('import')">Import</button>
+      </div>
+
+      <div class="modal-body" id="ms-panel-new">
         <div class="field">
           <label class="field-label" for="milestone-name">Milestone Name</label>
           <input class="field-input" id="milestone-name" type="text" placeholder="e.g., Gospels" />
@@ -838,9 +912,47 @@
         </div>
       </div>
 
+      <!-- Add Milestone Import tab -->
+      <div class="modal-body" id="ms-panel-import" style="display:none;">
+        <div class="ms-dropzone" id="ms-dropzone"
+          onclick="document.getElementById('ms-file').click()"
+          ondragover="event.preventDefault(); this.classList.add('drag')"
+          ondragleave="this.classList.remove('drag')"
+          ondrop="msDrop(event)">
+          <input type="file" id="ms-file" accept=".usfm,.sfm,.SFM,.USFM" multiple style="display:none" onchange="msFilesSelected(this.files)">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <div class="ms-upload-text">
+            <strong>Upload USFM files</strong><br>
+            Drag and drop one or more USFM files here
+          </div>
+          <button type="button" class="ms-select-btn" onclick="event.stopPropagation(); document.getElementById('ms-file').click()">Select File</button>
+          <div class="ms-upload-sub">USFM is the only supported format. One file per book.</div>
+        </div>
+        <div class="ms-errors" id="ms-errors"></div>
+        <div class="ms-file-list" id="ms-file-list" style="display:none;"></div>
+
+        <div class="field">
+          <label class="field-label" for="ms-name"><span class="ms-required">*</span> Milestone Name</label>
+          <input class="field-input" id="ms-name" type="text" placeholder="e.g., Gospels" oninput="msUpdateImportButton()" />
+        </div>
+        <div class="field">
+          <label class="field-label">Book(s)</label>
+          <div class="ms-readonly" id="ms-books-display"></div>
+        </div>
+
+        <!-- Import destination (read-only) -->
+        <div class="ms-destination">
+          <div class="ms-dest-row"><span class="ms-dest-label">Project</span><span>Kachi Koli NT</span></div>
+          <div class="ms-dest-row"><span class="ms-dest-label">Source Language</span><span>Gujarati</span></div>
+          <div class="ms-dest-row"><span class="ms-dest-label">Source Bible</span><span>IRV Gujarati</span></div>
+          <div class="ms-dest-row"><span class="ms-dest-label">Target Language</span><span>Kachi Koli</span></div>
+        </div>
+      </div>
+
       <div class="modal-footer">
         <button class="btn-cancel" onclick="closeAddMilestone()">Cancel</button>
-        <button class="btn-primary">Save</button>
+        <button class="btn-primary" id="ms-save-btn">Save</button>
+        <button class="btn-primary" id="ms-import-btn" style="display:none;" disabled onclick="msImport()">Import</button>
       </div>
 
     </div>
@@ -1076,6 +1188,8 @@
     });
 
     function openAddMilestone() {
+      switchMilestoneTab('new');
+      resetMilestoneImport();
       buildBookList();
       document.getElementById('milestone-name').value = '';
       // Pre-populated from the parent project's Connectivity Profile (Meta Card) — hardcoded
@@ -1089,6 +1203,144 @@
       if (!e || e.target === document.getElementById('add-milestone-modal')) {
         document.getElementById('add-milestone-modal').classList.remove('open');
       }
+    }
+
+    // ── Add Milestone Import tab (WNPD-08) ──
+    // Empty prototype files can't be parsed, so validation is simulated from the
+    // filename: "invalid" previews "File is not a valid USFM file.", "nobooks" previews
+    // "Missing book data.", and a 3-character USFM code in the name (e.g. NUM.usfm,
+    // Kachi-Koli-REV.usfm) is the detected book. Books the project already holds
+    // (below) preview the Existing Book Check; anything else previews the pass state.
+    const USFM_BOOK_NAMES = {
+      GEN: 'Genesis', EXO: 'Exodus', LEV: 'Leviticus', NUM: 'Numbers', DEU: 'Deuteronomy',
+      JOS: 'Joshua', JDG: 'Judges', RUT: 'Ruth', PSA: 'Psalms', PRO: 'Proverbs', ISA: 'Isaiah',
+      JER: 'Jeremiah', MAT: 'Matthew', MRK: 'Mark', LUK: 'Luke', JHN: 'John', ACT: 'Acts',
+      ROM: 'Romans', '1CO': '1 Corinthians', '2CO': '2 Corinthians', GAL: 'Galatians',
+      EPH: 'Ephesians', PHP: 'Philippians', COL: 'Colossians', HEB: 'Hebrews', JAS: 'James',
+      '1PE': '1 Peter', '2PE': '2 Peter', '1JN': '1 John', '2JN': '2 John', '3JN': '3 John',
+      JUD: 'Jude', REV: 'Revelation',
+    };
+    // Mirrors the milestone table above; ACT is held by the project but is in no milestone.
+    const PROJECT_HELD_BOOKS = {
+      MAT: 'Gospels', MRK: 'Gospels', LUK: 'Gospels', JHN: 'Gospels',
+      ROM: 'Select Epistles', GAL: 'Select Epistles', EPH: 'Select Epistles', PHP: 'Select Epistles', COL: 'Select Epistles',
+      GEN: 'Patriarchal History', EXO: 'Patriarchal History',
+      ACT: null,
+    };
+
+    function switchMilestoneTab(tab) {
+      const isNew = tab === 'new';
+      document.getElementById('ms-tab-new').classList.toggle('active', isNew);
+      document.getElementById('ms-tab-import').classList.toggle('active', !isNew);
+      document.getElementById('ms-panel-new').style.display = isNew ? '' : 'none';
+      document.getElementById('ms-panel-import').style.display = isNew ? 'none' : '';
+      document.getElementById('ms-save-btn').style.display = isNew ? '' : 'none';
+      document.getElementById('ms-import-btn').style.display = isNew ? 'none' : '';
+    }
+
+    // msFiles holds files that passed validation: { name, code }.
+    let msFiles = [];
+    let msPending = 0;
+    let msErrors = [];
+
+    function resetMilestoneImport() {
+      msFiles = [];
+      msPending = 0;
+      msErrors = [];
+      document.getElementById('ms-file').value = '';
+      document.getElementById('ms-dropzone').classList.remove('drag');
+      document.getElementById('ms-name').value = '';
+      msRender();
+    }
+
+    function msDrop(e) {
+      e.preventDefault();
+      document.getElementById('ms-dropzone').classList.remove('drag');
+      msFilesSelected(e.dataTransfer.files);
+    }
+
+    // Each file is validated as soon as it is added; failures are reported per
+    // file and never affect the rest of the list.
+    function msFilesSelected(files) {
+      if (!files || !files.length) return;
+      msErrors = []; // errors stay until dismissed or another file is added
+      const names = Array.from(files).map(f => f.name);
+      document.getElementById('ms-file').value = '';
+      msPending += names.length;
+      msRender();
+      names.forEach((name, i) => setTimeout(() => {
+        msValidateFile(name);
+        msPending--;
+        msRender();
+      }, 250 + i * 120));
+    }
+
+    // Empty prototype files can't be parsed, so the result is simulated from the
+    // filename (see the note above USFM_BOOK_NAMES).
+    function msValidateFile(name) {
+      if (name.toLowerCase().includes('invalid')) {
+        return msErrors.push({ name, text: 'File is not a valid USFM file.' });
+      }
+      const code = name.toLowerCase().includes('nobooks')
+        ? null
+        : name.replace(/\.[^.]+$/, '').split(/[^A-Za-z0-9]+/).pop().toUpperCase();
+      if (!code || !USFM_BOOK_NAMES[code]) {
+        return msErrors.push({ name, text: 'Missing book data.' });
+      }
+      const book = USFM_BOOK_NAMES[code];
+      if (code in PROJECT_HELD_BOOKS) {
+        const where = PROJECT_HELD_BOOKS[code];
+        return msErrors.push({ name, text: where ? `${book} already exists in ${where}.` : `${book} already exists in this project.` });
+      }
+      if (msFiles.some(f => f.code === code)) {
+        return msErrors.push({ name, text: `${book} was already added.` });
+      }
+      msFiles.push({ name, code });
+    }
+
+    function msRemoveFile(index) {
+      msFiles.splice(index, 1);
+      msRender();
+    }
+
+    function msDismissError(index) {
+      msErrors.splice(index, 1);
+      msRender();
+    }
+
+    function msRender() {
+      const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+
+      document.getElementById('ms-errors').innerHTML = msErrors.map((e, i) => `
+        <div class="ms-error">
+          <span class="ms-error-text"><strong>${esc(e.name)}:</strong> ${e.text}</span>
+          <button type="button" class="ms-error-dismiss" onclick="msDismissError(${i})" aria-label="Dismiss error">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>`).join('');
+
+      const listEl = document.getElementById('ms-file-list');
+      listEl.innerHTML = msFiles.map((f, i) => `
+        <div class="ms-file-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <span class="ms-file-name">${esc(f.name)}</span>
+          <button type="button" class="ms-file-remove" onclick="msRemoveFile(${i})" aria-label="Remove ${esc(f.name)}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>`).join('');
+      listEl.style.display = msFiles.length ? 'flex' : 'none';
+
+      document.getElementById('ms-books-display').textContent = msFiles.map(f => USFM_BOOK_NAMES[f.code]).join(', ');
+      msUpdateImportButton();
+    }
+
+    function msUpdateImportButton() {
+      const ok = document.getElementById('ms-name').value.trim() && msFiles.length > 0 && msPending === 0;
+      document.getElementById('ms-import-btn').disabled = !ok;
+    }
+
+    function msImport() {
+      closeAddMilestone();
     }
 
     // ── Manage Workflow modal ──

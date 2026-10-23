@@ -293,6 +293,17 @@
       </div>
     </div>
 
+    <!-- Translator Milestones Browse: back returns to the list, manager-only actions hidden -->
+    <script>
+      if (localStorage.getItem('fluent_current_role') === 'translator') {
+        document.querySelector('.back-btn').href = 'milestones-translator.html';
+        document.querySelector('.page-header-actions').style.display = 'none';
+        const hideAssign = document.createElement('style');
+        hideAssign.textContent = '#assign-btn, .chapter-table th:first-child, .chapter-table td:first-child { display: none; }';
+        document.head.appendChild(hideAssign);
+      }
+    </script>
+
     <div class="body-columns">
 
       <!-- Left Panel -->
@@ -679,7 +690,7 @@
     // ── Manage Books ──
     const ALL_MILESTONES = [
       { id: 'gospels', name: 'Gospels' },
-      { id: 'epistles', name: 'Epistles' },
+      { id: 'epistles', name: 'Select Epistles' },
       { id: 'patriarchal', name: 'Patriarchal History' }
     ];
     const CURRENT_MILESTONE_ID = 'gospels';

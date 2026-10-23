@@ -197,9 +197,9 @@
     // This page's Create Project flow (per WPH-Build-Projects-List-Page) collects
     // Project Name, Source Language/Bible, Target Language, Connectivity Profile
     // (web#280), and a required Pericope Set (web#285), then creates the project
-    // with zero milestones — no Books field on the New tab. The Import tab
-    // (WNPD-08) stays visible. Reuse the shared cp-dialog markup/styles from
-    // create-project.js, but trim the New tab on open (not on DOMContentLoaded —
+    // with zero milestones — no Books field. The Create Project dialog has no
+    // Import tab (USFM import lives in Add Milestone, WNPD-08). Reuse the shared cp-dialog markup/styles from
+    // create-project.js, but trim the form on open (not on DOMContentLoaded —
     // the dialog is injected on that same event, and listener order isn't
     // guaranteed) and override validation/submit for the New tab's simpler flow.
     function openProjectsCreateDialog() {
