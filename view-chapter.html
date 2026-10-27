@@ -1090,7 +1090,7 @@
     }
     .pericope-para {
       font-size: 1rem;
-      line-height: 1.75;
+      line-height: 2;
       overflow-wrap: break-word;
     }
     .pericope-para .verse-num {
@@ -1163,21 +1163,21 @@
       padding-left: 24px;
     }
     .chapter-doc-area {
-      flex: 1; overflow-y: auto;
+      flex: 1; overflow: hidden;
       border: 1px solid var(--border); border-radius: var(--radius-lg);
       display: grid;
-      grid-template-columns: minmax(0,1fr) 1px minmax(0,1fr);
-      min-height: 0; align-content: start;
+      grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+      min-height: 0;
     }
     .chapter-src-col {
       padding: 20px 16px 60px 24px;
-      font-size: 1rem; line-height: 1.75;
+      font-size: 1rem; line-height: 2;
       color: var(--foreground); overflow-wrap: break-word;
+      overflow-y: auto; min-height: 0;
     }
-    .chapter-col-div { background: var(--border); align-self: stretch; }
     /* ── Chapter view source audio player ── */
     .chapter-player-row { margin-bottom: 12px; padding-right: 0; }
-    .chapter-tgt-col { padding: 20px 24px 60px 16px; overflow-wrap: break-word; }
+    .chapter-tgt-col { padding: 20px 24px 60px 16px; overflow-wrap: break-word; overflow-y: auto; min-height: 0; }
     .vnum {
       font-size: 1rem; font-weight: 700; color: var(--foreground);
       user-select: none; -webkit-user-select: none;
@@ -1188,15 +1188,16 @@
       padding: 14px 0 5px; margin-bottom: 10px; display: block;
     }
     .ch-src-heading.level-s2 { font-size: 0.9375rem; }
-    .ch-src-block { margin-bottom: 6px; }
+    .ch-src-block { margin-bottom: 6px; padding: 0 4px; min-height: 2em; line-height: 2; }
+    .ch-src-block sup.vnum { vertical-align: baseline; line-height: inherit; }
     .ch-src-block.q1 { padding-left: 2.25em; font-style: italic; }
     .ch-src-block.q2 { padding-left: 4.25em; font-style: italic; }
     .chapter-block {
       outline: 1.5px solid transparent;
       outline-offset: 1px;
       padding: 0 4px; border-radius: 4px;
-      font-size: 1rem; line-height: 1.75;
-      color: var(--foreground); min-height: 1.75em;
+      font-size: 1rem; line-height: 2;
+      color: var(--foreground); min-height: 2em;
       word-break: break-word; margin-bottom: 6px;
       transition: outline-color 0.1s, background 0.1s;
     }
@@ -1442,7 +1443,6 @@
       </div>
       <div class="chapter-doc-area" id="chapter-doc-area">
         <div class="chapter-src-col" id="chapter-src-col"></div>
-        <div class="chapter-col-div"></div>
         <div class="chapter-tgt-col" id="chapter-tgt-col"></div>
       </div>
     </div>
