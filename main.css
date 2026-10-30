@@ -14,7 +14,10 @@
   --card-hover: #0940a8;
   --card-foreground: #1a1a1a;
   --primary: #0b50d0;
+  --primary-foreground: #ffffff;
   --primary-hover: #0940a8;
+  --accent: #e0e6f5;
+  --accent-foreground: #1a1a1a;
   --muted: #f2f4f8;
   --muted-foreground: #555555;
   --destructive: #df0c07;
@@ -59,7 +62,10 @@
   --card-hover: #242c39;
   --card-foreground: #e6e6e6;
   --primary: #3d7cf2;
+  --primary-foreground: #ffffff;
   --primary-hover: #336ad6;
+  --accent: #2a3442;
+  --accent-foreground: #f2f4f7;
   --muted: #202630;
   --muted-foreground: #9da6b5;
   --popover: #2a3240;
