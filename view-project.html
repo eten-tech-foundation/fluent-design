@@ -654,6 +654,21 @@
       </div>
     </div>
 
+    <!-- Translator/Observer Projects (WPH, #595): back returns to their Projects list, manager-only actions hidden -->
+    <script>
+      (function () {
+        const role = localStorage.getItem('fluent_current_role');
+        if (role !== 'translator' && role !== 'observer') return;
+        const back = document.querySelector('.back-btn');
+        back.href = role === 'observer' ? 'observer-dashboard.html' : 'project-list-translator.html';
+        document.querySelector('.page-header-actions').style.display = 'none';
+        const hide = document.createElement('style');
+        hide.textContent = '.btn-icon-add, .team-banner, .users-table th:last-child, .users-table .td-action, .role-caret { display: none; }'
+          + ' .users-table .role-cell { pointer-events: none; }';
+        document.head.appendChild(hide);
+      })();
+    </script>
+
     <div class="body-columns">
 
       <!-- Left Panel -->

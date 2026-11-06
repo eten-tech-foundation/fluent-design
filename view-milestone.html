@@ -293,11 +293,10 @@
       </div>
     </div>
 
-    <!-- Translator Milestones Browse: back returns to the list, manager-only actions hidden -->
+    <!-- Translator/Observer Projects (WPH, #595): Export Milestone stays, manager-only actions hidden -->
     <script>
-      if (localStorage.getItem('fluent_current_role') === 'translator') {
-        document.querySelector('.back-btn').href = 'milestones-translator.html';
-        document.querySelector('.page-header-actions').style.display = 'none';
+      if (['translator', 'observer'].includes(localStorage.getItem('fluent_current_role'))) {
+        document.getElementById('milestone-actions').style.display = 'none';
         const hideAssign = document.createElement('style');
         hideAssign.textContent = '#assign-btn, .chapter-table th:first-child, .chapter-table td:first-child { display: none; }';
         document.head.appendChild(hideAssign);
